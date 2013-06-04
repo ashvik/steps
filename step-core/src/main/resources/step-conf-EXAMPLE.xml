@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<steprequestmapper>
+    <multiScopedSteps>
+        <step name="#">
+            <scope request="#" nextStep="#"/>
+            <scope request="#" nextStep="#"/>
+        </step>
+    </multiScopedSteps>
+    <mappedrequest request="#" rootStep="#" applyGenericSteps="#">
+        <preSteps>
+            <step>1</step>
+            <step>2</step>
+        </preSteps>
+        <postSteps>
+            <step>3</step>
+        </postSteps>
+    </mappedrequest>
+    <mappedrequest request="#" rootStep="#" applyGenericSteps="#">
+        <preSteps>
+            <step>4</step>
+            <step>5</step>
+        </preSteps>
+        <postSteps>
+            <step>6</step>
+            <step>7</step>
+        </postSteps>
+    </mappedrequest>
+</steprequestmapper>

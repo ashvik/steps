@@ -1,0 +1,60 @@
+package com.step.core.context.impl;
+
+import com.step.core.context.StepContext;
+import com.step.core.factory.ObjectFactory;
+import com.step.core.io.StepInput;
+
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * Created with IntelliJ IDEA.
+ * User: amishra
+ * Date: 5/25/13
+ * Time: 1:23 PM
+ * To change this template use File | Settings | File Templates.
+ */
+public class BasicStepContext implements StepContext {
+    private Map<String, Object> cache = new HashMap<String, Object>();
+    private StepInput input;
+    private ObjectFactory objectFactory;
+
+    @Override
+    public void put(String name, Object obj) {
+        this.cache.put(name, obj);
+    }
+
+    @Override
+    public Object get(String name) {
+        return this.cache.get(name);
+    }
+
+    @Override
+    public void setStepInput(StepInput input) {
+       this.input = input;
+    }
+
+    @Override
+    public StepInput getStepInput() {
+        return this.input;
+    }
+
+    public <T> T getInput(Class<T> inputClass){
+        return (T)this.input.getInput(inputClass);
+    }
+
+    @Override
+    public <T> T getDependency(Class<T> dependency) {
+        return this.objectFactory.fetch(dependency);
+    }
+
+    @Override
+    public Object getDependency(String dependency) {
+        return this.objectFactory.fetch(dependency);
+    }
+
+    @Override
+    public void setObjectFactory(ObjectFactory factory) {
+        this.objectFactory = factory;
+    }
+}
