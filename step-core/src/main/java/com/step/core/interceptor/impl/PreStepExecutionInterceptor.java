@@ -14,6 +14,6 @@ import com.step.core.interceptor.ExecutionInterceptor;
 public class PreStepExecutionInterceptor extends AbstractStepExecutionInterceptor {
     @Override
     public void intercept(StepChain chain, StepContext context) {
-        executeInterceptorSteps(chain.getPreSteps(), context);
+        executeInterceptorSteps(chain.getPreSteps(), chain, context);
     }
 }

@@ -1,6 +1,9 @@
 package com.step.core.factory.spring;
 
 import com.step.core.factory.ObjectFactory;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -10,9 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
  * Time: 11:39 PM
  * To change this template use File | Settings | File Templates.
  */
-public class SpringManagedObjectFactory implements ObjectFactory {
-    @Autowired
-    private org.springframework.beans.factory.config.AutowireCapableBeanFactory beanFactory;
+public class SpringManagedObjectFactory implements ObjectFactory, BeanFactoryAware {
+    private BeanFactory beanFactory;
 
     @Override
     public <T> T fetch(Class<T> objClass) {
@@ -27,5 +29,10 @@ public class SpringManagedObjectFactory implements ObjectFactory {
     @Override
     public void init() {
         throw new UnsupportedOperationException("init Unsupported");
+    }
+
+    @Override
+    public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+        this.beanFactory = beanFactory;
     }
 }

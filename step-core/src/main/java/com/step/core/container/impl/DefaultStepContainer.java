@@ -75,14 +75,14 @@ public class DefaultStepContainer implements StepContainer {
         String request = holder.getMappedRequest();
         addCommonStepsInChainIfApplicable(chain, holder.isCanApplyGenericSteps(), true, holder.getPreSteps());
 
-        chain.addStep(holder.getStepClass());
+        chain.addStep(holder);
         boolean isFinished = false;
 
         while(!isFinished){
-            String next = holder.getNextStepForScope(request);//holder.getNextStep();
+            String next = holder.getNextStepForScope(request);
             if(next != null && !next.isEmpty()){
                 holder = this.stepDefinitionProvider.getStepDefinitionByStepName(next);
-                chain.addStep(holder.getStepClass());
+                chain.addStep(holder);
             }else{
                 String nextStep = holder.getNextStep();
                 if(nextStep != null && !nextStep.isEmpty()){
@@ -91,7 +91,7 @@ public class DefaultStepContainer implements StepContainer {
                     isFinished = true;
                 }
 
-                chain.addStep(holder.getStepClass());
+                chain.addStep(holder);
             }
         }
 

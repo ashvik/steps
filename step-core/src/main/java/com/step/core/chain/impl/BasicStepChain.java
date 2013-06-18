@@ -1,9 +1,14 @@
 package com.step.core.chain.impl;
 
 import com.step.core.chain.StepChain;
+import com.step.core.collector.StepDefinitionHolder;
+import com.step.core.utils.AnnotatedField;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -16,6 +21,8 @@ public class BasicStepChain implements StepChain {
     private List<Class<?>> steps = new ArrayList<Class<?>>();
     private List<Class<?>> preSteps = new ArrayList<Class<?>>();
     private List<Class<?>> postSteps = new ArrayList<Class<?>>();
+    private Map<Class<?>, List<AnnotatedField>> dependenciesMap =
+            new HashMap<Class<?>, List<AnnotatedField>>();
 
     @Override
     public List<Class<?>> getPreSteps() {
@@ -33,9 +40,16 @@ public class BasicStepChain implements StepChain {
     }
 
     @Override
-    public void addStep(Class<?> stepClass) {
-        if(!this.steps.contains(stepClass)){
-            this.steps.add(stepClass);
+    public List<AnnotatedField> getDependenciesForStep(Class<?> stepClass) {
+        List<AnnotatedField> fields = this.dependenciesMap.get(stepClass);
+        return fields == null ? Collections.EMPTY_LIST : fields;
+    }
+
+    @Override
+    public void addStep(StepDefinitionHolder holder) {
+        if(!this.steps.contains(holder.getStepClass())){
+            this.steps.add(holder.getStepClass());
+            this.dependenciesMap.put(holder.getStepClass(), holder.getAnnotatedFields());
         }
     }
 

@@ -43,6 +43,7 @@ public class AnnotatedGenericStepCollector implements StepCollector {
             int priority = (Integer)ad.getDefinition("priority");
             StepDefinitionHolder holder = new StepDefinitionHolder(name, ad.getAnnotatedClass());
             holder.setGenericStepType(type);
+            holder.setAnnotatedFields((List)ad.getDefinition("dependencies"));
             orderedSteps.add(new PrioritizedStepDefinition(priority, holder));
             Collections.sort(orderedSteps, new PriorityComparator());
         }

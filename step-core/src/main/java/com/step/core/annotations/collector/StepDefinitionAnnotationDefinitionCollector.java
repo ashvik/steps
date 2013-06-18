@@ -2,10 +2,11 @@ package com.step.core.annotations.collector;
 
 import com.step.core.annotations.StepDefinition;
 import com.step.core.utils.AnnotatedDefinition;
-import com.step.core.utils.AnnotatedDefinitionCollector;
 import com.step.core.utils.PackageScanner;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -15,10 +16,12 @@ import java.util.Set;
  * Time: 8:44 PM
  * To change this template use File | Settings | File Templates.
  */
-public class StepDefinitionAnnotationDefinitionCollector implements AnnotatedDefinitionCollector {
+public class StepDefinitionAnnotationDefinitionCollector extends AbstractStepAnnotationDefinitionCollector {
     @Override
     public Set<AnnotatedDefinition> collect(String pack) {
         Set<AnnotatedDefinition> definitions = new HashSet<AnnotatedDefinition>();
+        List<Class<?>> dependencies = new ArrayList<Class<?>>();
+
         try{
             if(pack != null && !pack.isEmpty()){
                 Class[] bds = PackageScanner.getClassesInPackage(pack);
@@ -37,6 +40,7 @@ public class StepDefinitionAnnotationDefinitionCollector implements AnnotatedDef
 
                             definition.addDefinition("name", name);
                             definition.addDefinition("next", next);
+                            definition.addDefinition("dependencies", collectAnnotatedFields(cls));
 
                             definitions.add(definition);
                         }
@@ -50,14 +54,5 @@ public class StepDefinitionAnnotationDefinitionCollector implements AnnotatedDef
         }
 
         return definitions;
-    }
-
-    private String makeDefaultStepName(Class stepClass){
-        String clsName = stepClass.getClass().getName();
-        String defaultName = clsName.substring(clsName.lastIndexOf('.')+1, clsName.length());
-        char[] chars = defaultName.toCharArray();
-        chars[0] = Character.toLowerCase(chars[0]);
-
-        return new String(chars, 0, chars.length);
     }
 }

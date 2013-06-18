@@ -40,8 +40,10 @@ public class AnnotatedStepCollector implements StepCollector{
         for(AnnotatedDefinition ad : annoDefinitions){
             String names = (String)ad.getDefinition("name");
             String next = (String)ad.getDefinition("next");
+            StepDefinitionHolder holder = new StepDefinitionHolder(names, next, ad.getAnnotatedClass());
+            holder.setAnnotatedFields((List)ad.getDefinition("dependencies"));
 
-            defs.add(new StepDefinitionHolder(names, next, ad.getAnnotatedClass()));
+            defs.add(holder);
         }
 
         return defs;

@@ -1,6 +1,8 @@
 package com.step.core.collector;
 
+import com.step.core.annotations.collector.StepDefinitionAnnotationDefinitionCollector;
 import com.step.core.enums.GenericStepType;
+import com.step.core.utils.AnnotatedField;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,6 +25,7 @@ public class StepDefinitionHolder {
     private GenericStepType genericStepType;
     private List<String> preSteps = new ArrayList<String>();
     private List<String> postSteps = new ArrayList<String>();
+    private List<AnnotatedField> annotatedFields = new ArrayList<AnnotatedField>();
     private Map<String, String> scopes = new HashMap<String, String>();
 
     public StepDefinitionHolder(String name){
@@ -98,6 +101,14 @@ public class StepDefinitionHolder {
 
     public String getNextStepForScope(String scope){
         return this.scopes.get(scope);
+    }
+
+    public List<AnnotatedField> getAnnotatedFields() {
+        return annotatedFields;
+    }
+
+    public void setAnnotatedFields(List<AnnotatedField> annotatedFields) {
+        this.annotatedFields = annotatedFields;
     }
 
     public void merge(StepDefinitionHolder other){

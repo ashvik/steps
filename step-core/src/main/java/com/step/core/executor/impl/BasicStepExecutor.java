@@ -7,11 +7,7 @@ import com.step.core.context.StepContext;
 import com.step.core.exceptions.StepExecutionException;
 import com.step.core.executor.StepExecutor;
 import com.step.core.io.ExecutionResult;
-import com.step.core.io.StepInput;
-
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.List;
+import com.step.core.utils.StepExecutionUtil;
 
 /**
  * Created with IntelliJ IDEA.
@@ -30,6 +26,8 @@ public class BasicStepExecutor implements StepExecutor {
             Object step = null;
             try {
                 step = stepClass.newInstance();
+
+                StepExecutionUtil.makeRichStepObject(step, chain.getDependenciesForStep(stepClass), context);
 
                 if(step instanceof ResponsiveStep){
                     ResponsiveStep rs = (ResponsiveStep)step;

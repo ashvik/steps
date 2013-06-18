@@ -1,10 +1,8 @@
 package com.step.core.annotations.collector;
 
 import com.step.core.annotations.GenericStepDefinition;
-import com.step.core.annotations.StepDefinition;
 import com.step.core.enums.GenericStepType;
 import com.step.core.utils.AnnotatedDefinition;
-import com.step.core.utils.AnnotatedDefinitionCollector;
 import com.step.core.utils.PackageScanner;
 
 import java.util.HashSet;
@@ -17,7 +15,7 @@ import java.util.Set;
  * Time: 1:38 AM
  * To change this template use File | Settings | File Templates.
  */
-public class GenericStepAnnotationDefinitionCollector implements AnnotatedDefinitionCollector {
+public class GenericStepAnnotationDefinitionCollector extends AbstractStepAnnotationDefinitionCollector {
     @Override
     public Set<AnnotatedDefinition> collect(String pack) {
         Set<AnnotatedDefinition> definitions = new HashSet<AnnotatedDefinition>();
@@ -37,6 +35,7 @@ public class GenericStepAnnotationDefinitionCollector implements AnnotatedDefini
                             definition.addDefinition("name", name);
                             definition.addDefinition("type", type);
                             definition.addDefinition("priority", priority);
+                            definition.addDefinition("dependencies", collectAnnotatedFields(cls));
 
                             definitions.add(definition);
                         }
