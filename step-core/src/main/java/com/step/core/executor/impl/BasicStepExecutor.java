@@ -46,7 +46,7 @@ public class BasicStepExecutor implements StepExecutor {
                 throw new StepExecutionException(stepClass, e);
             }
         }
-        result = new ExecutionResult(stepResult);
+        result = new ExecutionResult(stepResult, context.getAttributes());
 
         return result;
     }

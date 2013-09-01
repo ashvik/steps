@@ -1,5 +1,7 @@
 package com.step.core.io;
 
+import com.step.core.Attributes;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,11 +18,17 @@ public class StepInput {
     private String request;
     private List<Object> collectedInputs = new ArrayList<Object>();
     private List<Class<?>> collectedInputClass = new ArrayList<Class<?>>();
+    private Attributes attributes = new Attributes();
 
     public StepInput(String request, Object input){
         this.collectedInputs.add(input);
         this.request = request;
         this.collectedInputClass.add(input.getClass());
+    }
+
+    public StepInput(String request, Attributes attributes){
+        this.request = request;
+        this.attributes = attributes;
     }
 
     public StepInput(String request){
@@ -50,5 +58,9 @@ public class StepInput {
 
     public String getRequest(){
         return this.request;
+    }
+
+    public Object getAttribute(String name){
+        return attributes.getAttribute(name);
     }
 }

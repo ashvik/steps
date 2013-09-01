@@ -70,6 +70,10 @@ public class DefaultStepContainer implements StepContainer {
         stepExecutorProvider.initInterceptors(configuration);
     }
 
+    protected StepDefinitionHolder getStepDefinition(String request){
+       return stepDefinitionProvider.getStepDefinitionByRequest(request);
+    }
+
     private StepChain createStepChainToExecute(StepDefinitionHolder holder){
         StepChain chain = new BasicStepChain();
         String request = holder.getMappedRequest();

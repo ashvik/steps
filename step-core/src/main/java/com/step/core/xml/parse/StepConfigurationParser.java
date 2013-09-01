@@ -88,6 +88,8 @@ public class StepConfigurationParser {
         String canUseGenericSteps = ele.getAttribute("applyGenericSteps");
         mr.setRequest(ele.getAttribute("request"));
         mr.setRootStep(ele.getAttribute("rootStep"));
+        mr.setOnSuccess(ele.getAttribute("onSuccess"));
+        mr.setOnFailure(ele.getAttribute("onFailure"));
         mr.setApplyGenericSteps(canUseGenericSteps.isEmpty() ? true : Boolean.valueOf(canUseGenericSteps));
 
         //populating pre steps....

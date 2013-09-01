@@ -21,6 +21,8 @@ public class StepDefinitionHolder {
     private String nextStep;
     private String name;
     private String mappedRequest;
+    private String onSuccess;
+    private String onFailure;
     private boolean canApplyGenericSteps = true;
     private GenericStepType genericStepType;
     private List<String> preSteps = new ArrayList<String>();
@@ -101,6 +103,22 @@ public class StepDefinitionHolder {
 
     public String getNextStepForScope(String scope){
         return this.scopes.get(scope);
+    }
+
+    public String getOnSuccess() {
+        return onSuccess;
+    }
+
+    public void setOnSuccess(String onSuccess) {
+        this.onSuccess = onSuccess;
+    }
+
+    public String getOnFailure() {
+        return onFailure;
+    }
+
+    public void setOnFailure(String onFailure) {
+        this.onFailure = onFailure;
     }
 
     public List<AnnotatedField> getAnnotatedFields() {

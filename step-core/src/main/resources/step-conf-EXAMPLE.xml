@@ -6,7 +6,7 @@
             <scope request="#" nextStep="#"/>
         </step>
     </multiScopedSteps>
-    <mappedrequest request="#" rootStep="#" applyGenericSteps="#">
+    <mappedrequest request="#" rootStep="#" applyGenericSteps="#" onSuccess="#" onFailure="#">
         <preSteps>
             <step>1</step>
             <step>2</step>
@@ -15,7 +15,7 @@
             <step>3</step>
         </postSteps>
     </mappedrequest>
-    <mappedrequest request="#" rootStep="#" applyGenericSteps="#">
+    <mappedrequest request="#" rootStep="#" applyGenericSteps="#" onSuccess="#" onFailure="#">
         <preSteps>
             <step>4</step>
             <step>5</step>

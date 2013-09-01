@@ -52,6 +52,8 @@ public class XmlStepCollector implements StepCollector {
                 holder.setCanApplyGenericSteps(mr.isApplyGenericSteps());
                 holder.setPreSteps(mr.getPreSteps());
                 holder.setPostSteps(mr.getPostSteps());
+                holder.setOnSuccess(mr.getOnSuccess());
+                holder.setOnFailure(mr.getOnFailure());
                 definitions.add(holder);
             }
         }catch(Exception e){

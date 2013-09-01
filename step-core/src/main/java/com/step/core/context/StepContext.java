@@ -1,7 +1,10 @@
 package com.step.core.context;
 
+import com.step.core.Attributes;
 import com.step.core.factory.ObjectFactory;
 import com.step.core.io.StepInput;
+
+import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.
@@ -19,4 +22,7 @@ public interface StepContext {
     <T> T getDependency(Class<T> dependency);
     Object getDependency(String dependency);
     void setObjectFactory(ObjectFactory factory);
+    Object getAttribute(String name);
+    Attributes getAttributes();
+    void putAttribute(String name, Object value);
 }

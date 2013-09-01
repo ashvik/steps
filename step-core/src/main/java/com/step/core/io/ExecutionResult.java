@@ -1,5 +1,7 @@
 package com.step.core.io;
 
+import com.step.core.Attributes;
+
 /**
  * Created with IntelliJ IDEA.
  * User: amishra
@@ -9,12 +11,18 @@ package com.step.core.io;
  */
 public class ExecutionResult<T> {
     private T resultObject;
+    private Attributes attributes;
 
-    public ExecutionResult(T obj){
+    public ExecutionResult(T obj, Attributes attributes){
         this.resultObject = obj;
+        this.attributes = attributes;
     }
 
     public T getResultObject(){
         return this.resultObject;
+    }
+
+    public Attributes getAttributes() {
+        return attributes;
     }
 }

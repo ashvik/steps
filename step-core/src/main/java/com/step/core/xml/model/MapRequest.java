@@ -14,6 +14,8 @@ public class MapRequest {
     private String request;
     private String rootStep;
     private boolean applyGenericSteps = true;
+    private String onSuccess;
+    private String onFailure;
     private List<String> preSteps = new ArrayList<String>();
     private List<String> postSteps = new ArrayList<String>();
 
@@ -55,5 +57,21 @@ public class MapRequest {
 
     public void setApplyGenericSteps(boolean applyGenericSteps) {
         this.applyGenericSteps = applyGenericSteps;
+    }
+
+    public String getOnSuccess() {
+        return onSuccess;
+    }
+
+    public void setOnSuccess(String onSuccess) {
+        this.onSuccess = onSuccess;
+    }
+
+    public String getOnFailure() {
+        return onFailure;
+    }
+
+    public void setOnFailure(String onFailure) {
+        this.onFailure = onFailure;
     }
 }

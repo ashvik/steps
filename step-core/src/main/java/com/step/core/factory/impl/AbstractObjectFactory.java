@@ -2,7 +2,9 @@ package com.step.core.factory.impl;
 
 import com.step.core.annotations.Initialize;
 import com.step.core.factory.ObjectFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -36,13 +38,13 @@ public abstract class AbstractObjectFactory implements ObjectFactory {
         return objectByNameMap.get(objName);
     }
 
-    protected void add(Object obj){
+    protected AbstractObjectFactory add(Object obj){
         Class cls = obj.getClass();
         Class[] interfaces = cls.getInterfaces();
 
         if(interfaces.length == 0){
             objectByClassMap.put(cls, obj);
-            return;
+            return this;
         }
 
         for(Class interfaceCls : interfaces){
@@ -51,6 +53,7 @@ public abstract class AbstractObjectFactory implements ObjectFactory {
 
         objectByClassMap.put(cls, obj);
         addByName(obj);
+        return this;
     }
 
     protected void addByName(Object obj){
@@ -180,13 +183,24 @@ public abstract class AbstractObjectFactory implements ObjectFactory {
 
     private void initFields(Object object, Field... fields) throws IllegalArgumentException, IllegalAccessException {
         for(Field f : fields){
-            Initialize annotation = f.getAnnotation(Initialize.class);
-            if(annotation != null){
+            Annotation[] annotations = f.getAnnotations();
+
+            if(annotations != null && isApplicableAnnotation(annotations)){
                 Class cls = f.getType();
                 f.setAccessible(true);
                 f.set(object, initializeClass(cls));
             }
         }
+    }
+
+    private boolean isApplicableAnnotation(Annotation[] annotations){
+        for(Annotation ann : annotations){
+            if(ann.annotationType() == Initialize.class || ann.annotationType() == Autowired.class){
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private void initSuperFields(Object object) throws IllegalArgumentException, SecurityException, IllegalAccessException {

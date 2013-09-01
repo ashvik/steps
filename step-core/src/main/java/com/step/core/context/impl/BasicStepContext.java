@@ -1,11 +1,13 @@
 package com.step.core.context.impl;
 
+import com.step.core.Attributes;
 import com.step.core.context.StepContext;
 import com.step.core.factory.ObjectFactory;
 import com.step.core.io.StepInput;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.
@@ -18,6 +20,7 @@ public class BasicStepContext implements StepContext {
     private Map<String, Object> cache = new HashMap<String, Object>();
     private StepInput input;
     private ObjectFactory objectFactory;
+    private Attributes attributes = new Attributes();
 
     @Override
     public void put(String name, Object obj) {
@@ -56,5 +59,20 @@ public class BasicStepContext implements StepContext {
     @Override
     public void setObjectFactory(ObjectFactory factory) {
         this.objectFactory = factory;
+    }
+
+    @Override
+    public Object getAttribute(String name) {
+        return this.attributes.getAttribute(name);
+    }
+
+    @Override
+    public Attributes getAttributes() {
+        return this.attributes;
+    }
+
+    @Override
+    public void putAttribute(String name, Object value) {
+        this.attributes.addAttribute(name, value);
     }
 }
