@@ -10,6 +10,8 @@ import com.step.core.collector.impl.XmlStepCollector;
 import com.step.core.container.StepContainer;
 import com.step.core.context.StepContext;
 import com.step.core.context.impl.BasicStepContext;
+import com.step.core.exceptions.StepContainerExecutionException;
+import com.step.core.exceptions.StepExecutionException;
 import com.step.core.executor.StepExecutor;
 import com.step.core.executor.StepExecutorProvider;
 import com.step.core.executor.impl.BasicStepExecutorProvider;
@@ -40,7 +42,7 @@ public class DefaultStepContainer implements StepContainer {
         StepDefinitionHolder sdh = stepDefinitionProvider.getStepDefinitionByRequest(req);
 
         if(sdh == null){
-            //TODO throw exception
+            throw new StepContainerExecutionException("No step definition found for request '"+req+"'");
         }
 
         StepChain chain = createStepChainToExecute(sdh);
@@ -110,11 +112,11 @@ public class DefaultStepContainer implements StepContainer {
 
         if(canApply){
             for(StepDefinitionHolder def : genStep){
-                chain.addInterceptorStep(def.getStepClass(), isPreStep);
+                chain.addInterceptorStep(def, isPreStep);
             }
         }else if(!steps.isEmpty()){
             for(String step : steps){
-                chain.addInterceptorStep(this.stepDefinitionProvider.getStepDefinitionByStepName(step).getStepClass(), isPreStep);
+                chain.addInterceptorStep(this.stepDefinitionProvider.getStepDefinitionByStepName(step), isPreStep);
             }
         }
     }

@@ -19,5 +19,5 @@ public interface StepChain {
     List<Class<?>> getSteps();
     List<AnnotatedField> getDependenciesForStep(Class<?> stepClass);
     void addStep(StepDefinitionHolder stepDefinitionHolder);
-    void addInterceptorStep(Class<?> stepClass, boolean isPreStep);
+    void addInterceptorStep(StepDefinitionHolder stepDefinitionHolder, boolean isPreStep);
 }

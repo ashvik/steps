@@ -1,8 +1,6 @@
 package com.step.core.annotations.collector;
 
-import com.step.core.annotations.GenericStepDefinition;
 import com.step.core.annotations.InterceptorQualifier;
-import com.step.core.enums.GenericStepType;
 import com.step.core.enums.InterceptorType;
 import com.step.core.utils.AnnotatedDefinition;
 import com.step.core.utils.AnnotatedDefinitionCollector;

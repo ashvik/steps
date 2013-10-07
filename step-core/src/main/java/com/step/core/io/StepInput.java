@@ -3,9 +3,7 @@ package com.step.core.io;
 import com.step.core.Attributes;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.

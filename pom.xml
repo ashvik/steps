@@ -11,6 +11,7 @@
     <modules>
         <module>step-core</module>
         <module>step-web</module>
+        <module>step-example</module>
     </modules>
 
     <properties>

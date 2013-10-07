@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<steprequestmapper>
+    <multiScopedSteps>
+        <step name="makeBusinessObjectFromInputStep">
+            <scope request="add" nextStep="addBusinessObjectStep"/>
+            <scope request="fetch" nextStep="fetchBusinessObjectStep"/>
+        </step>
+    </multiScopedSteps>
+    <mappedrequest request="add" rootStep="makeBusinessObjectFromInputStep"/>
+    <mappedrequest request="fetch" rootStep="makeBusinessObjectFromInputStep"/>
+</steprequestmapper>

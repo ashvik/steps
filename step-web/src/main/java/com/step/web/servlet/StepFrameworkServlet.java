@@ -52,6 +52,11 @@ public class StepFrameworkServlet extends HttpServlet {
         WebExecutionResult result = (WebExecutionResult)stepContainer.submit(input);
 
         req.setAttribute("result", result.getResultObject());
+        Attributes attrs = result.getAttributes();
+        for(String name : attrs.getAttributeName()){
+            req.getSession(false).setAttribute(name, attrs.getAttribute(name));
+        }
+
         RequestDispatcher view = req.getRequestDispatcher(result.getResource());
         view.forward(req, resp);
     }

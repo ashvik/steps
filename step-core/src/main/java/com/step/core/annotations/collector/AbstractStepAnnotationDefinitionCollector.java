@@ -31,7 +31,7 @@ public abstract class AbstractStepAnnotationDefinitionCollector implements Annot
     }
 
     protected String makeDefaultStepName(Class stepClass){
-        String clsName = stepClass.getClass().getName();
+        String clsName = stepClass.getName();
         String defaultName = clsName.substring(clsName.lastIndexOf('.')+1, clsName.length());
         char[] chars = defaultName.toCharArray();
         chars[0] = Character.toLowerCase(chars[0]);
