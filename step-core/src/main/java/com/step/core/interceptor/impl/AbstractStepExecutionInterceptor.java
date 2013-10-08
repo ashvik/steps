@@ -25,6 +25,7 @@ public abstract class AbstractStepExecutionInterceptor implements ExecutionInter
                 rls.setStepContext(context);
                 rls.execute();
             }catch(Exception e){
+                e.printStackTrace();
                 throw new IllegalStateException(e.getMessage());
             }
         }
