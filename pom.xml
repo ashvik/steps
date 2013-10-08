@@ -77,4 +77,12 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+
+	<scm>
+		<connection>scm:svn:https://github.com/ashvik/steps</connection>
+		<developerConnection>scm:svn:https://github.com/ashvik/steps</developerConnection>
+		<tag>HEAD</tag>
+		<url>scm:svn:https://github.com/ashvik/steps</url>
+  </scm>
+
 </project>
