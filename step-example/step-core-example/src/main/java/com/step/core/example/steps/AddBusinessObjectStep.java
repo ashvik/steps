@@ -24,10 +24,13 @@ public class AddBusinessObjectStep extends AbstractResponsiveStep<BusinessObject
     private DBService dbService;
 
     @Override
-    public BusinessObject execute() {
+    public BusinessObject execute(){
         BusinessObject bo = getInput(BusinessObject.class);
         dbService.save(bo);
         log.info("Saved object ["+bo+"]");
+        /*if(bo == null){
+            throw new IOException("");
+        }*/
         return bo;
     }
 }

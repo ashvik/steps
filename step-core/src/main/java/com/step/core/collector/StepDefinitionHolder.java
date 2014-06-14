@@ -1,6 +1,7 @@
 package com.step.core.collector;
 
-import com.step.core.annotations.collector.StepDefinitionAnnotationDefinitionCollector;
+import com.step.core.chain.breaker.BreakDetails;
+import com.step.core.chain.jump.JumpDetails;
 import com.step.core.enums.GenericStepType;
 import com.step.core.utils.AnnotatedField;
 
@@ -29,6 +30,8 @@ public class StepDefinitionHolder {
     private List<String> postSteps = new ArrayList<String>();
     private List<AnnotatedField> annotatedFields = new ArrayList<AnnotatedField>();
     private Map<String, String> scopes = new HashMap<String, String>();
+    private Map<String, JumpDetails> jumpDetailsMap = new HashMap<String, JumpDetails>();
+    private Map<String, BreakDetails> breakDetailsMap = new HashMap<String, BreakDetails>();
 
     public StepDefinitionHolder(String name){
         this.name = name;
@@ -129,6 +132,22 @@ public class StepDefinitionHolder {
         this.annotatedFields = annotatedFields;
     }
 
+    public void addJumpDetails(String request, JumpDetails jumpDetails){
+        this.jumpDetailsMap.put(request, jumpDetails);
+    }
+
+    public JumpDetails getJumpDetails(String request){
+        return this.jumpDetailsMap.get(request);
+    }
+
+    public void addBreakDetails(String request, BreakDetails breakDetails){
+        this.breakDetailsMap.put(request, breakDetails);
+    }
+
+    public BreakDetails getBreakDetails(String request){
+        return this.breakDetailsMap.get(request);
+    }
+
     public void merge(StepDefinitionHolder other){
         this.mappedRequest = other.mappedRequest == null ? this.mappedRequest : other.mappedRequest ;
         this.genericStepType = other.genericStepType == null ? this.genericStepType : other.genericStepType;
@@ -136,6 +155,8 @@ public class StepDefinitionHolder {
         this.preSteps = other.preSteps.isEmpty() ? this.preSteps : other.preSteps;
         this.postSteps = other.postSteps.isEmpty() ? this.postSteps : other.postSteps;
         this.scopes = other.scopes.isEmpty() ? this.scopes : other.scopes;
+        this.jumpDetailsMap.putAll(other.jumpDetailsMap);
+        this.breakDetailsMap.putAll(other.breakDetailsMap);
     }
 
     public StepDefinitionHolder cloneWithDifferentMappedRequest(String mappedRequest){
@@ -146,6 +167,8 @@ public class StepDefinitionHolder {
         cloned.preSteps = this.preSteps;
         cloned.postSteps = this.postSteps;
         cloned.scopes = this.scopes;
+        cloned.jumpDetailsMap = this.jumpDetailsMap;
+        cloned.breakDetailsMap = this.breakDetailsMap;
         cloned.nextStep = this.nextStep;
 
         return cloned;

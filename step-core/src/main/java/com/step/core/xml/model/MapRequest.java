@@ -18,6 +18,24 @@ public class MapRequest {
     private String onFailure;
     private List<String> preSteps = new ArrayList<String>();
     private List<String> postSteps = new ArrayList<String>();
+    private List<Jumper> jumpers = new ArrayList<Jumper>();
+    private List<Breaker> breakers = new ArrayList<Breaker>();
+
+    public void addJumper(Jumper jumper){
+        this.jumpers.add(jumper);
+    }
+
+    public List<Jumper> getJumpers(){
+        return this.jumpers;
+    }
+
+    public void addBreaker(Breaker jumper){
+        this.breakers.add(jumper);
+    }
+
+    public List<Breaker> getBreaker(){
+        return this.breakers;
+    }
 
     public void addPreSteps(String step){
         this.preSteps.add(step);

@@ -10,5 +10,5 @@ import com.step.core.context.StepContextAware;
  * To change this template use File | Settings | File Templates.
  */
 public interface ResponsiveStep<T> extends StepContextAware {
-    T execute();
+    T execute() throws Exception;
 }

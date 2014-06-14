@@ -1,14 +1,12 @@
 package com.step.core.chain.impl;
 
 import com.step.core.chain.StepChain;
+import com.step.core.chain.breaker.BreakDetails;
+import com.step.core.chain.jump.JumpDetails;
 import com.step.core.collector.StepDefinitionHolder;
 import com.step.core.utils.AnnotatedField;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -21,6 +19,10 @@ public class BasicStepChain implements StepChain {
     private List<Class<?>> steps = new ArrayList<Class<?>>();
     private List<Class<?>> preSteps = new ArrayList<Class<?>>();
     private List<Class<?>> postSteps = new ArrayList<Class<?>>();
+    private Map<Class<?>, Class<?>> stepToJumpConditionMap = new HashMap<Class<?>, Class<?>>();
+    private Map<Class<?>, Class<?>> stepToBreakConditionMap = new HashMap<Class<?>, Class<?>>();
+    private Map<Class<?>, String> stepNames = new HashMap<Class<?>, String>();
+    private Map<Class<?>, JumpDetails> stepJumpInfoMap = new HashMap<Class<?>, JumpDetails>();
     private Map<Class<?>, List<AnnotatedField>> dependenciesMap =
             new HashMap<Class<?>, List<AnnotatedField>>();
 
@@ -46,10 +48,20 @@ public class BasicStepChain implements StepChain {
     }
 
     @Override
-    public void addStep(StepDefinitionHolder holder) {
+    public void addStep(StepDefinitionHolder holder, String request) {
         if(!this.steps.contains(holder.getStepClass())){
             this.steps.add(holder.getStepClass());
             this.dependenciesMap.put(holder.getStepClass(), holder.getAnnotatedFields());
+            this.stepNames.put(holder.getStepClass(), holder.getName());
+            JumpDetails details = holder.getJumpDetails(request);
+            if(details != null){
+                this.stepToJumpConditionMap.put(holder.getStepClass(), details.getConditionClass());
+                this.stepJumpInfoMap.put(holder.getStepClass(), details);
+            }
+            BreakDetails breakDetails = holder.getBreakDetails(request);
+            if(breakDetails != null){
+                this.stepToBreakConditionMap.put(holder.getStepClass(), breakDetails.getConditionClass());
+            }
         }
     }
 
@@ -62,5 +74,25 @@ public class BasicStepChain implements StepChain {
         }
 
         this.dependenciesMap.put(stepDefinitionHolder.getStepClass(), stepDefinitionHolder.getAnnotatedFields());
+    }
+
+    @Override
+    public String getStepName(Class<?> stepClass) {
+        return stepNames.get(stepClass);
+    }
+
+    @Override
+    public Class<?> getJumpConditionClassForStep(Class<?> step) {
+        return this.stepToJumpConditionMap.get(step);
+    }
+
+    @Override
+    public JumpDetails getJumpDetailsForStep(Class<?> step) {
+        return stepJumpInfoMap.get(step);
+    }
+
+    @Override
+    public Class<?> getBreakConditionClassForStep(Class<?> step) {
+        return this.stepToBreakConditionMap.get(step);
     }
 }

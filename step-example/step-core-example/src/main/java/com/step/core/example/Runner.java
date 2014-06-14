@@ -1,8 +1,6 @@
 package com.step.core.example;
 
 import com.step.core.container.StepContainer;
-import com.step.core.example.entity.BusinessObject;
-import com.step.core.io.ExecutionResult;
 import com.step.core.io.StepInput;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -22,7 +20,7 @@ public class Runner {
         StepContainer container = appContext.getBean(StepContainer.class);
 
         //Adding
-        Map<String, String> data = new HashMap();
+        /*Map<String, String> data = new HashMap();
         data.put("id","1");
         data.put("name","name_1");
         data.put("value", "value_1");
@@ -36,6 +34,13 @@ public class Runner {
         data.put("id","1");
 
         input = new StepInput("fetch", data);
-        result = container.submit(input);
+        result = container.submit(input);*/
+
+        Map map = new HashMap();
+        //map.put("testNew","test");
+        //map.put("breakNew","test");
+        StepInput input1 = new StepInput("jumpTestNew", map);
+        container.submit(input1);
+
     }
 }

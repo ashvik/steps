@@ -1,16 +1,15 @@
 package com.step.core.collector.impl;
 
 import com.step.core.Configuration;
-import com.step.core.annotations.collector.StepDefinitionAnnotationDefinitionCollector;
 import com.step.core.collector.StepCollector;
 import com.step.core.collector.StepDefinitionHolder;
-import com.step.core.utils.AnnotatedDefinition;
-import com.step.core.utils.AnnotatedDefinitionCollector;
+import com.step.core.collector.apply.AnnotationDefinitionCollectorApplier;
+import com.step.core.collector.apply.impl.ApplyChainBreakerCollector;
+import com.step.core.collector.apply.impl.ApplyStepDefinitionCollector;
+import com.step.core.collector.apply.impl.ApplyStepJumperCollector;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.
@@ -20,32 +19,20 @@ import java.util.Set;
  * To change this template use File | Settings | File Templates.
  */
 public class AnnotatedStepCollector implements StepCollector{
+    private AnnotationDefinitionCollectorApplier applyStepDefinitionCollector = new ApplyStepDefinitionCollector();
+
+    private AnnotationDefinitionCollectorApplier applyStepJumperCollector = new ApplyStepJumperCollector();
+
+    private AnnotationDefinitionCollectorApplier applyChainBreakerCollector = new ApplyChainBreakerCollector();
+
     @Override
     public List<StepDefinitionHolder> collect(Configuration conf) {
         List<StepDefinitionHolder> definitions = new ArrayList<StepDefinitionHolder>();
         String[] stepPackages = conf.getStepPackages();
-        definitions.addAll(scanAndCollectStepDefinition(stepPackages));
+        definitions.addAll(applyStepDefinitionCollector.apply(stepPackages));
+        definitions.addAll(applyStepJumperCollector.apply(stepPackages));
+        definitions.addAll(applyChainBreakerCollector.apply(stepPackages));
 
         return definitions;
-    }
-
-    private List<StepDefinitionHolder> scanAndCollectStepDefinition(String[] stepPkgs) {
-        Set<AnnotatedDefinition> annoDefinitions = new HashSet<AnnotatedDefinition>();
-        List<StepDefinitionHolder> defs = new ArrayList<StepDefinitionHolder>();
-        for(String pkg : stepPkgs){
-            AnnotatedDefinitionCollector collector = new StepDefinitionAnnotationDefinitionCollector();
-            annoDefinitions.addAll(collector.collect(pkg));
-        }
-
-        for(AnnotatedDefinition ad : annoDefinitions){
-            String names = (String)ad.getDefinition("name");
-            String next = (String)ad.getDefinition("next");
-            StepDefinitionHolder holder = new StepDefinitionHolder(names, next, ad.getAnnotatedClass());
-            holder.setAnnotatedFields((List)ad.getDefinition("dependencies"));
-
-            defs.add(holder);
-        }
-
-        return defs;
     }
 }

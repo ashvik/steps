@@ -1,9 +1,6 @@
 package com.step.core.xml.parse;
 
-import com.step.core.xml.model.MapRequest;
-import com.step.core.xml.model.MultiScopedStep;
-import com.step.core.xml.model.Scope;
-import com.step.core.xml.model.StepRequestMapper;
+import com.step.core.xml.model.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -100,7 +97,45 @@ public class StepConfigurationParser {
         NodeList postStepNodes = ele.getElementsByTagName("postSteps");
         populateInterceptorSteps(mr, postStepNodes, false);
 
+        //populating jumpers....
+        NodeList jumpers = ele.getElementsByTagName("jumper");
+        populateJumpers(mr, jumpers);
+
+        //populating breakers....
+        NodeList breakers = ele.getElementsByTagName("breaker");
+        populateBreakers(mr, breakers);
+
         return mr;
+    }
+
+    private void populateJumpers(MapRequest mr, NodeList nodes) {
+        if(nodes != null && nodes.getLength()>0){
+            for(int i=0 ; i<nodes.getLength() ; i++){
+                Jumper jumper = new Jumper();
+                Element e = (Element)nodes.item(i);
+                jumper.setRequest(mr.getRequest());
+                jumper.setForStep(e.getAttribute("forStep"));
+                jumper.setConditionClass(e.getAttribute("conditionClass"));
+                jumper.setOnSuccessJumpTo(e.getAttribute("onSuccessJumpTo"));
+                jumper.setOnFailureJumpTo(e.getAttribute("onFailureJumpTo"));
+
+                mr.addJumper(jumper);
+            }
+        }
+    }
+
+    private void populateBreakers(MapRequest mr, NodeList nodes) {
+        if(nodes != null && nodes.getLength()>0){
+            for(int i=0 ; i<nodes.getLength() ; i++){
+                Breaker breaker = new Breaker();
+                Element e = (Element)nodes.item(i);
+                breaker.setRequest(mr.getRequest());
+                breaker.setForStep(e.getAttribute("forStep"));
+                breaker.setConditionClass(e.getAttribute("conditionClass"));
+
+                mr.addBreaker(breaker);
+            }
+        }
     }
 
     private void populateInterceptorSteps(MapRequest mr, NodeList nodes, boolean isPreStep) {

@@ -16,6 +16,11 @@ public class StepExecutionException extends RuntimeException{
         this.stepClass = stepClass;
     }
 
+    public StepExecutionException(Class<?> stepClass, String message){
+        super(message);
+        this.stepClass = stepClass;
+    }
+
     public String failedStep(){
         return this.stepClass.getName();
     }

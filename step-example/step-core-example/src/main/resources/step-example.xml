@@ -5,7 +5,22 @@
             <scope request="add" nextStep="addBusinessObjectStep"/>
             <scope request="fetch" nextStep="fetchBusinessObjectStep"/>
         </step>
+        <step name="jumpTestStep1">
+            <scope request="jumpTest" nextStep="jumpTestStep2"/>
+            <scope request="jumpTestNew" nextStep="jumpTestStep5"/>
+        </step>
     </multiScopedSteps>
+
     <mappedrequest request="add" rootStep="makeBusinessObjectFromInputStep"/>
+
     <mappedrequest request="fetch" rootStep="makeBusinessObjectFromInputStep"/>
+
+    <mappedrequest request="jumpTest" rootStep="jumpTestStep1">
+        <!--jumper forStep="jumpTestStep1" conditionClass="com.step.core.example.steps.TestJumpCondition" onSuccessJumpTo="jumpTestStep4"/-->
+        <breaker forStep="jumpTestStep1" conditionClass="com.step.core.example.steps.TestBreakCondition"/>
+    </mappedrequest>
+    <mappedrequest request="jumpTestNew" rootStep="jumpTestStep1">
+        <!--jumper forStep="jumpTestStep1" conditionClass="com.step.core.example.steps.TestJumpConditionNew" onSuccessJumpTo="jumpTestStep6"/-->
+        <breaker forStep="jumpTestStep1" conditionClass="com.step.core.example.steps.TestBreakConditionNew"/>
+    </mappedrequest>
 </steprequestmapper>

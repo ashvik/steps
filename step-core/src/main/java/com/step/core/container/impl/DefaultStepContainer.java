@@ -10,8 +10,8 @@ import com.step.core.collector.impl.XmlStepCollector;
 import com.step.core.container.StepContainer;
 import com.step.core.context.StepContext;
 import com.step.core.context.impl.BasicStepContext;
+import com.step.core.exceptions.StepChainException;
 import com.step.core.exceptions.StepContainerExecutionException;
-import com.step.core.exceptions.StepExecutionException;
 import com.step.core.executor.StepExecutor;
 import com.step.core.executor.StepExecutorProvider;
 import com.step.core.executor.impl.BasicStepExecutorProvider;
@@ -43,6 +43,8 @@ public class DefaultStepContainer implements StepContainer {
 
         if(sdh == null){
             throw new StepContainerExecutionException("No step definition found for request '"+req+"'");
+        }else if(sdh.getStepClass() ==  null){
+            throw new StepContainerExecutionException("Root step '"+sdh.getName()+"' is not configured properly. Check for annotation.");
         }
 
         StepChain chain = createStepChainToExecute(sdh);
@@ -81,23 +83,29 @@ public class DefaultStepContainer implements StepContainer {
         String request = holder.getMappedRequest();
         addCommonStepsInChainIfApplicable(chain, holder.isCanApplyGenericSteps(), true, holder.getPreSteps());
 
-        chain.addStep(holder);
+        chain.addStep(holder, request);
         boolean isFinished = false;
 
         while(!isFinished){
             String next = holder.getNextStepForScope(request);
             if(next != null && !next.isEmpty()){
                 holder = this.stepDefinitionProvider.getStepDefinitionByStepName(next);
-                chain.addStep(holder);
+                if(holder == null){
+                    throw new StepChainException("No step found with name '"+next+"' check if step is annotated.");
+                }
+                chain.addStep(holder, request);
             }else{
                 String nextStep = holder.getNextStep();
                 if(nextStep != null && !nextStep.isEmpty()){
                     holder = this.stepDefinitionProvider.getStepDefinitionByStepName(nextStep);
+                    if(holder == null){
+                        throw new StepChainException("No step found with name '"+nextStep+"' check if step is annotated.");
+                    }
                 }else{
                     isFinished = true;
                 }
 
-                chain.addStep(holder);
+                chain.addStep(holder, request);
             }
         }
 

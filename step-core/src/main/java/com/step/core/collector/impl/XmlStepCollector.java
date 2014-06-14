@@ -1,12 +1,11 @@
 package com.step.core.collector.impl;
 
 import com.step.core.Configuration;
+import com.step.core.chain.breaker.BreakDetails;
+import com.step.core.chain.jump.JumpDetails;
 import com.step.core.collector.StepCollector;
 import com.step.core.collector.StepDefinitionHolder;
-import com.step.core.xml.model.MapRequest;
-import com.step.core.xml.model.MultiScopedStep;
-import com.step.core.xml.model.Scope;
-import com.step.core.xml.model.StepRequestMapper;
+import com.step.core.xml.model.*;
 import com.step.core.xml.parse.StepConfigurationParser;
 
 import java.io.InputStream;
@@ -21,6 +20,7 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 public class XmlStepCollector implements StepCollector {
+
     @Override
     public List<StepDefinitionHolder> collect(Configuration conf) {
         List<StepDefinitionHolder> definitions = new ArrayList<StepDefinitionHolder>();
@@ -34,6 +34,8 @@ public class XmlStepCollector implements StepCollector {
 
     private List<StepDefinitionHolder> makeFromConfigurationFile(String xmfFile){
         List<StepDefinitionHolder> definitions = new ArrayList<StepDefinitionHolder>();
+        List<Jumper> allJumpers = new ArrayList<Jumper>();
+        List<Breaker> allBreakers = new ArrayList<Breaker>();
         InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream(xmfFile);
         StepConfigurationParser parser = new StepConfigurationParser();
 
@@ -55,11 +57,39 @@ public class XmlStepCollector implements StepCollector {
                 holder.setOnSuccess(mr.getOnSuccess());
                 holder.setOnFailure(mr.getOnFailure());
                 definitions.add(holder);
+
+                allJumpers.addAll(mr.getJumpers());
+                allBreakers.addAll(mr.getBreaker());
             }
+
+            processJumpers(allJumpers, definitions);
+            processBreakers(allBreakers, definitions);
         }catch(Exception e){
             e.printStackTrace();
         }
 
         return definitions;
+    }
+
+    private void processJumpers(List<Jumper> allJumpers, List<StepDefinitionHolder> definitions) throws ClassNotFoundException {
+        for(Jumper jumper : allJumpers){
+            StepDefinitionHolder h = new StepDefinitionHolder(jumper.getForStep());
+            JumpDetails details = new JumpDetails();
+            details.setConditionClass(Class.forName(jumper.getConditionClass()));
+            details.setOnSuccessJumpStep(jumper.getOnSuccessJumpTo());
+            details.setOnFailureJumpStep(jumper.getOnFailureJumpTo());
+            h.addJumpDetails(jumper.getRequest(), details);
+            definitions.add(h);
+        }
+    }
+
+    private void processBreakers(List<Breaker> allBreakers, List<StepDefinitionHolder> definitions) throws ClassNotFoundException {
+        for(Breaker breaker : allBreakers){
+            StepDefinitionHolder h = new StepDefinitionHolder(breaker.getForStep());
+            BreakDetails details = new BreakDetails();
+            details.setConditionClass(Class.forName(breaker.getConditionClass()));
+            h.addBreakDetails(breaker.getRequest(), details);
+            definitions.add(h);
+        }
     }
 }

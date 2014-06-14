@@ -7,7 +7,6 @@ import com.step.core.io.StepInput;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.
@@ -21,6 +20,7 @@ public class BasicStepContext implements StepContext {
     private StepInput input;
     private ObjectFactory objectFactory;
     private Attributes attributes = new Attributes();
+    private boolean breakStepChain;
 
     @Override
     public void put(String name, Object obj) {
@@ -74,5 +74,15 @@ public class BasicStepContext implements StepContext {
     @Override
     public void putAttribute(String name, Object value) {
         this.attributes.addAttribute(name, value);
+    }
+
+    @Override
+    public void breakStepChainExecution() {
+        breakStepChain = true;
+    }
+
+    @Override
+    public boolean hasStepChainExecutionBroken() {
+        return breakStepChain;
     }
 }

@@ -4,8 +4,6 @@ import com.step.core.Attributes;
 import com.step.core.factory.ObjectFactory;
 import com.step.core.io.StepInput;
 
-import java.util.Set;
-
 /**
  * Created with IntelliJ IDEA.
  * User: amishra
@@ -25,4 +23,7 @@ public interface StepContext {
     Object getAttribute(String name);
     Attributes getAttributes();
     void putAttribute(String name, Object value);
+    void breakStepChainExecution();
+    boolean hasStepChainExecutionBroken();
+
 }
