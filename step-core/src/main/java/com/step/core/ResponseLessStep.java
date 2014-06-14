@@ -1,6 +1,6 @@
 package com.step.core;
 
-import com.step.core.context.StepContextAware;
+import com.step.core.context.StepExecutionContextAware;
 
 /**
  * Created with IntelliJ IDEA.
@@ -9,6 +9,6 @@ import com.step.core.context.StepContextAware;
  * Time: 11:47 AM
  * To change this template use File | Settings | File Templates.
  */
-public interface ResponseLessStep extends StepContextAware {
+public interface ResponseLessStep extends StepExecutionContextAware {
     void execute() throws Exception;
 }

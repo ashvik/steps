@@ -1,7 +1,7 @@
 package com.step.core.executor.proxy;
 
 import com.step.core.chain.StepChain;
-import com.step.core.context.StepContext;
+import com.step.core.context.StepExecutionContext;
 import com.step.core.enums.InterceptorType;
 import com.step.core.executor.StepExecutor;
 import com.step.core.interceptor.ExecutionInterceptor;
@@ -32,7 +32,7 @@ public class StepExecutorHandler implements InvocationHandler{
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         List<ExecutionInterceptor> post = new ArrayList<ExecutionInterceptor>();
         StepChain chain = (StepChain)args[0];
-        StepContext context = (StepContext)args[1];
+        StepExecutionContext context = (StepExecutionContext)args[1];
 
         for(ExecutionInterceptorHolder interceptor : interceptors){
             if(interceptor.getType() == InterceptorType.BEFORE){

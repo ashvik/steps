@@ -11,7 +11,7 @@ import com.step.core.io.StepInput;
  * Time: 6:49 PM
  * To change this template use File | Settings | File Templates.
  */
-public interface StepContext {
+public interface StepExecutionContext {
     void put(String name, Object obj);
     Object get(String name);
     void setStepInput(StepInput input);

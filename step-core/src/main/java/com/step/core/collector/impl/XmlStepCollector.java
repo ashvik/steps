@@ -3,6 +3,7 @@ package com.step.core.collector.impl;
 import com.step.core.Configuration;
 import com.step.core.chain.breaker.BreakDetails;
 import com.step.core.chain.jump.JumpDetails;
+import com.step.core.chain.repeater.RepeatDetails;
 import com.step.core.collector.StepCollector;
 import com.step.core.collector.StepDefinitionHolder;
 import com.step.core.xml.model.*;
@@ -36,6 +37,7 @@ public class XmlStepCollector implements StepCollector {
         List<StepDefinitionHolder> definitions = new ArrayList<StepDefinitionHolder>();
         List<Jumper> allJumpers = new ArrayList<Jumper>();
         List<Breaker> allBreakers = new ArrayList<Breaker>();
+        List<Repeater> allRepeaters = new ArrayList<Repeater>();
         InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream(xmfFile);
         StepConfigurationParser parser = new StepConfigurationParser();
 
@@ -60,10 +62,12 @@ public class XmlStepCollector implements StepCollector {
 
                 allJumpers.addAll(mr.getJumpers());
                 allBreakers.addAll(mr.getBreaker());
+                allRepeaters.addAll(mr.getRepeaters());
             }
 
             processJumpers(allJumpers, definitions);
             processBreakers(allBreakers, definitions);
+            processRepeaters(allRepeaters, definitions);
         }catch(Exception e){
             e.printStackTrace();
         }
@@ -89,6 +93,17 @@ public class XmlStepCollector implements StepCollector {
             BreakDetails details = new BreakDetails();
             details.setConditionClass(Class.forName(breaker.getConditionClass()));
             h.addBreakDetails(breaker.getRequest(), details);
+            definitions.add(h);
+        }
+    }
+
+    private void processRepeaters(List<Repeater> allRepeaters, List<StepDefinitionHolder> definitions) throws ClassNotFoundException {
+        for(Repeater repeater : allRepeaters){
+            StepDefinitionHolder h = new StepDefinitionHolder(repeater.getForStep());
+            RepeatDetails details = new RepeatDetails();
+            details.setConditionClass(Class.forName(repeater.getConditionClass()));
+            details.setRepeatFromStep(repeater.getRepeatFromStep());
+            h.addRepeatDetails(repeater.getRequest(), details);
             definitions.add(h);
         }
     }

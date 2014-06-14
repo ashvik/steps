@@ -17,7 +17,7 @@ import java.util.logging.Logger;
  */
 
 @GenericStepDefinition(name="connectDBServiceStep", stepType = GenericStepType.PRE_STEP)
-public class ConnectDBServiceStep extends AbstractResponseLessStep{
+public class ConnectDBServiceStep extends AbstractResponseLessStep {
     private Logger log = Logger.getLogger(this.getClass().getName());
 
     @StepDependency

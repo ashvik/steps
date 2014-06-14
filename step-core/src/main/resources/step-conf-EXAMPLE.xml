@@ -9,6 +9,7 @@
     <mappedrequest request="#" rootStep="#" applyGenericSteps="#" onSuccess="#" onFailure="#">
         <jumper forStep="#" conditionClass="#" onSuccessJumpTo="#" onFailureJumpTo="#"/>
         <breaker forStep="#" conditionClass="#"/>
+        <repeater forStep="#" conditionClass="#" repeatFromStep="#"/>
         <preSteps>
             <step>1</step>
             <step>2</step>

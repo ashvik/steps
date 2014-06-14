@@ -2,7 +2,7 @@ package com.step.core.executor;
 
 import com.step.core.Configuration;
 import com.step.core.chain.StepChain;
-import com.step.core.context.StepContext;
+import com.step.core.context.StepExecutionContext;
 
 /**
  * Created with IntelliJ IDEA.
@@ -12,6 +12,6 @@ import com.step.core.context.StepContext;
  * To change this template use File | Settings | File Templates.
  */
 public interface StepExecutorProvider {
-    StepExecutor provide(StepChain chain, StepContext context);
+    StepExecutor provide(StepChain chain, StepExecutionContext context);
     void initInterceptors(Configuration conf);
 }

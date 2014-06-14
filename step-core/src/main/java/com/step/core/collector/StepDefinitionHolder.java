@@ -2,6 +2,7 @@ package com.step.core.collector;
 
 import com.step.core.chain.breaker.BreakDetails;
 import com.step.core.chain.jump.JumpDetails;
+import com.step.core.chain.repeater.RepeatDetails;
 import com.step.core.enums.GenericStepType;
 import com.step.core.utils.AnnotatedField;
 
@@ -32,6 +33,7 @@ public class StepDefinitionHolder {
     private Map<String, String> scopes = new HashMap<String, String>();
     private Map<String, JumpDetails> jumpDetailsMap = new HashMap<String, JumpDetails>();
     private Map<String, BreakDetails> breakDetailsMap = new HashMap<String, BreakDetails>();
+    private Map<String, RepeatDetails> repeatDetailsMap = new HashMap<String, RepeatDetails>();
 
     public StepDefinitionHolder(String name){
         this.name = name;
@@ -148,6 +150,14 @@ public class StepDefinitionHolder {
         return this.breakDetailsMap.get(request);
     }
 
+    public void addRepeatDetails(String request, RepeatDetails repeatDetails){
+        this.repeatDetailsMap.put(request, repeatDetails);
+    }
+
+    public RepeatDetails getRepeatDetails(String request){
+        return this.repeatDetailsMap.get(request);
+    }
+
     public void merge(StepDefinitionHolder other){
         this.mappedRequest = other.mappedRequest == null ? this.mappedRequest : other.mappedRequest ;
         this.genericStepType = other.genericStepType == null ? this.genericStepType : other.genericStepType;
@@ -157,6 +167,7 @@ public class StepDefinitionHolder {
         this.scopes = other.scopes.isEmpty() ? this.scopes : other.scopes;
         this.jumpDetailsMap.putAll(other.jumpDetailsMap);
         this.breakDetailsMap.putAll(other.breakDetailsMap);
+        this.repeatDetailsMap.putAll(other.repeatDetailsMap);
     }
 
     public StepDefinitionHolder cloneWithDifferentMappedRequest(String mappedRequest){
@@ -169,6 +180,7 @@ public class StepDefinitionHolder {
         cloned.scopes = this.scopes;
         cloned.jumpDetailsMap = this.jumpDetailsMap;
         cloned.breakDetailsMap = this.breakDetailsMap;
+        cloned.repeatDetailsMap = this.repeatDetailsMap;
         cloned.nextStep = this.nextStep;
 
         return cloned;

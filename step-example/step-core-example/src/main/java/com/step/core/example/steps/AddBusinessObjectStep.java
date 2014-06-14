@@ -6,6 +6,7 @@ import com.step.core.annotations.StepDependency;
 import com.step.core.example.entity.BusinessObject;
 import com.step.core.example.services.DBService;
 
+import java.io.IOException;
 import java.util.logging.Logger;
 
 /**
@@ -17,20 +18,23 @@ import java.util.logging.Logger;
  */
 
 @StepDefinition
-public class AddBusinessObjectStep extends AbstractResponsiveStep<BusinessObject>{
+public class AddBusinessObjectStep extends AbstractResponsiveStep<BusinessObject> {
     private Logger log = Logger.getLogger(this.getClass().getName());
 
     @StepDependency
     private DBService dbService;
 
     @Override
-    public BusinessObject execute(){
+    public BusinessObject execute() throws IOException, NoSuchMethodException {
         BusinessObject bo = getInput(BusinessObject.class);
+        BusinessObject co = null;
         dbService.save(bo);
         log.info("Saved object ["+bo+"]");
-        /*if(bo == null){
+        if(bo == null){
             throw new IOException("");
-        }*/
+        }if(co == null){
+            throw new NoSuchMethodException("");
+        }
         return bo;
     }
 }

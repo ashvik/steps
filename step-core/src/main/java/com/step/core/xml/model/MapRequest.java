@@ -20,6 +20,7 @@ public class MapRequest {
     private List<String> postSteps = new ArrayList<String>();
     private List<Jumper> jumpers = new ArrayList<Jumper>();
     private List<Breaker> breakers = new ArrayList<Breaker>();
+    private List<Repeater> repeaters = new ArrayList<Repeater>();
 
     public void addJumper(Jumper jumper){
         this.jumpers.add(jumper);
@@ -35,6 +36,14 @@ public class MapRequest {
 
     public List<Breaker> getBreaker(){
         return this.breakers;
+    }
+
+    public void addRepeater(Repeater repeater){
+        this.repeaters.add(repeater);
+    }
+
+    public List<Repeater> getRepeaters(){
+        return this.repeaters;
     }
 
     public void addPreSteps(String step){

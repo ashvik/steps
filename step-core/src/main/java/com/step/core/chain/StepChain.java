@@ -1,6 +1,8 @@
 package com.step.core.chain;
 
+import com.step.core.chain.impl.BasicStepChain;
 import com.step.core.chain.jump.JumpDetails;
+import com.step.core.chain.repeater.RepeatDetails;
 import com.step.core.collector.StepDefinitionHolder;
 import com.step.core.utils.AnnotatedField;
 
@@ -24,4 +26,8 @@ public interface StepChain {
     Class<?> getJumpConditionClassForStep(Class<?> step);
     JumpDetails getJumpDetailsForStep(Class<?> step);
     Class<?> getBreakConditionClassForStep(Class<?> step);
+    BasicStepChain.StepNode getRootNode();
+    BasicStepChain.StepNode getStepNodeByName(String name);
+    Class<?> getRepeatBreakConditionClassForStep(Class<?> step);
+    RepeatDetails getRepeatDetailsForStep(Class<?> step);
 }

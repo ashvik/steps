@@ -1,8 +1,7 @@
 package com.step.core.interceptor.impl;
 
 import com.step.core.chain.StepChain;
-import com.step.core.context.StepContext;
-import com.step.core.interceptor.ExecutionInterceptor;
+import com.step.core.context.StepExecutionContext;
 
 /**
  * Created with IntelliJ IDEA.
@@ -13,7 +12,7 @@ import com.step.core.interceptor.ExecutionInterceptor;
  */
 public class PostStepExecutionInterceptor extends AbstractStepExecutionInterceptor {
     @Override
-    public void intercept(StepChain chain, StepContext context) {
+    public void intercept(StepChain chain, StepExecutionContext context) {
         executeInterceptorSteps(chain.getPostStep(), chain, context);
     }
 }

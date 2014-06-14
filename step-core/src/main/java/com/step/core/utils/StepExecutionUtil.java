@@ -1,6 +1,6 @@
 package com.step.core.utils;
 
-import com.step.core.context.StepContext;
+import com.step.core.context.StepExecutionContext;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -13,7 +13,7 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 public abstract class StepExecutionUtil {
-    public static void makeRichStepObject(Object stepObject, List<AnnotatedField> fields, StepContext context){
+    public static void makeRichStepObject(Object stepObject, List<AnnotatedField> fields, StepExecutionContext context){
         for(AnnotatedField field : fields){
             String name = field.getAnnotatedName();
             Object dependency = null;

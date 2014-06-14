@@ -3,6 +3,7 @@ package com.step.core.chain.impl;
 import com.step.core.chain.StepChain;
 import com.step.core.chain.breaker.BreakDetails;
 import com.step.core.chain.jump.JumpDetails;
+import com.step.core.chain.repeater.RepeatDetails;
 import com.step.core.collector.StepDefinitionHolder;
 import com.step.core.utils.AnnotatedField;
 
@@ -21,10 +22,14 @@ public class BasicStepChain implements StepChain {
     private List<Class<?>> postSteps = new ArrayList<Class<?>>();
     private Map<Class<?>, Class<?>> stepToJumpConditionMap = new HashMap<Class<?>, Class<?>>();
     private Map<Class<?>, Class<?>> stepToBreakConditionMap = new HashMap<Class<?>, Class<?>>();
+    private Map<Class<?>, Class<?>> stepToRepeatConditionMap = new HashMap<Class<?>, Class<?>>();
     private Map<Class<?>, String> stepNames = new HashMap<Class<?>, String>();
     private Map<Class<?>, JumpDetails> stepJumpInfoMap = new HashMap<Class<?>, JumpDetails>();
-    private Map<Class<?>, List<AnnotatedField>> dependenciesMap =
-            new HashMap<Class<?>, List<AnnotatedField>>();
+    private Map<Class<?>, RepeatDetails> stepRepeatInfoMap = new HashMap<Class<?>, RepeatDetails>();
+    private Map<String, StepNode> stepNodeMap = new HashMap<String, StepNode>();
+    private Map<Class<?>, List<AnnotatedField>> dependenciesMap = new HashMap<Class<?>, List<AnnotatedField>>();
+    private StepNode rootNode;
+    private Set<String> visitedNodes = new HashSet<String>();
 
     @Override
     public List<Class<?>> getPreSteps() {
@@ -49,19 +54,51 @@ public class BasicStepChain implements StepChain {
 
     @Override
     public void addStep(StepDefinitionHolder holder, String request) {
-        if(!this.steps.contains(holder.getStepClass())){
-            this.steps.add(holder.getStepClass());
-            this.dependenciesMap.put(holder.getStepClass(), holder.getAnnotatedFields());
-            this.stepNames.put(holder.getStepClass(), holder.getName());
-            JumpDetails details = holder.getJumpDetails(request);
-            if(details != null){
-                this.stepToJumpConditionMap.put(holder.getStepClass(), details.getConditionClass());
-                this.stepJumpInfoMap.put(holder.getStepClass(), details);
+        if(rootNode == null){
+            rootNode = new StepNode(holder.getStepClass(),null,1);
+            stepNodeMap.put(holder.getName(), rootNode);
+            populateRequiredAssets(holder, request);
+            visitedNodes.add(holder.getName());
+        }else{
+            if(!visitedNodes.contains(holder.getName())){
+                StepNode currentNode = rootNode;
+                StepNode next = rootNode.nextNode;
+                int seq = currentNode.getStepSequence();
+                while(true){
+                    if(next == null){
+                        seq++;
+                        next = new StepNode(holder.getStepClass(), null, seq);
+                        stepNodeMap.put(holder.getName(), next);
+                        currentNode.setNextNode(next);
+                        populateRequiredAssets(holder, request);
+                        visitedNodes.add(holder.getName());
+                        break;
+                    }else{
+                        currentNode = next;
+                        next = currentNode.getNextNode();
+                        seq = currentNode.getStepSequence();
+                    }
+                }
             }
-            BreakDetails breakDetails = holder.getBreakDetails(request);
-            if(breakDetails != null){
-                this.stepToBreakConditionMap.put(holder.getStepClass(), breakDetails.getConditionClass());
-            }
+        }
+    }
+
+    private void populateRequiredAssets(StepDefinitionHolder holder, String request){
+        this.dependenciesMap.put(holder.getStepClass(), holder.getAnnotatedFields());
+        this.stepNames.put(holder.getStepClass(), holder.getName());
+        JumpDetails details = holder.getJumpDetails(request);
+        if(details != null){
+            this.stepToJumpConditionMap.put(holder.getStepClass(), details.getConditionClass());
+            this.stepJumpInfoMap.put(holder.getStepClass(), details);
+        }
+        BreakDetails breakDetails = holder.getBreakDetails(request);
+        if(breakDetails != null){
+            this.stepToBreakConditionMap.put(holder.getStepClass(), breakDetails.getConditionClass());
+        }
+        RepeatDetails repeatDetails = holder.getRepeatDetails(request);
+        if(repeatDetails != null){
+            this.stepToRepeatConditionMap.put(holder.getStepClass(), repeatDetails.getConditionClass());
+            this.stepRepeatInfoMap.put(holder.getStepClass(), repeatDetails);
         }
     }
 
@@ -94,5 +131,53 @@ public class BasicStepChain implements StepChain {
     @Override
     public Class<?> getBreakConditionClassForStep(Class<?> step) {
         return this.stepToBreakConditionMap.get(step);
+    }
+
+    @Override
+    public Class<?> getRepeatBreakConditionClassForStep(Class<?> step) {
+        return this.stepToRepeatConditionMap.get(step);
+    }
+
+    @Override
+    public RepeatDetails getRepeatDetailsForStep(Class<?> step) {
+        return stepRepeatInfoMap.get(step);
+    }
+
+    @Override
+    public StepNode getRootNode() {
+        return rootNode;
+    }
+
+    @Override
+    public StepNode getStepNodeByName(String name) {
+        return stepNodeMap.get(name);
+    }
+
+    public static final class StepNode{
+        private int stepSequence;
+        private Class<?> stepClass;
+        private StepNode nextNode;
+
+        public StepNode(Class stepClass, StepNode nextNode, int stepSequence){
+            this.stepClass = stepClass;
+            this.nextNode = nextNode;
+            this.stepSequence = stepSequence;
+        }
+
+        public Class<?> getStepClass() {
+            return stepClass;
+        }
+
+        public StepNode getNextNode() {
+            return nextNode;
+        }
+
+        public int getStepSequence() {
+            return stepSequence;
+        }
+
+        public void setNextNode(StepNode nextNode){
+            this.nextNode = nextNode;
+        }
     }
 }

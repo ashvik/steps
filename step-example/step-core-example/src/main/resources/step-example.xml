@@ -21,6 +21,7 @@
     </mappedrequest>
     <mappedrequest request="jumpTestNew" rootStep="jumpTestStep1">
         <!--jumper forStep="jumpTestStep1" conditionClass="com.step.core.example.steps.TestJumpConditionNew" onSuccessJumpTo="jumpTestStep6"/-->
-        <breaker forStep="jumpTestStep1" conditionClass="com.step.core.example.steps.TestBreakConditionNew"/>
+        <!--breaker forStep="jumpTestStep1" conditionClass="com.step.core.example.steps.TestBreakConditionNew"/-->
+        <!--repeater forStep="jumpTestStep6" conditionClass="com.step.core.example.steps.TestRepeatBreakCondition" repeatFromStep="jumpTestStep1"/-->
     </mappedrequest>
 </steprequestmapper>

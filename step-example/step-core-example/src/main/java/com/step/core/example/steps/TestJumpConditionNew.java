@@ -1,7 +1,7 @@
 package com.step.core.example.steps;
 
 import com.step.core.conditions.JumpCondition;
-import com.step.core.context.StepContext;
+import com.step.core.context.StepExecutionContext;
 
 import java.util.Map;
 
@@ -9,21 +9,21 @@ import java.util.Map;
  * Created by amishra on 6/13/14.
  */
 public class TestJumpConditionNew implements JumpCondition {
-    StepContext context;
+    StepExecutionContext context;
 
     @Override
     public boolean check() {
-        Map map = getStepContext().getInput(Map.class);
+        Map map = getStepExecutionContext().getInput(Map.class);
         return map.get("testNew") != null;
     }
 
     @Override
-    public void setStepContext(StepContext context) {
+    public void setStepExecutionContext(StepExecutionContext context) {
         this.context = context;
     }
 
     @Override
-    public StepContext getStepContext() {
+    public StepExecutionContext getStepExecutionContext() {
         return this.context;
     }
 }

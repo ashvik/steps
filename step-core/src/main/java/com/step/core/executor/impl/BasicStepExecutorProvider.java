@@ -4,7 +4,7 @@ import com.step.core.Configuration;
 import com.step.core.annotations.builder.impl.InterceptorQualifierAnnotationDefinitionBuilder;
 import com.step.core.annotations.collector.BasicAnnotationDefinitionCollector;
 import com.step.core.chain.StepChain;
-import com.step.core.context.StepContext;
+import com.step.core.context.StepExecutionContext;
 import com.step.core.enums.InterceptorType;
 import com.step.core.executor.StepExecutor;
 import com.step.core.executor.StepExecutorProvider;
@@ -32,7 +32,7 @@ public class BasicStepExecutorProvider implements StepExecutorProvider {
     private List<ExecutionInterceptorHolder> interceptors = new ArrayList<ExecutionInterceptorHolder>();
 
     @Override
-    public StepExecutor provide(StepChain chain, StepContext context) {
+    public StepExecutor provide(StepChain chain, StepExecutionContext context) {
         StepExecutor exe = new BasicStepExecutor();
         return ProxySupport.getProxy(StepExecutor.class, this.getClass().getClassLoader(), new StepExecutorHandler(exe, interceptors));
     }

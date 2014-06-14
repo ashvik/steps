@@ -1,7 +1,7 @@
 package com.step.core.context.impl;
 
 import com.step.core.Attributes;
-import com.step.core.context.StepContext;
+import com.step.core.context.StepExecutionContext;
 import com.step.core.factory.ObjectFactory;
 import com.step.core.io.StepInput;
 
@@ -15,7 +15,7 @@ import java.util.Map;
  * Time: 1:23 PM
  * To change this template use File | Settings | File Templates.
  */
-public class BasicStepContext implements StepContext {
+public class BasicStepExecutionContext implements StepExecutionContext {
     private Map<String, Object> cache = new HashMap<String, Object>();
     private StepInput input;
     private ObjectFactory objectFactory;

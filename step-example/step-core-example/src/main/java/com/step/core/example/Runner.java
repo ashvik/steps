@@ -4,7 +4,9 @@ import com.step.core.container.StepContainer;
 import com.step.core.io.StepInput;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -37,9 +39,14 @@ public class Runner {
         result = container.submit(input);*/
 
         Map map = new HashMap();
+        List<Integer> count = new ArrayList<Integer>();
+        count.add(1);
+        count.add(2);
+        count.add(3);
         //map.put("testNew","test");
         //map.put("breakNew","test");
-        StepInput input1 = new StepInput("jumpTestNew", map);
+        StepInput input1 = new StepInput("jumpTestNew", count);
+        input1.setInput(map);
         container.submit(input1);
 
     }

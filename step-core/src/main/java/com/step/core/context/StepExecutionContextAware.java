@@ -7,7 +7,7 @@ package com.step.core.context;
  * Time: 11:51 AM
  * To change this template use File | Settings | File Templates.
  */
-public interface StepContextAware {
-    void setStepContext(StepContext context);
-    StepContext getStepContext();
+public interface StepExecutionContextAware {
+    void setStepExecutionContext(StepExecutionContext context);
+    StepExecutionContext getStepExecutionContext();
 }

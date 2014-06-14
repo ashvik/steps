@@ -8,8 +8,8 @@ import com.step.core.collector.impl.AnnotatedGenericStepCollector;
 import com.step.core.collector.impl.AnnotatedStepCollector;
 import com.step.core.collector.impl.XmlStepCollector;
 import com.step.core.container.StepContainer;
-import com.step.core.context.StepContext;
-import com.step.core.context.impl.BasicStepContext;
+import com.step.core.context.StepExecutionContext;
+import com.step.core.context.impl.BasicStepExecutionContext;
 import com.step.core.exceptions.StepChainException;
 import com.step.core.exceptions.StepContainerExecutionException;
 import com.step.core.executor.StepExecutor;
@@ -48,7 +48,7 @@ public class DefaultStepContainer implements StepContainer {
         }
 
         StepChain chain = createStepChainToExecute(sdh);
-        StepContext context = new BasicStepContext();
+        StepExecutionContext context = new BasicStepExecutionContext();
         context.setStepInput(input);
         context.setObjectFactory(this.objectFactory);
         StepExecutor executor = stepExecutorProvider.provide(chain, context);
