@@ -1,6 +1,7 @@
 package com.step.core.collector.apply.impl;
 
-import com.step.core.annotations.collector.StepJumperAnnotationDefinitionCollector;
+import com.step.core.annotations.builder.impl.StepJumperAnnotationDefinitionBuilder;
+import com.step.core.annotations.collector.BasicAnnotationDefinitionCollector;
 import com.step.core.chain.jump.JumpDetails;
 import com.step.core.collector.StepDefinitionHolder;
 import com.step.core.collector.apply.AnnotationDefinitionCollectorApplier;
@@ -21,8 +22,8 @@ public class ApplyStepJumperCollector implements AnnotationDefinitionCollectorAp
         Set<AnnotatedDefinition> annoDefinitions = new HashSet<AnnotatedDefinition>();
         List<StepDefinitionHolder> defs = new ArrayList<StepDefinitionHolder>();
         for(String pkg : stepPkgs){
-            AnnotatedDefinitionCollector collector = new StepJumperAnnotationDefinitionCollector();
-            annoDefinitions.addAll(collector.collect(pkg));
+            AnnotatedDefinitionCollector collector = new BasicAnnotationDefinitionCollector();
+            annoDefinitions.addAll(collector.collect(pkg, new StepJumperAnnotationDefinitionBuilder()));
         }
 
         for(AnnotatedDefinition ad : annoDefinitions){

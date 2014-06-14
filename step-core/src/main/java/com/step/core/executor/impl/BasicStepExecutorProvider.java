@@ -1,7 +1,8 @@
 package com.step.core.executor.impl;
 
 import com.step.core.Configuration;
-import com.step.core.annotations.collector.InterceptorQualifierAnnotationDefinitionCollector;
+import com.step.core.annotations.builder.impl.InterceptorQualifierAnnotationDefinitionBuilder;
+import com.step.core.annotations.collector.BasicAnnotationDefinitionCollector;
 import com.step.core.chain.StepChain;
 import com.step.core.context.StepContext;
 import com.step.core.enums.InterceptorType;
@@ -39,8 +40,8 @@ public class BasicStepExecutorProvider implements StepExecutorProvider {
     @Override
     public void initInterceptors(Configuration conf) {
         String pkg = conf.getExecutionInterceptorPackage();
-        AnnotatedDefinitionCollector collector = new InterceptorQualifierAnnotationDefinitionCollector();
-        Set<AnnotatedDefinition> defs = collector.collect(pkg);
+        AnnotatedDefinitionCollector collector = new BasicAnnotationDefinitionCollector();
+        Set<AnnotatedDefinition> defs = collector.collect(pkg, new InterceptorQualifierAnnotationDefinitionBuilder());
 
         for(AnnotatedDefinition def : defs){
             try{

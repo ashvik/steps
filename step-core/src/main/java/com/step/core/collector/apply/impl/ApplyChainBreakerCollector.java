@@ -1,6 +1,7 @@
 package com.step.core.collector.apply.impl;
 
-import com.step.core.annotations.collector.ChainBreakerAnnotationDefinitionCollector;
+import com.step.core.annotations.builder.impl.ChainBreakerAnnotationDefinitionBuilder;
+import com.step.core.annotations.collector.BasicAnnotationDefinitionCollector;
 import com.step.core.chain.breaker.BreakDetails;
 import com.step.core.collector.StepDefinitionHolder;
 import com.step.core.collector.apply.AnnotationDefinitionCollectorApplier;
@@ -21,8 +22,8 @@ public class ApplyChainBreakerCollector implements AnnotationDefinitionCollector
         Set<AnnotatedDefinition> annoDefinitions = new HashSet<AnnotatedDefinition>();
         List<StepDefinitionHolder> defs = new ArrayList<StepDefinitionHolder>();
         for(String pkg : stepPkgs){
-            AnnotatedDefinitionCollector collector = new ChainBreakerAnnotationDefinitionCollector();
-            annoDefinitions.addAll(collector.collect(pkg));
+            AnnotatedDefinitionCollector collector = new BasicAnnotationDefinitionCollector();
+            annoDefinitions.addAll(collector.collect(pkg, new ChainBreakerAnnotationDefinitionBuilder()));
         }
 
         for(AnnotatedDefinition ad : annoDefinitions){

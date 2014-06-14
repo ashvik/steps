@@ -1,6 +1,7 @@
 package com.step.core.collector.apply.impl;
 
-import com.step.core.annotations.collector.GenericStepAnnotationDefinitionCollector;
+import com.step.core.annotations.builder.impl.GenericStepAnnotationDefinitionBuilder;
+import com.step.core.annotations.collector.BasicAnnotationDefinitionCollector;
 import com.step.core.collector.StepDefinitionHolder;
 import com.step.core.collector.apply.AnnotationDefinitionCollectorApplier;
 import com.step.core.enums.GenericStepType;
@@ -20,8 +21,8 @@ public class ApplyGenericStepCollector implements AnnotationDefinitionCollectorA
         List<PrioritizedStepDefinition> orderedSteps = new ArrayList<PrioritizedStepDefinition>();
 
         for(String pkg : stepPkgs){
-            AnnotatedDefinitionCollector collector = new GenericStepAnnotationDefinitionCollector();
-            annoDefinitions.addAll(collector.collect(pkg));
+            AnnotatedDefinitionCollector collector = new BasicAnnotationDefinitionCollector();
+            annoDefinitions.addAll(collector.collect(pkg, new GenericStepAnnotationDefinitionBuilder()));
         }
 
         for(AnnotatedDefinition ad : annoDefinitions){
