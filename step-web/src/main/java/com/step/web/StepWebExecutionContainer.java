@@ -1,6 +1,6 @@
 package com.step.web;
 
-import com.step.core.container.impl.DefaultStepContainer;
+import com.step.core.container.impl.DefaultStepExecutionContainer;
 import com.step.core.exceptions.StepExecutionException;
 import com.step.core.io.ExecutionResult;
 import com.step.core.io.StepInput;
@@ -12,9 +12,9 @@ import com.step.core.io.StepInput;
  * Time: 4:11 PM
  * To change this template use File | Settings | File Templates.
  */
-public class StepWebContainer extends DefaultStepContainer {
+public class StepWebExecutionContainer extends DefaultStepExecutionContainer {
 
-    public WebExecutionResult submit(StepInput input){
+    public WebExecutionResult submit(StepInput input) throws Exception {
         try{
             ExecutionResult result = super.submit(input);
             String onSuccess = getStepDefinition(input.getRequest()).getOnSuccess();

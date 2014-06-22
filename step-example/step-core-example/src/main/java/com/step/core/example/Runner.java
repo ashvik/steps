@@ -1,6 +1,6 @@
 package com.step.core.example;
 
-import com.step.core.container.StepContainer;
+import com.step.core.container.StepExecutionContainer;
 import com.step.core.io.StepInput;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -17,11 +17,18 @@ import java.util.Map;
  * To change this template use File | Settings | File Templates.
  */
 public class Runner {
-    public static void main(String args[]){
+    public static void main(String args[]) throws Exception {
         ClassPathXmlApplicationContext appContext = new ClassPathXmlApplicationContext("applicationContext-stepCore-Example.xml");
-        StepContainer container = appContext.getBean(StepContainer.class);
+        StepExecutionContainer container = appContext.getBean(StepExecutionContainer.class);
+        //StepInformationService informationService = appContext.getBean(StepInformationService.class);
 
-        //Adding
+        //List<String> printInfo = informationService.getStepChainInfoDiagramForRequest("jumpTestNew");
+
+        //for(String str : printInfo){
+         //   System.out.println(str);
+        //}
+
+        //AddingXXXXXXXXXXXXX
         /*Map<String, String> data = new HashMap();
         data.put("id","1");
         data.put("name","name_1");
@@ -45,9 +52,11 @@ public class Runner {
         count.add(3);
         //map.put("testNew","test");
         //map.put("breakNew","test");
-        StepInput input1 = new StepInput("jumpTestNew", count);
+        StepInput input1 = new StepInput("jumpTest", count);
         input1.setInput(map);
         container.submit(input1);
+       // Class c = (Class)((ParameterizedType)count.getClass().getGenericInterfaces()[0]).getActualTypeArguments()[0];
+       // System.out.println(c);
 
     }
 }

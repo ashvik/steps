@@ -1,7 +1,8 @@
 package com.step.web.servlet;
 
 import com.step.core.Attributes;
-import com.step.core.container.StepContainer;
+import com.step.core.container.StepExecutionContainer;
+import com.step.core.exceptions.StepContainerExecutionException;
 import com.step.core.io.StepInput;
 import com.step.web.WebExecutionResult;
 import com.step.web.builder.StepContainerBuilder;
@@ -27,14 +28,14 @@ import java.util.Map;
  * To change this template use File | Settings | File Templates.
  */
 public class StepFrameworkServlet extends HttpServlet {
-    private StepContainer stepContainer;
+    private StepExecutionContainer stepExecutionContainer;
 
     public void init(ServletConfig config){
         try{
             super.init(config);
             ServletContext servletContext = getServletContext();
             StepContainerBuilder<ServletContext> builder = new StepWebContainerBuilder();
-            stepContainer = builder.build(servletContext);
+            stepExecutionContainer = builder.build(servletContext);
         }catch(Exception e){
             e.printStackTrace();
         }
@@ -49,7 +50,12 @@ public class StepFrameworkServlet extends HttpServlet {
         String request = path.substring(1, path.length());
         StepInput input = new StepInput(request, makeAttributes(req));
 
-        WebExecutionResult result = (WebExecutionResult)stepContainer.submit(input);
+        WebExecutionResult result = null;
+        try {
+            result = (WebExecutionResult) stepExecutionContainer.submit(input);
+        } catch (Exception e) {
+            throw new StepContainerExecutionException(e.getMessage());
+        }
 
         req.setAttribute("result", result.getResultObject());
         Attributes attrs = result.getAttributes();

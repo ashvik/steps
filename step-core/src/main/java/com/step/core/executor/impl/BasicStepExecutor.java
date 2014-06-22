@@ -23,7 +23,7 @@ import com.step.core.utils.StepExecutionUtil;
  */
 public class BasicStepExecutor implements StepExecutor {
     @Override
-    public ExecutionResult execute(StepChain chain, StepExecutionContext context) {
+    public ExecutionResult execute(StepChain chain, StepExecutionContext context) throws Exception{
         ExecutionResult result = null;
         Object stepResult = null;
         String jumpTo = null;
@@ -38,7 +38,7 @@ public class BasicStepExecutor implements StepExecutor {
                 break;
             }
 
-            try {
+            //try {
                 step = stepClass.newInstance();
                 StepExecutionUtil.makeRichStepObject(step, chain.getDependenciesForStep(stepClass), context);
 
@@ -69,9 +69,9 @@ public class BasicStepExecutor implements StepExecutor {
                 }else{
                     throw new IllegalStateException("Step can only be the instanceof ResponsiveStep or ResponseLessStep.");
                 }
-            } catch(Exception e){
-                throw new StepExecutionException(stepClass, e);
-            }
+            //} //catch(Exception e){
+                //throw new StepExecutionException(stepClass, e);
+            //}
 
             if(jumpTo != null && !jumpTo.isEmpty()){
                 int currentSequence = currentNode.getStepSequence();

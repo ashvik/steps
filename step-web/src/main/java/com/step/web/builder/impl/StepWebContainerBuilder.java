@@ -2,10 +2,9 @@ package com.step.web.builder.impl;
 
 import com.step.core.BasicConfiguration;
 import com.step.core.Configuration;
-import com.step.core.container.StepContainer;
-import com.step.core.container.impl.DefaultStepContainer;
+import com.step.core.container.StepExecutionContainer;
 import com.step.core.factory.ObjectFactory;
-import com.step.web.StepWebContainer;
+import com.step.web.StepWebExecutionContainer;
 import com.step.web.builder.StepContainerBuilder;
 import com.step.web.factory.ObjectFactoryInitializer;
 
@@ -25,14 +24,14 @@ public class StepWebContainerBuilder implements StepContainerBuilder<ServletCont
     private Builder builder = new Builder();
 
     @Override
-    public StepContainer build(ServletContext servletContext) {
+    public StepExecutionContainer build(ServletContext servletContext) {
         this.servletContext = servletContext;
         return builder.buildSteps().buildConfig().buildObjectFactory().build();
     }
 
     private class Builder{
-        StepContainer build(){
-            StepContainer container = new StepWebContainer();
+        StepExecutionContainer build(){
+            StepExecutionContainer container = new StepWebExecutionContainer();
             container.setConfiguration(configuration);
             container.setObjectFactory(objectFactory);
             container.init();

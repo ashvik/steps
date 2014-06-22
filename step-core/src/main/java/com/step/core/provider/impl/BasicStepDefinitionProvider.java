@@ -6,10 +6,7 @@ import com.step.core.collector.StepDefinitionHolder;
 import com.step.core.enums.GenericStepType;
 import com.step.core.provider.StepDefinitionProvider;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -94,5 +91,15 @@ public class BasicStepDefinitionProvider implements StepDefinitionProvider {
     @Override
     public List<StepDefinitionHolder> getGenericPostSteps() {
         return this.genericPostSteps;
+    }
+
+    @Override
+    public Set<String> allRequests() {
+        return this.stepsRequestMapper.keySet();
+    }
+
+    @Override
+    public Set<String> allSteps() {
+        return this.steps.keySet();
     }
 }

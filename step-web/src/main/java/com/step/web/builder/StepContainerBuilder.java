@@ -1,6 +1,6 @@
 package com.step.web.builder;
 
-import com.step.core.container.StepContainer;
+import com.step.core.container.StepExecutionContainer;
 
 /**
  * Created with IntelliJ IDEA.
@@ -10,5 +10,5 @@ import com.step.core.container.StepContainer;
  * To change this template use File | Settings | File Templates.
  */
 public interface StepContainerBuilder<I> {
-    StepContainer build(I input);
+    StepExecutionContainer build(I input);
 }

@@ -103,11 +103,13 @@ public class BasicStepChain implements StepChain {
     }
 
     @Override
-    public void addInterceptorStep(StepDefinitionHolder stepDefinitionHolder, boolean isPreStep) {
+    public void addInterceptorStep(StepDefinitionHolder stepDefinitionHolder, String request, boolean isPreStep) {
         if(isPreStep){
             this.preSteps.add(stepDefinitionHolder.getStepClass());
+            populateRequiredAssets(stepDefinitionHolder, request);
         }else{
             this.postSteps.add(stepDefinitionHolder.getStepClass());
+            populateRequiredAssets(stepDefinitionHolder, request);
         }
 
         this.dependenciesMap.put(stepDefinitionHolder.getStepClass(), stepDefinitionHolder.getAnnotatedFields());

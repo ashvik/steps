@@ -15,9 +15,16 @@
 
     <mappedrequest request="fetch" rootStep="makeBusinessObjectFromInputStep"/>
 
-    <mappedrequest request="jumpTest" rootStep="jumpTestStep1">
-        <!--jumper forStep="jumpTestStep1" conditionClass="com.step.core.example.steps.TestJumpCondition" onSuccessJumpTo="jumpTestStep4"/-->
+    <mappedrequest request="jumpTest" rootStep="jumpTestStep1" applyGenericSteps="false">
         <breaker forStep="jumpTestStep1" conditionClass="com.step.core.example.steps.TestBreakCondition"/>
+        <jumper forStep="jumpTestStep1" conditionClass="com.step.core.example.steps.TestJumpCondition" onSuccessJumpTo="jumpTestStep4"/>
+        <preSteps>
+            <step>testPreStep</step>
+        </preSteps>
+        <postSteps>
+            <step>testPostStep</step>
+        </postSteps>
+        <!--breaker forStep="jumpTestStep1" conditionClass="com.step.core.example.steps.TestBreakCondition"/-->
     </mappedrequest>
     <mappedrequest request="jumpTestNew" rootStep="jumpTestStep1">
         <!--jumper forStep="jumpTestStep1" conditionClass="com.step.core.example.steps.TestJumpConditionNew" onSuccessJumpTo="jumpTestStep6"/-->

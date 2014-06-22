@@ -4,6 +4,7 @@ import com.step.core.Configuration;
 import com.step.core.collector.StepDefinitionHolder;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.
@@ -18,4 +19,6 @@ public interface StepDefinitionProvider {
     StepDefinitionHolder getStepDefinitionByRequest(String name);
     List<StepDefinitionHolder> getGenericPreSteps();
     List<StepDefinitionHolder> getGenericPostSteps();
+    Set<String> allRequests();
+    Set<String> allSteps();
 }

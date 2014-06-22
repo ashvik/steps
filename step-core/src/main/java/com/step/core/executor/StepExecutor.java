@@ -12,5 +12,5 @@ import com.step.core.io.ExecutionResult;
  * To change this template use File | Settings | File Templates.
  */
 public interface StepExecutor {
-    ExecutionResult execute(StepChain chain, StepExecutionContext context);
+    ExecutionResult execute(StepChain chain, StepExecutionContext context) throws Exception;
 }

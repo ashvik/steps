@@ -161,7 +161,7 @@ public class StepDefinitionHolder {
     public void merge(StepDefinitionHolder other){
         this.mappedRequest = other.mappedRequest == null ? this.mappedRequest : other.mappedRequest ;
         this.genericStepType = other.genericStepType == null ? this.genericStepType : other.genericStepType;
-        this.canApplyGenericSteps = other.canApplyGenericSteps;
+        this.canApplyGenericSteps = !this.canApplyGenericSteps ? this.canApplyGenericSteps : other.canApplyGenericSteps;
         this.preSteps = other.preSteps.isEmpty() ? this.preSteps : other.preSteps;
         this.postSteps = other.postSteps.isEmpty() ? this.postSteps : other.postSteps;
         this.scopes = other.scopes.isEmpty() ? this.scopes : other.scopes;
