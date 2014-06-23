@@ -25,7 +25,7 @@ public class StepChainInfo {
         BasicFlatInfoVisitor visitor = new BasicFlatInfoVisitor(this, chain);
 
         if(!preSteps.isEmpty()){
-            handleInterceptorSteps(preSteps, chain, visitor);
+            handleInterceptorSteps(preSteps, chain, visitor,"PRE");
         }
 
         while(currentNode != null){
@@ -36,7 +36,7 @@ public class StepChainInfo {
         }
 
         if(!postSteps.isEmpty()){
-            handleInterceptorSteps(postSteps, chain, visitor);
+            handleInterceptorSteps(postSteps, chain, visitor,"POST");
         }
     }
 
@@ -72,11 +72,12 @@ public class StepChainInfo {
         return repeaters;
     }
 
-    private void handleInterceptorSteps(List<Class<?>> steps, StepChain chain, BasicFlatInfoVisitor visitor){
+    private void handleInterceptorSteps(List<Class<?>> steps, StepChain chain, BasicFlatInfoVisitor visitor, String type){
         for(Class<?> stepClass : steps){
             BasicStepChain.StepNode node = new BasicStepChain.StepNode(stepClass, null, -1);
             visitor.setCurrentNode(node);
             StepInfo info = new StepInfo();
+            info.setInterceptorType(type);
             info.accept(visitor);
         }
     }

@@ -62,11 +62,13 @@ public class BasicStepInformationService implements StepInformationService {
         int stepNo = 1;
 
         for(int i=0 ; i<steps.size() ; i++){
+            StepInfo stepInfo = steps.get(i);
+            String name = stepInfo.getStepName()+(stepInfo.getInterceptorType() != null ? " ("+stepInfo.getInterceptorType()+")" : "");
             if(i != steps.size()-1){
-                builder.append("=>("+stepNo+") "+steps.get(i).getStepName()+"\n");
+                builder.append("=>("+stepNo+") "+name+"\n");
                 stepNo++;
             }else{
-                builder.append("=>("+stepNo+") "+steps.get(i).getStepName());
+                builder.append("=>("+stepNo+") "+name);
             }
         }
         print.add("EXECUTION CHAIN:- ");
@@ -135,8 +137,10 @@ public class BasicStepInformationService implements StepInformationService {
     }
 
     private String makeJumpInfoValueString(JumpInfo info){
-        //StringBuffer buffer = new StringBuffer("  -F-                                                            -S-                                                              -X-                                                           -C-  ");
-        StringBuffer buffer = new StringBuffer("| -F-                                                           | -S-                                                            | -X-                                                         | -C-");
+        StringBuffer buffer = new StringBuffer("| -F-                                                           " +
+                "| -S-                                                            " +
+                "| -X-                                                         " +
+                "| -C-");
         int fromIndex = buffer.indexOf("| -F-");
         int successIndex = buffer.indexOf("| -S-");
         int failureIndex = buffer.indexOf("| -X-");
@@ -166,7 +170,8 @@ public class BasicStepInformationService implements StepInformationService {
     }
 
     private String makeBreakInfoValueString(BreakInfo info){
-        StringBuffer buffer = new StringBuffer("| -B-                                                           | -C- ");
+        StringBuffer buffer = new StringBuffer("| -B-                                                           " +
+                "| -C- ");
         int fromIndex = buffer.indexOf("| -B-");
         int conditionIndex = buffer.indexOf("| -C-");
 
@@ -184,8 +189,9 @@ public class BasicStepInformationService implements StepInformationService {
     }
 
     private String makeRepeatInfoValueString(RepeatInfo info){
-        //StringBuffer buffer = new StringBuffer("  -F-                                                            -U-                                                               -C-  ");
-        StringBuffer buffer = new StringBuffer("| -F-                                                          | -U-                                                             | -C-                         ");
+        StringBuffer buffer = new StringBuffer("| -F-                                                          " +
+                "| -U-                                                             " +
+                "| -C-                         ");
         int fromIndex = buffer.indexOf("| -F-");
         int upToIndex = buffer.indexOf("| -U-");
         int conditionIndex = buffer.indexOf("| -C-");

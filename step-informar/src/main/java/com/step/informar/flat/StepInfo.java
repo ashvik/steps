@@ -8,6 +8,7 @@ import com.step.informar.flat.visitor.FlatInfoVisitor;
 public class StepInfo implements FlatInfo{
     private String stepName;
     private String nextStep;
+    private String interceptorType;
     private String description;
 
     public StepInfo(){}
@@ -45,21 +46,11 @@ public class StepInfo implements FlatInfo{
         visitor.visitStepInfo(this);
     }
 
-    /*public StepInfo(String stepName, String nextStep, String description){
-        this.stepName = stepName;
-        this.nextStep = nextStep;
-        this.description = description;
+    public String getInterceptorType() {
+        return interceptorType;
     }
 
-    public String getStepName() {
-        return stepName;
+    public void setInterceptorType(String interceptorType) {
+        this.interceptorType = interceptorType;
     }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public String getNextStep() {
-        return nextStep;
-    }*/
 }

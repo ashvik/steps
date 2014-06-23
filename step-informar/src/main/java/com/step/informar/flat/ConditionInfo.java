@@ -28,17 +28,4 @@ public class ConditionInfo{
     public void setConditionDescription(String conditionDescription) {
         this.conditionDescription = conditionDescription;
     }
-
-    /*public ConditionInfo(String condition, String conditionDescription){
-        this.condition = condition;
-        this.conditionDescription = conditionDescription;
-    }
-
-    public String getCondition() {
-        return condition;
-    }
-
-    public String getConditionDescription() {
-        return conditionDescription;
-    }*/
 }

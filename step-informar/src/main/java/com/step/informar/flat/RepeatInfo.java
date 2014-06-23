@@ -37,22 +37,4 @@ public class RepeatInfo implements FlatInfo{
     public void accept(FlatInfoVisitor visitor) {
         visitor.visitRepeatInfo(this);
     }
-
-    /*public RepeatInfo(StepInfo startRepeatFrom, StepInfo repeatUpTo, ConditionInfo condition){
-        this.startRepeatFrom = startRepeatFrom;
-        this.repeatUpTo = repeatUpTo;
-        this.condition = condition;
-    }
-
-    public StepInfo getStartRepeatFrom() {
-        return startRepeatFrom;
-    }
-
-    public StepInfo getRepeatUpTo() {
-        return repeatUpTo;
-    }
-
-    public ConditionInfo getCondition() {
-        return condition;
-    }*/
 }

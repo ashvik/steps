@@ -29,17 +29,4 @@ public class BreakInfo implements FlatInfo{
     public void accept(FlatInfoVisitor visitor) {
         visitor.visitBreakInfo(this);
     }
-
-    /*public BreakInfo(StepInfo breakStep, ConditionInfo condition){
-        this.breakStep = breakStep;
-        this.condition = condition;
-    }
-
-    public StepInfo getBreakStep() {
-        return breakStep;
-    }
-
-    public ConditionInfo getCondition() {
-        return condition;
-    }*/
 }
