@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<steprequestmapper>
+<stepRequestMapper xsi:schemaLocation="step.xsd">
     <multiScopedSteps>
         <step name="#">
             <scope request="#" nextStep="#"/>
             <scope request="#" nextStep="#"/>
         </step>
     </multiScopedSteps>
-    <mappedrequest request="#" rootStep="#" applyGenericSteps="#" onSuccess="#" onFailure="#">
+    <mappedRequest request="#" rootStep="#" applyGenericSteps="#" onSuccess="#" onFailure="#">
         <jumper forStep="#" conditionClass="#" onSuccessJumpTo="#" onFailureJumpTo="#"/>
         <breaker forStep="#" conditionClass="#"/>
         <repeater forStep="#" conditionClass="#" repeatFromStep="#"/>
@@ -17,8 +17,9 @@
         <postSteps>
             <step>3</step>
         </postSteps>
-    </mappedrequest>
-    <mappedrequest request="#" rootStep="#" applyGenericSteps="#" onSuccess="#" onFailure="#">
+    </mappedRequest>
+    
+    <mappedRequest request="#" rootStep="#" onSuccess="#" onFailure="#">
         <preSteps>
             <step>4</step>
             <step>5</step>
@@ -27,5 +28,5 @@
             <step>6</step>
             <step>7</step>
         </postSteps>
-    </mappedrequest>
-</steprequestmapper>
+    </mappedRequest>
+</stepRequestMapper>
