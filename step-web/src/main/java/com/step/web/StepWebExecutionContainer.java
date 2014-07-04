@@ -17,10 +17,10 @@ public class StepWebExecutionContainer extends DefaultStepExecutionContainer {
     public WebExecutionResult submit(StepInput input) throws Exception {
         try{
             ExecutionResult result = super.submit(input);
-            String onSuccess = getStepDefinition(input.getRequest()).getOnSuccess();
+            String onSuccess = getStepDefinition(input.getRequest()).getMappedRequestDetailsHolder().getOnSuccess();
             return new WebExecutionResult(result.getResultObject(), onSuccess, result.getAttributes());
         }catch(StepExecutionException e){
-            String onFailure = getStepDefinition(input.getRequest()).getOnFailure();
+            String onFailure = getStepDefinition(input.getRequest()).getMappedRequestDetailsHolder().getOnFailure();
             return new WebExecutionResult(e.getMessage(), onFailure, null);
         }
     }

@@ -2,6 +2,7 @@ package com.step.core.collector.apply.impl;
 
 import com.step.core.annotations.builder.impl.StepDefinitionAnnotationDefinitionBuilder;
 import com.step.core.annotations.collector.BasicAnnotationDefinitionCollector;
+import com.step.core.collector.MappedRequestDetailsHolder;
 import com.step.core.collector.StepDefinitionHolder;
 import com.step.core.collector.apply.AnnotationDefinitionCollectorApplier;
 import com.step.core.utils.AnnotatedDefinition;
@@ -29,6 +30,8 @@ public class ApplyStepDefinitionCollector implements AnnotationDefinitionCollect
             String names = (String)ad.getDefinition("name");
             String next = (String)ad.getDefinition("next");
             StepDefinitionHolder holder = new StepDefinitionHolder(names, next, ad.getAnnotatedClass());
+            MappedRequestDetailsHolder requestDetailsHolder = new MappedRequestDetailsHolder();
+            holder.setMappedRequestDetailsHolder(requestDetailsHolder);
             holder.setAnnotatedFields((List)ad.getDefinition("dependencies"));
 
             defs.add(holder);

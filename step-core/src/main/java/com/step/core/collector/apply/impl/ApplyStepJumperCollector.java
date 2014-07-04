@@ -3,6 +3,7 @@ package com.step.core.collector.apply.impl;
 import com.step.core.annotations.builder.impl.StepJumperAnnotationDefinitionBuilder;
 import com.step.core.annotations.collector.BasicAnnotationDefinitionCollector;
 import com.step.core.chain.jump.JumpDetails;
+import com.step.core.collector.MappedRequestDetailsHolder;
 import com.step.core.collector.StepDefinitionHolder;
 import com.step.core.collector.apply.AnnotationDefinitionCollectorApplier;
 import com.step.core.utils.AnnotatedDefinition;
@@ -43,7 +44,9 @@ public class ApplyStepJumperCollector implements AnnotationDefinitionCollectorAp
             }
 
             StepDefinitionHolder holder = new StepDefinitionHolder(name, ad.getAnnotatedClass());
-            holder.addJumpDetails(request, details);
+            MappedRequestDetailsHolder requestDetailsHolder = new MappedRequestDetailsHolder();
+            holder.setMappedRequestDetailsHolder(requestDetailsHolder);
+            requestDetailsHolder.addJumpDetails(request, details);
 
             defs.add(holder);
         }

@@ -4,6 +4,7 @@ import com.step.core.Configuration;
 import com.step.core.chain.breaker.BreakDetails;
 import com.step.core.chain.jump.JumpDetails;
 import com.step.core.chain.repeater.RepeatDetails;
+import com.step.core.collector.MappedRequestDetailsHolder;
 import com.step.core.collector.StepCollector;
 import com.step.core.collector.StepDefinitionHolder;
 import com.step.core.xml.model.*;
@@ -45,6 +46,8 @@ public class XmlStepCollector implements StepCollector {
             StepRequestMapper mapper = parser.parse(in);
             for(MultiScopedStep mss : mapper.getMultiScopedSteps()){
                 StepDefinitionHolder holder = new StepDefinitionHolder(mss.getName());
+                MappedRequestDetailsHolder requestDetailsHolder = new MappedRequestDetailsHolder();
+                holder.setMappedRequestDetailsHolder(requestDetailsHolder);
                 for(Scope scope : mss.getScopes()){
                     holder.addScope(scope.getRequest(), scope.getNextStep());
                 }
@@ -52,12 +55,14 @@ public class XmlStepCollector implements StepCollector {
             }
             for(MapRequest mr : mapper.getMapRequests()){
                 StepDefinitionHolder holder = new StepDefinitionHolder(mr.getRootStep());
-                holder.setMappedRequest(mr.getRequest());
-                holder.setCanApplyGenericSteps(mr.isApplyGenericSteps());
-                holder.setPreSteps(mr.getPreSteps());
-                holder.setPostSteps(mr.getPostSteps());
-                holder.setOnSuccess(mr.getOnSuccess());
-                holder.setOnFailure(mr.getOnFailure());
+                MappedRequestDetailsHolder requestDetailsHolder = new MappedRequestDetailsHolder();
+                holder.setMappedRequestDetailsHolder(requestDetailsHolder);
+                requestDetailsHolder.setMappedRequest(mr.getRequest());
+                requestDetailsHolder.setCanApplyGenericSteps(mr.isApplyGenericSteps());
+                requestDetailsHolder.setPreSteps(mr.getPreSteps());
+                requestDetailsHolder.setPostSteps(mr.getPostSteps());
+                requestDetailsHolder.setOnSuccess(mr.getOnSuccess());
+                requestDetailsHolder.setOnFailure(mr.getOnFailure());
                 definitions.add(holder);
 
                 allJumpers.addAll(mr.getJumpers());
@@ -78,11 +83,13 @@ public class XmlStepCollector implements StepCollector {
     private void processJumpers(List<Jumper> allJumpers, List<StepDefinitionHolder> definitions) throws ClassNotFoundException {
         for(Jumper jumper : allJumpers){
             StepDefinitionHolder h = new StepDefinitionHolder(jumper.getForStep());
+            MappedRequestDetailsHolder requestDetailsHolder = new MappedRequestDetailsHolder();
+            h.setMappedRequestDetailsHolder(requestDetailsHolder);
             JumpDetails details = new JumpDetails();
             details.setConditionClass(Class.forName(jumper.getConditionClass()));
             details.setOnSuccessJumpStep(jumper.getOnSuccessJumpTo());
             details.setOnFailureJumpStep(jumper.getOnFailureJumpTo());
-            h.addJumpDetails(jumper.getRequest(), details);
+            requestDetailsHolder.addJumpDetails(jumper.getRequest(), details);
             definitions.add(h);
         }
     }
@@ -90,9 +97,11 @@ public class XmlStepCollector implements StepCollector {
     private void processBreakers(List<Breaker> allBreakers, List<StepDefinitionHolder> definitions) throws ClassNotFoundException {
         for(Breaker breaker : allBreakers){
             StepDefinitionHolder h = new StepDefinitionHolder(breaker.getForStep());
+            MappedRequestDetailsHolder requestDetailsHolder = new MappedRequestDetailsHolder();
+            h.setMappedRequestDetailsHolder(requestDetailsHolder);
             BreakDetails details = new BreakDetails();
             details.setConditionClass(Class.forName(breaker.getConditionClass()));
-            h.addBreakDetails(breaker.getRequest(), details);
+            requestDetailsHolder.addBreakDetails(breaker.getRequest(), details);
             definitions.add(h);
         }
     }
@@ -100,10 +109,12 @@ public class XmlStepCollector implements StepCollector {
     private void processRepeaters(List<Repeater> allRepeaters, List<StepDefinitionHolder> definitions) throws ClassNotFoundException {
         for(Repeater repeater : allRepeaters){
             StepDefinitionHolder h = new StepDefinitionHolder(repeater.getForStep());
+            MappedRequestDetailsHolder requestDetailsHolder = new MappedRequestDetailsHolder();
+            h.setMappedRequestDetailsHolder(requestDetailsHolder);
             RepeatDetails details = new RepeatDetails();
             details.setConditionClass(Class.forName(repeater.getConditionClass()));
             details.setRepeatFromStep(repeater.getRepeatFromStep());
-            h.addRepeatDetails(repeater.getRequest(), details);
+            requestDetailsHolder.addRepeatDetails(repeater.getRequest(), details);
             definitions.add(h);
         }
     }

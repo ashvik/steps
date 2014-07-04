@@ -8,6 +8,7 @@
         <step name="jumpTestStep1">
             <scope request="jumpTest" nextStep="jumpTestStep2"/>
             <scope request="jumpTestNew" nextStep="jumpTestStep5"/>
+            <scope request="jumpTestNewAgain" nextStep="jumpTestStep6"/>
         </step>
     </multiScopedSteps>
 
@@ -28,7 +29,18 @@
     </mappedrequest>
     <mappedrequest request="jumpTestNew" rootStep="jumpTestStep1">
         <!--jumper forStep="jumpTestStep1" conditionClass="com.step.core.example.steps.TestJumpConditionNew" onSuccessJumpTo="jumpTestStep6"/-->
+        <preSteps>
+            <step>testPreStepNew</step>
+        </preSteps>
         <breaker forStep="jumpTestStep1" conditionClass="com.step.core.example.steps.TestBreakConditionNew"/>
-        <repeater forStep="jumpTestStep6" conditionClass="com.step.core.example.steps.TestRepeatBreakCondition" repeatFromStep="jumpTestStep1"/>
+        <!--repeater forStep="jumpTestStep6" conditionClass="com.step.core.example.steps.TestRepeatBreakCondition" repeatFromStep="jumpTestStep1"/-->
+    </mappedrequest>
+    <mappedrequest request="jumpTestNewAgain" rootStep="jumpTestStep1">
+        <!--jumper forStep="jumpTestStep1" conditionClass="com.step.core.example.steps.TestJumpConditionNew" onSuccessJumpTo="jumpTestStep6"/-->
+        <preSteps>
+            <step>testPreStepAgain</step>
+        </preSteps>
+        <breaker forStep="jumpTestStep1" conditionClass="com.step.core.example.steps.TestBreakConditionNew"/>
+        <!--repeater forStep="jumpTestStep6" conditionClass="com.step.core.example.steps.TestRepeatBreakCondition" repeatFromStep="jumpTestStep1"/-->
     </mappedrequest>
 </steprequestmapper>

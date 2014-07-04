@@ -26,7 +26,7 @@ public abstract class StepExecutionUtil {
             }
 
             try{
-                Field f =stepObject.getClass().getDeclaredField(field.getFieldName());
+                Field f = stepObject.getClass().getDeclaredField(field.getFieldName());
                 f.setAccessible(true);
                 f.set(stepObject, dependency);
             }catch(Exception e){

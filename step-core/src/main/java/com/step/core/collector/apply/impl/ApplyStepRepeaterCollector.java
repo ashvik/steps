@@ -3,6 +3,7 @@ package com.step.core.collector.apply.impl;
 import com.step.core.annotations.builder.impl.StepRepeaterAnnotationDefinitionBuilder;
 import com.step.core.annotations.collector.BasicAnnotationDefinitionCollector;
 import com.step.core.chain.repeater.RepeatDetails;
+import com.step.core.collector.MappedRequestDetailsHolder;
 import com.step.core.collector.StepDefinitionHolder;
 import com.step.core.collector.apply.AnnotationDefinitionCollectorApplier;
 import com.step.core.utils.AnnotatedDefinition;
@@ -41,7 +42,9 @@ public class ApplyStepRepeaterCollector implements AnnotationDefinitionCollector
             }
 
             StepDefinitionHolder holder = new StepDefinitionHolder(name, ad.getAnnotatedClass());
-            holder.addRepeatDetails(request, details);
+            MappedRequestDetailsHolder requestDetailsHolder = new MappedRequestDetailsHolder();
+            holder.setMappedRequestDetailsHolder(requestDetailsHolder);
+            requestDetailsHolder.addRepeatDetails(request, details);
 
             defs.add(holder);
         }

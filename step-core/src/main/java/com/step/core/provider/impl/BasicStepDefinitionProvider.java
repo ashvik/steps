@@ -1,6 +1,7 @@
 package com.step.core.provider.impl;
 
 import com.step.core.Configuration;
+import com.step.core.collector.MappedRequestDetailsHolder;
 import com.step.core.collector.StepCollector;
 import com.step.core.collector.StepDefinitionHolder;
 import com.step.core.enums.GenericStepType;
@@ -36,13 +37,22 @@ public class BasicStepDefinitionProvider implements StepDefinitionProvider {
 
         for(StepDefinitionHolder definition : definitions){
             String name = definition.getName();
-            String request = definition.getMappedRequest();
+            MappedRequestDetailsHolder mappedRequestDetailsHolder = definition.getMappedRequestDetailsHolder();
+            String request = null;
+            if(mappedRequestDetailsHolder != null){
+                request = mappedRequestDetailsHolder.getMappedRequest();
+            }
             GenericStepType type = definition.getGenericStepType();
 
             StepDefinitionHolder def = steps.get(name);
             if(def != null){
-                if(def.getMappedRequest() != null && !def.getMappedRequest().isEmpty() && request != null){
+                if(def.getMappedRequestDetailsHolder() != null &&
+                        def.getMappedRequestDetailsHolder().getMappedRequest() != null &&
+                        !def.getMappedRequestDetailsHolder().getMappedRequest().isEmpty() &&
+                        request != null){
                     StepDefinitionHolder cloned = def.cloneWithDifferentMappedRequest(request);
+                    cloned.getMappedRequestDetailsHolder().setPreSteps(definition.getMappedRequestDetailsHolder().getPreSteps());
+                    cloned.getMappedRequestDetailsHolder().setPostSteps(definition.getMappedRequestDetailsHolder().getPostSteps());
                     String key = request+"@"+name;
                     steps.put(key, cloned);
                     stepsRequestMapper.put(request, key);

@@ -2,6 +2,7 @@ package com.step.core.example;
 
 import com.step.core.container.StepExecutionContainer;
 import com.step.core.io.StepInput;
+import com.step.informar.service.StepInformationService;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.util.ArrayList;
@@ -20,13 +21,13 @@ public class Runner {
     public static void main(String args[]) throws Exception {
         ClassPathXmlApplicationContext appContext = new ClassPathXmlApplicationContext("applicationContext-stepCore-Example.xml");
         StepExecutionContainer container = appContext.getBean(StepExecutionContainer.class);
-        //StepInformationService informationService = appContext.getBean(StepInformationService.class);
+       StepInformationService informationService = appContext.getBean(StepInformationService.class);
 
-        //List<String> printInfo = informationService.getStepChainInfoDiagramForRequest("jumpTestNew");
+        List<String> printInfo = informationService.getStepChainInfoDiagramForRequest("jumpTestNewAgain");
 
-        //for(String str : printInfo){
-         //   System.out.println(str);
-        //}
+        for(String str : printInfo){
+            System.out.println(str);
+        }
 
         //AddingXXXXXXXXXXXXX
         /*Map<String, String> data = new HashMap();
@@ -51,8 +52,8 @@ public class Runner {
         count.add(2);
         count.add(3);
         //map.put("test","test");
-        //map.put("breakNew","test");
-        StepInput input1 = new StepInput("jumpTestNew", count);
+        //map.put("break","test");
+        StepInput input1 = new StepInput("jumpTest", count);
         input1.setInput(map);
         container.submit(input1);
        // Class c = (Class)((ParameterizedType)count.getClass().getGenericInterfaces()[0]).getActualTypeArguments()[0];

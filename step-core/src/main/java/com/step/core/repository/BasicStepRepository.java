@@ -3,6 +3,7 @@ package com.step.core.repository;
 import com.step.core.Configuration;
 import com.step.core.chain.StepChain;
 import com.step.core.chain.impl.BasicStepChain;
+import com.step.core.collector.MappedRequestDetailsHolder;
 import com.step.core.collector.StepDefinitionHolder;
 import com.step.core.collector.impl.AnnotatedGenericStepCollector;
 import com.step.core.collector.impl.AnnotatedStepCollector;
@@ -35,11 +36,12 @@ public class BasicStepRepository implements StepRepository{
     @Override
     public StepChain getStepExecutionChainForRequest(String req) {
         StepDefinitionHolder rootHolder = stepDefinitionProvider.getStepDefinitionByRequest(req);
+        MappedRequestDetailsHolder requestDetailsHolder = rootHolder.getMappedRequestDetailsHolder();
         StepDefinitionHolder holder = rootHolder;
         StepChain chain = new BasicStepChain();
-        String request = holder.getMappedRequest();
+        String request = requestDetailsHolder.getMappedRequest();
 
-        addCommonStepsInChainIfApplicable(chain, rootHolder.isCanApplyGenericSteps(), true, request, rootHolder.getPreSteps());
+        addCommonStepsInChainIfApplicable(chain, requestDetailsHolder.isCanApplyGenericSteps(), true, request, requestDetailsHolder.getPreSteps());
 
         chain.addStep(holder, request);
         boolean isFinished = false;
@@ -67,7 +69,7 @@ public class BasicStepRepository implements StepRepository{
             }
         }
 
-        addCommonStepsInChainIfApplicable(chain, rootHolder.isCanApplyGenericSteps(), false, request, rootHolder.getPostSteps());
+        addCommonStepsInChainIfApplicable(chain, requestDetailsHolder.isCanApplyGenericSteps(), false, request, requestDetailsHolder.getPostSteps());
 
         return chain;
     }

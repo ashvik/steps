@@ -4,6 +4,7 @@ import com.step.core.chain.StepChain;
 import com.step.core.chain.breaker.BreakDetails;
 import com.step.core.chain.jump.JumpDetails;
 import com.step.core.chain.repeater.RepeatDetails;
+import com.step.core.collector.MappedRequestDetailsHolder;
 import com.step.core.collector.StepDefinitionHolder;
 import com.step.core.utils.AnnotatedField;
 
@@ -86,19 +87,22 @@ public class BasicStepChain implements StepChain {
     private void populateRequiredAssets(StepDefinitionHolder holder, String request){
         this.dependenciesMap.put(holder.getStepClass(), holder.getAnnotatedFields());
         this.stepNames.put(holder.getStepClass(), holder.getName());
-        JumpDetails details = holder.getJumpDetails(request);
-        if(details != null){
-            this.stepToJumpConditionMap.put(holder.getStepClass(), details.getConditionClass());
-            this.stepJumpInfoMap.put(holder.getStepClass(), details);
-        }
-        BreakDetails breakDetails = holder.getBreakDetails(request);
-        if(breakDetails != null){
-            this.stepToBreakConditionMap.put(holder.getStepClass(), breakDetails.getConditionClass());
-        }
-        RepeatDetails repeatDetails = holder.getRepeatDetails(request);
-        if(repeatDetails != null){
-            this.stepToRepeatConditionMap.put(holder.getStepClass(), repeatDetails.getConditionClass());
-            this.stepRepeatInfoMap.put(holder.getStepClass(), repeatDetails);
+        MappedRequestDetailsHolder requestDetailsHolder = holder.getMappedRequestDetailsHolder();
+        if(requestDetailsHolder != null){
+            JumpDetails details = requestDetailsHolder.getJumpDetails(request);
+            if(details != null){
+                this.stepToJumpConditionMap.put(holder.getStepClass(), details.getConditionClass());
+                this.stepJumpInfoMap.put(holder.getStepClass(), details);
+            }
+            BreakDetails breakDetails = requestDetailsHolder.getBreakDetails(request);
+            if(breakDetails != null){
+                this.stepToBreakConditionMap.put(holder.getStepClass(), breakDetails.getConditionClass());
+            }
+            RepeatDetails repeatDetails = requestDetailsHolder.getRepeatDetails(request);
+            if(repeatDetails != null){
+                this.stepToRepeatConditionMap.put(holder.getStepClass(), repeatDetails.getConditionClass());
+                this.stepRepeatInfoMap.put(holder.getStepClass(), repeatDetails);
+            }
         }
     }
 
