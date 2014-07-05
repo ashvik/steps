@@ -51,9 +51,11 @@ public class Runner {
         count.add(1);
         count.add(2);
         count.add(3);
-        map.put("test1","test");
-        map.put("breakNew1","test");
-        StepInput input1 = new StepInput("jumpTestNew", count);
+        //map.put("test1","test");
+        //map.put("test","test");
+        //map.put("break","test");
+        //map.put("breakNew","test");
+        StepInput input1 = new StepInput("jumpTest", count);
         input1.setInput(map);
         container.submit(input1);
        // Class c = (Class)((ParameterizedType)count.getClass().getGenericInterfaces()[0]).getActualTypeArguments()[0];

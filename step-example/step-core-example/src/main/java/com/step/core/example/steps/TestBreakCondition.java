@@ -10,6 +10,7 @@ import java.util.Map;
 public class TestBreakCondition extends AbstractBreakCondition{
     @Override
     public boolean check() {
+        System.out.println("BREAK");
         return getStepExecutionContext().getInput(Map.class).get("break")!=null;
     }
 }
