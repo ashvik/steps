@@ -4,13 +4,10 @@ import com.step.core.chain.StepChain;
 import com.step.core.chain.impl.BasicStepChain;
 import com.step.core.chain.jump.JumpDetails;
 import com.step.core.chain.repeater.RepeatDetails;
-import com.step.informar.flat.BreakInfo;
-import com.step.informar.flat.ConditionInfo;
-import com.step.informar.flat.JumpInfo;
-import com.step.informar.flat.RepeatInfo;
-import com.step.informar.flat.StepChainInfo;
-import com.step.informar.flat.StepInfo;
+import com.step.informar.flat.*;
 import com.step.informar.flat.visitor.FlatInfoVisitor;
+
+import java.util.List;
 
 /**
  * Created by amishra on 6/21/14.
@@ -19,6 +16,8 @@ public class BasicFlatInfoVisitor implements FlatInfoVisitor {
     private StepChainInfo stepChainInfo;
     private StepChain stepChain;
     private BasicStepChain.StepNode currentNode;
+    private JumpDetails currentJumpDetails;
+    private Class<?> currentBreakDetails;
 
     public BasicFlatInfoVisitor(StepChainInfo stepChainInfo, StepChain stepChain){
         this.stepChainInfo = stepChainInfo;
@@ -37,11 +36,27 @@ public class BasicFlatInfoVisitor implements FlatInfoVisitor {
         stepInfo.setNextStep(nextStepName);
         stepChainInfo.addStepInfo(stepInfo);
 
-        BreakInfo breakInfo = new BreakInfo();
-        JumpInfo jumpInfo = new JumpInfo();
+        List<JumpDetails> jumpDetailsList = stepChain.getJumpDetailsForStep(stepClass);
+
+        if(jumpDetailsList != null){
+            for(JumpDetails details : jumpDetailsList){
+                JumpInfo jumpInfo = new JumpInfo();
+                this.currentJumpDetails = details;
+                jumpInfo.accept(this);
+            }
+        }
+
+        List<Class<?>> breakClasses = stepChain.getBreakConditionClassForStep(stepClass);
+
+        if(breakClasses != null){
+            for(Class<?> details : breakClasses){
+                BreakInfo breakInfo = new BreakInfo();
+                this.currentBreakDetails = details;
+                breakInfo.accept(this);
+            }
+        }
+
         RepeatInfo repeatInfo = new RepeatInfo();
-        breakInfo.accept(this);
-        jumpInfo.accept(this);
         repeatInfo.accept(this);
     }
 
@@ -49,12 +64,11 @@ public class BasicFlatInfoVisitor implements FlatInfoVisitor {
     public void visitJumpInfo(JumpInfo jumpInfo) {
         Class<?> stepClass = currentNode.getStepClass();
         String stepName = stepChain.getStepName(stepClass);
-        JumpDetails details = stepChain.getJumpDetailsForStep(stepClass);
 
-        if(details != null){
-            String onSuccess = details.getOnSuccessJumpStep();
-            String onFailure = details.getOnFailureJumpStep();
-            String condition = details.getConditionClass().getSimpleName();
+        if(this.currentJumpDetails != null){
+            String onSuccess = this.currentJumpDetails.getOnSuccessJumpStep();
+            String onFailure = this.currentJumpDetails.getOnFailureJumpStep();
+            String condition = this.currentJumpDetails.getConditionClass().getSimpleName();
             jumpInfo.setFromStep(stepName);
             jumpInfo.setOnSuccess(onSuccess);
             jumpInfo.setOnFailure(onFailure);
@@ -68,11 +82,10 @@ public class BasicFlatInfoVisitor implements FlatInfoVisitor {
     public void visitBreakInfo(BreakInfo breakInfo) {
         Class<?> stepClass = currentNode.getStepClass();
         String stepName = stepChain.getStepName(stepClass);
-        Class conditionClass = stepChain.getBreakConditionClassForStep(stepClass);//.getSimpleName();
 
-        if(conditionClass != null){
+        if(this.currentBreakDetails != null){
             breakInfo.setBreakStep(stepName);
-            breakInfo.setCondition(new ConditionInfo(conditionClass.getSimpleName()));
+            breakInfo.setCondition(new ConditionInfo(this.currentBreakDetails.getSimpleName()));
 
             stepChainInfo.addBreakInfo(breakInfo);
         }

@@ -12,7 +12,9 @@ import com.step.core.xml.parse.StepConfigurationParser;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -81,28 +83,42 @@ public class XmlStepCollector implements StepCollector {
     }
 
     private void processJumpers(List<Jumper> allJumpers, List<StepDefinitionHolder> definitions) throws ClassNotFoundException {
+        Map<String, StepDefinitionHolder> localCache = new HashMap<String, StepDefinitionHolder>();
         for(Jumper jumper : allJumpers){
-            StepDefinitionHolder h = new StepDefinitionHolder(jumper.getForStep());
-            MappedRequestDetailsHolder requestDetailsHolder = new MappedRequestDetailsHolder();
-            h.setMappedRequestDetailsHolder(requestDetailsHolder);
+            StepDefinitionHolder h = localCache.get(jumper.getForStep());
+
+            if(h == null){
+                h = new StepDefinitionHolder(jumper.getForStep());
+                MappedRequestDetailsHolder requestDetailsHolder = new MappedRequestDetailsHolder();
+                h.setMappedRequestDetailsHolder(requestDetailsHolder);
+                definitions.add(h);
+                localCache.put(jumper.getForStep(), h);
+            }
             JumpDetails details = new JumpDetails();
             details.setConditionClass(Class.forName(jumper.getConditionClass()));
             details.setOnSuccessJumpStep(jumper.getOnSuccessJumpTo());
             details.setOnFailureJumpStep(jumper.getOnFailureJumpTo());
-            requestDetailsHolder.addJumpDetails(jumper.getRequest(), details);
-            definitions.add(h);
+            h.addJumpDetails(jumper.getRequest(), details);
         }
     }
 
     private void processBreakers(List<Breaker> allBreakers, List<StepDefinitionHolder> definitions) throws ClassNotFoundException {
+        Map<String, StepDefinitionHolder> localCache = new HashMap<String, StepDefinitionHolder>();
         for(Breaker breaker : allBreakers){
-            StepDefinitionHolder h = new StepDefinitionHolder(breaker.getForStep());
-            MappedRequestDetailsHolder requestDetailsHolder = new MappedRequestDetailsHolder();
-            h.setMappedRequestDetailsHolder(requestDetailsHolder);
+            StepDefinitionHolder h = localCache.get(breaker.getForStep());
+
+            if(h == null){
+                h = new StepDefinitionHolder(breaker.getForStep());
+                MappedRequestDetailsHolder requestDetailsHolder = new MappedRequestDetailsHolder();
+                h.setMappedRequestDetailsHolder(requestDetailsHolder);
+                definitions.add(h);
+                localCache.put(breaker.getForStep(), h);
+            }
+
             BreakDetails details = new BreakDetails();
             details.setConditionClass(Class.forName(breaker.getConditionClass()));
-            requestDetailsHolder.addBreakDetails(breaker.getRequest(), details);
-            definitions.add(h);
+            h.addBreakDetails(breaker.getRequest(), details);
+
         }
     }
 
@@ -114,7 +130,7 @@ public class XmlStepCollector implements StepCollector {
             RepeatDetails details = new RepeatDetails();
             details.setConditionClass(Class.forName(repeater.getConditionClass()));
             details.setRepeatFromStep(repeater.getRepeatFromStep());
-            requestDetailsHolder.addRepeatDetails(repeater.getRequest(), details);
+            h.addRepeatDetails(repeater.getRequest(), details);
             definitions.add(h);
         }
     }

@@ -44,7 +44,7 @@ public class ApplyStepRepeaterCollector implements AnnotationDefinitionCollector
             StepDefinitionHolder holder = new StepDefinitionHolder(name, ad.getAnnotatedClass());
             MappedRequestDetailsHolder requestDetailsHolder = new MappedRequestDetailsHolder();
             holder.setMappedRequestDetailsHolder(requestDetailsHolder);
-            requestDetailsHolder.addRepeatDetails(request, details);
+            holder.addRepeatDetails(request, details);
 
             defs.add(holder);
         }

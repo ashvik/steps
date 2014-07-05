@@ -42,7 +42,7 @@ public class ApplyChainBreakerCollector implements AnnotationDefinitionCollector
             StepDefinitionHolder holder = new StepDefinitionHolder(name, ad.getAnnotatedClass());
             MappedRequestDetailsHolder requestDetailsHolder = new MappedRequestDetailsHolder();
             holder.setMappedRequestDetailsHolder(requestDetailsHolder);
-            requestDetailsHolder.addBreakDetails(request, details);
+            holder.addBreakDetails(request, details);
 
             defs.add(holder);
         }

@@ -21,11 +21,11 @@ public class BasicStepChain implements StepChain {
     private List<Class<?>> steps = new ArrayList<Class<?>>();
     private List<Class<?>> preSteps = new ArrayList<Class<?>>();
     private List<Class<?>> postSteps = new ArrayList<Class<?>>();
-    private Map<Class<?>, Class<?>> stepToJumpConditionMap = new HashMap<Class<?>, Class<?>>();
-    private Map<Class<?>, Class<?>> stepToBreakConditionMap = new HashMap<Class<?>, Class<?>>();
+    private Map<Class<?>, List<Class<?>>> stepToJumpConditionMap = new HashMap<Class<?>, List<Class<?>>>();
+    private Map<Class<?>, List<Class<?>>> stepToBreakConditionMap = new HashMap<Class<?>, List<Class<?>>>();
     private Map<Class<?>, Class<?>> stepToRepeatConditionMap = new HashMap<Class<?>, Class<?>>();
     private Map<Class<?>, String> stepNames = new HashMap<Class<?>, String>();
-    private Map<Class<?>, JumpDetails> stepJumpInfoMap = new HashMap<Class<?>, JumpDetails>();
+    private Map<Class<?>, List<JumpDetails>> stepJumpInfoMap = new HashMap<Class<?>, List<JumpDetails>>();
     private Map<Class<?>, RepeatDetails> stepRepeatInfoMap = new HashMap<Class<?>, RepeatDetails>();
     private Map<String, StepNode> stepNodeMap = new HashMap<String, StepNode>();
     private Map<Class<?>, List<AnnotatedField>> dependenciesMap = new HashMap<Class<?>, List<AnnotatedField>>();
@@ -89,16 +89,42 @@ public class BasicStepChain implements StepChain {
         this.stepNames.put(holder.getStepClass(), holder.getName());
         MappedRequestDetailsHolder requestDetailsHolder = holder.getMappedRequestDetailsHolder();
         if(requestDetailsHolder != null){
-            JumpDetails details = requestDetailsHolder.getJumpDetails(request);
+            List<JumpDetails> details = holder.getJumpDetails(request);
             if(details != null){
-                this.stepToJumpConditionMap.put(holder.getStepClass(), details.getConditionClass());
-                this.stepJumpInfoMap.put(holder.getStepClass(), details);
+                for(JumpDetails jumpDetail : details){
+                    List<Class<?>> condClass = this.stepToJumpConditionMap.get(holder.getStepClass());
+                    if(condClass == null){
+                        condClass = new ArrayList<Class<?>>();
+                        this.stepToJumpConditionMap.put(holder.getStepClass(), condClass);
+                    }
+
+                    condClass.add(jumpDetail.getConditionClass());
+
+                    List<JumpDetails> jumpDetailsList = this.stepJumpInfoMap.get(holder.getStepClass());
+                    if(jumpDetailsList == null){
+                        jumpDetailsList = new ArrayList<JumpDetails>();
+                        this.stepJumpInfoMap.put(holder.getStepClass(), jumpDetailsList);
+                    }
+
+                    jumpDetailsList.add(jumpDetail);
+                }
+                /*this.stepToJumpConditionMap.put(holder.getStepClass(), details.getConditionClass());
+                this.stepJumpInfoMap.put(holder.getStepClass(), details);*/
             }
-            BreakDetails breakDetails = requestDetailsHolder.getBreakDetails(request);
+            List<BreakDetails> breakDetails = holder.getBreakDetails(request);
             if(breakDetails != null){
-                this.stepToBreakConditionMap.put(holder.getStepClass(), breakDetails.getConditionClass());
+                for(BreakDetails bds : breakDetails){
+                    List<Class<?>> classes = this.stepToBreakConditionMap.get(holder.getStepClass());
+                    if(classes == null){
+                        classes = new ArrayList<Class<?>>();
+                        this.stepToBreakConditionMap.put(holder.getStepClass(), classes);
+                    }
+
+                    classes.add(bds.getConditionClass());
+                }
+                //this.stepToBreakConditionMap.put(holder.getStepClass(), breakDetails.getConditionClass());
             }
-            RepeatDetails repeatDetails = requestDetailsHolder.getRepeatDetails(request);
+            RepeatDetails repeatDetails = holder.getRepeatDetails(request);
             if(repeatDetails != null){
                 this.stepToRepeatConditionMap.put(holder.getStepClass(), repeatDetails.getConditionClass());
                 this.stepRepeatInfoMap.put(holder.getStepClass(), repeatDetails);
@@ -125,17 +151,17 @@ public class BasicStepChain implements StepChain {
     }
 
     @Override
-    public Class<?> getJumpConditionClassForStep(Class<?> step) {
+    public List<Class<?>> getJumpConditionClassForStep(Class<?> step) {
         return this.stepToJumpConditionMap.get(step);
     }
 
     @Override
-    public JumpDetails getJumpDetailsForStep(Class<?> step) {
+    public List<JumpDetails> getJumpDetailsForStep(Class<?> step) {
         return stepJumpInfoMap.get(step);
     }
 
     @Override
-    public Class<?> getBreakConditionClassForStep(Class<?> step) {
+    public List<Class<?>> getBreakConditionClassForStep(Class<?> step) {
         return this.stepToBreakConditionMap.get(step);
     }
 

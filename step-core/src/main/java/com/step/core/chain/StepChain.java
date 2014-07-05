@@ -23,9 +23,9 @@ public interface StepChain {
     void addStep(StepDefinitionHolder stepDefinitionHolder, String request);
     void addInterceptorStep(StepDefinitionHolder stepDefinitionHolder, String request, boolean isPreStep);
     String getStepName(Class<?> stepClass);
-    Class<?> getJumpConditionClassForStep(Class<?> step);
-    JumpDetails getJumpDetailsForStep(Class<?> step);
-    Class<?> getBreakConditionClassForStep(Class<?> step);
+    List<Class<?>> getJumpConditionClassForStep(Class<?> step);
+    List<JumpDetails> getJumpDetailsForStep(Class<?> step);
+    List<Class<?>> getBreakConditionClassForStep(Class<?> step);
     BasicStepChain.StepNode getRootNode();
     BasicStepChain.StepNode getStepNodeByName(String name);
     Class<?> getRepeatBreakConditionClassForStep(Class<?> step);

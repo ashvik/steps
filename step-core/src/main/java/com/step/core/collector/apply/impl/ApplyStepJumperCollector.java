@@ -46,7 +46,7 @@ public class ApplyStepJumperCollector implements AnnotationDefinitionCollectorAp
             StepDefinitionHolder holder = new StepDefinitionHolder(name, ad.getAnnotatedClass());
             MappedRequestDetailsHolder requestDetailsHolder = new MappedRequestDetailsHolder();
             holder.setMappedRequestDetailsHolder(requestDetailsHolder);
-            requestDetailsHolder.addJumpDetails(request, details);
+            holder.addJumpDetails(request, details);
 
             defs.add(holder);
         }
