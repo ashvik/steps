@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<steprequestmapper>
+<stepRequestMapper>
     <multiScopedSteps>
         <step name="makeBusinessObjectFromInputStep">
             <scope request="add" nextStep="addBusinessObjectStep"/>
@@ -12,11 +12,11 @@
         </step>
     </multiScopedSteps>
 
-    <mappedrequest request="add" rootStep="makeBusinessObjectFromInputStep"/>
+    <mappedRequest request="add" rootStep="makeBusinessObjectFromInputStep"/>
 
-    <mappedrequest request="fetch" rootStep="makeBusinessObjectFromInputStep"/>
+    <mappedRequest request="fetch" rootStep="makeBusinessObjectFromInputStep"/>
 
-    <mappedrequest request="jumpTest" rootStep="jumpTestStep1" applyGenericSteps="false">
+    <mappedRequest request="jumpTest" rootStep="jumpTestStep1" applyGenericSteps="false">
         <breaker forStep="jumpTestStep1" conditionClass="com.step.core.example.steps.TestBreakConditionNew"/>
         <breaker forStep="jumpTestStep1" conditionClass="com.step.core.example.steps.TestBreakCondition"/>
 
@@ -30,21 +30,21 @@
             <step>testPostStep</step>
         </postSteps>
         <!--breaker forStep="jumpTestStep1" conditionClass="com.step.core.example.steps.TestBreakCondition"/-->
-    </mappedrequest>
-    <mappedrequest request="jumpTestNew" rootStep="jumpTestStep1">
+    </mappedRequest>
+    <mappedRequest request="jumpTestNew" rootStep="jumpTestStep1">
         <!--jumper forStep="jumpTestStep1" conditionClass="com.step.core.example.steps.TestJumpConditionNew" onSuccessJumpTo="jumpTestStep6"/-->
         <preSteps>
             <step>testPreStepNew</step>
         </preSteps>
         <breaker forStep="jumpTestStep1" conditionClass="com.step.core.example.steps.TestBreakConditionNew"/>
         <!--repeater forStep="jumpTestStep6" conditionClass="com.step.core.example.steps.TestRepeatBreakCondition" repeatFromStep="jumpTestStep1"/-->
-    </mappedrequest>
-    <mappedrequest request="jumpTestNewAgain" rootStep="jumpTestStep1">
+    </mappedRequest>
+    <mappedRequest request="jumpTestNewAgain" rootStep="jumpTestStep1">
         <!--jumper forStep="jumpTestStep1" conditionClass="com.step.core.example.steps.TestJumpConditionNew" onSuccessJumpTo="jumpTestStep6"/-->
         <preSteps>
             <step>testPreStepAgain</step>
         </preSteps>
         <breaker forStep="jumpTestStep1" conditionClass="com.step.core.example.steps.TestBreakConditionNew"/>
         <!--repeater forStep="jumpTestStep6" conditionClass="com.step.core.example.steps.TestRepeatBreakCondition" repeatFromStep="jumpTestStep1"/-->
-    </mappedrequest>
-</steprequestmapper>
+    </mappedRequest>
+</stepRequestMapper>

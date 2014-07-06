@@ -60,7 +60,7 @@ public class StepConfigurationParser {
             }
         }
 
-        NodeList nList = doc.getElementsByTagName("mappedrequest");
+        NodeList nList = doc.getElementsByTagName("mappedRequest");
 
         for(int i=0 ; i<nList.getLength() ; i++){
             Node node = nList.item(i);
