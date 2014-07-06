@@ -75,7 +75,7 @@ public class MappedRequestDetailsHolder {
         cloned.canApplyGenericSteps = this.canApplyGenericSteps;
         cloned.preSteps = this.preSteps;
         cloned.postSteps = this.postSteps;
-        
+
         return cloned;
     }
 }
