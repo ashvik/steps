@@ -31,6 +31,7 @@ public class BasicStepChain implements StepChain {
     private Map<Class<?>, List<AnnotatedField>> dependenciesMap = new HashMap<Class<?>, List<AnnotatedField>>();
     private StepNode rootNode;
     private Set<String> visitedNodes = new HashSet<String>();
+    private List<String> pluginRequests = new ArrayList<String>();
 
     @Override
     public List<Class<?>> getPreSteps() {
@@ -108,8 +109,6 @@ public class BasicStepChain implements StepChain {
 
                     jumpDetailsList.add(jumpDetail);
                 }
-                /*this.stepToJumpConditionMap.put(holder.getStepClass(), details.getConditionClass());
-                this.stepJumpInfoMap.put(holder.getStepClass(), details);*/
             }
             List<BreakDetails> breakDetails = holder.getBreakDetails(request);
             if(breakDetails != null){
@@ -122,7 +121,6 @@ public class BasicStepChain implements StepChain {
 
                     classes.add(bds.getConditionClass());
                 }
-                //this.stepToBreakConditionMap.put(holder.getStepClass(), breakDetails.getConditionClass());
             }
             RepeatDetails repeatDetails = holder.getRepeatDetails(request);
             if(repeatDetails != null){
@@ -183,6 +181,14 @@ public class BasicStepChain implements StepChain {
     @Override
     public StepNode getStepNodeByName(String name) {
         return stepNodeMap.get(name);
+    }
+
+    public void setPluginRequests(List<String> pluginRequests){
+        this.pluginRequests = pluginRequests;
+    }
+
+    public List<String> getPluginRequests(){
+        return this.pluginRequests;
     }
 
     public static final class StepNode{

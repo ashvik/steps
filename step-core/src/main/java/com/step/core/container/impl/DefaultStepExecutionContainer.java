@@ -35,6 +35,9 @@ public class DefaultStepExecutionContainer implements StepExecutionContainer {
 
         context.setStepInput(input);
         context.setObjectFactory(this.objectFactory);
+        context.setStepRepository(stepRepository);
+        context.setStepExecutorProvider(stepExecutorProvider);
+        context.setApplicablePluginRequest(chain.getPluginRequests());
         StepExecutor executor = stepExecutorProvider.provide(chain, context);
         return executor.execute(chain, context);
     }
@@ -62,5 +65,10 @@ public class DefaultStepExecutionContainer implements StepExecutionContainer {
 
     protected StepDefinitionHolder getStepDefinition(String request){
        return stepRepository.getRootStepForRequest(request);
+    }
+
+    protected ExecutionResult submit(StepExecutionContext context, StepChain chain, StepExecutorProvider stepExecutorProvider) throws Exception {
+        StepExecutor executor = stepExecutorProvider.provide(chain, context);
+        return executor.execute(chain, context);
     }
 }

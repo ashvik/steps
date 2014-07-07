@@ -65,6 +65,7 @@ public class XmlStepCollector implements StepCollector {
                 requestDetailsHolder.setPostSteps(mr.getPostSteps());
                 requestDetailsHolder.setOnSuccess(mr.getOnSuccess());
                 requestDetailsHolder.setOnFailure(mr.getOnFailure());
+                requestDetailsHolder.addPluginRequests(mr.getRequest(), mr.getPluginRequests());
                 definitions.add(holder);
 
                 allJumpers.addAll(mr.getJumpers());

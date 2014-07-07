@@ -21,6 +21,7 @@ public class MapRequest {
     private List<Jumper> jumpers = new ArrayList<Jumper>();
     private List<Breaker> breakers = new ArrayList<Breaker>();
     private List<Repeater> repeaters = new ArrayList<Repeater>();
+    private List<String> pluginRequests = new ArrayList<String>();
 
     public void addJumper(Jumper jumper){
         this.jumpers.add(jumper);
@@ -100,5 +101,13 @@ public class MapRequest {
 
     public void setOnFailure(String onFailure) {
         this.onFailure = onFailure;
+    }
+
+    public void addPluginRequest(String request){
+        this.pluginRequests.add(request);
+    }
+
+    public List<String> getPluginRequests(){
+        return this.pluginRequests;
     }
 }

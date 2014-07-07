@@ -30,4 +30,6 @@ public interface StepChain {
     BasicStepChain.StepNode getStepNodeByName(String name);
     Class<?> getRepeatBreakConditionClassForStep(Class<?> step);
     RepeatDetails getRepeatDetailsForStep(Class<?> step);
+    void setPluginRequests(List<String> pluginRequests);
+    List<String> getPluginRequests();
 }

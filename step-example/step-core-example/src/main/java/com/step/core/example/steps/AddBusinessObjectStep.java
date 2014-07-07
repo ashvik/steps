@@ -7,6 +7,7 @@ import com.step.core.example.entity.BusinessObject;
 import com.step.core.example.services.DBService;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.logging.Logger;
 
 /**
@@ -25,16 +26,17 @@ public class AddBusinessObjectStep extends AbstractResponsiveStep<BusinessObject
     private DBService dbService;
 
     @Override
-    public BusinessObject execute() throws IOException, NoSuchMethodException {
+    public BusinessObject execute() throws Exception {
+        getStepExecutionContext().applyPluginRequest("nestedReq", new ArrayList());
         BusinessObject bo = getInput(BusinessObject.class);
         BusinessObject co = null;
         dbService.save(bo);
         log.info("Saved object ["+bo+"]");
         if(bo == null){
             throw new IOException("");
-        }if(co == null){
-            throw new NoSuchMethodException("");
-        }
+        }//if(co == null){
+           // throw new NoSuchMethodException("");
+        //}
         return bo;
     }
 }

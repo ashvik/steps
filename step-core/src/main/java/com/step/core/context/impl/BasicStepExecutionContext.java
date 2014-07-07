@@ -1,11 +1,19 @@
 package com.step.core.context.impl;
 
 import com.step.core.Attributes;
+import com.step.core.chain.StepChain;
+import com.step.core.container.StepExecutionContainer;
+import com.step.core.container.impl.DefaultStepExecutionContainer;
 import com.step.core.context.StepExecutionContext;
+import com.step.core.executor.StepExecutorProvider;
 import com.step.core.factory.ObjectFactory;
+import com.step.core.io.ExecutionResult;
 import com.step.core.io.StepInput;
+import com.step.core.repository.StepRepository;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -21,6 +29,10 @@ public class BasicStepExecutionContext implements StepExecutionContext {
     private ObjectFactory objectFactory;
     private Attributes attributes = new Attributes();
     private boolean breakStepChain;
+    private StepExecutorProvider stepExecutorProvider;
+    private StepRepository stepRepository;
+    private List<String> applicablePluginRequest = new ArrayList<String>();
+    private StepExecutionContainer stepExecutionContainer = new LocalStepExecutionContainer();
 
     @Override
     public void put(String name, Object obj) {
@@ -34,7 +46,7 @@ public class BasicStepExecutionContext implements StepExecutionContext {
 
     @Override
     public void setStepInput(StepInput input) {
-       this.input = input;
+        this.input = input;
     }
 
     @Override
@@ -84,5 +96,43 @@ public class BasicStepExecutionContext implements StepExecutionContext {
     @Override
     public boolean hasStepChainExecutionBroken() {
         return breakStepChain;
+    }
+
+    @Override
+    public void setApplicablePluginRequest(List<String> applicablePluginRequest) {
+        this.applicablePluginRequest = applicablePluginRequest;
+    }
+
+    @Override
+    public ExecutionResult applyPluginRequest(String request, Object input) throws Exception{
+        if(this.applicablePluginRequest.contains(request))
+            return stepExecutionContainer.submit(new StepInput(request, input));
+
+        throw new IllegalStateException("Request can not apply plugin request '"+request+"', make sure it is configured.");
+    }
+
+    @Override
+    public void setStepExecutorProvider(StepExecutorProvider stepExecutorProvider) {
+        this.stepExecutorProvider = stepExecutorProvider;
+    }
+
+    @Override
+    public void setStepRepository(StepRepository stepRepository) {
+        this.stepRepository = stepRepository;
+    }
+
+    private class LocalStepExecutionContainer extends DefaultStepExecutionContainer {
+        @Override
+        public ExecutionResult submit(StepInput input) throws Exception {
+            StepExecutionContext context = new BasicStepExecutionContext();
+            context.setStepInput(input);
+            context.setObjectFactory(objectFactory);
+            context.setStepRepository(stepRepository);
+            context.setStepExecutorProvider(stepExecutorProvider);
+            StepChain chain = stepRepository.getStepExecutionChainForRequest(input.getRequest());
+            context.setApplicablePluginRequest(chain.getPluginRequests());
+
+            return submit(context, chain, stepExecutorProvider);
+        }
     }
 }

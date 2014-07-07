@@ -10,6 +10,7 @@
         <jumper forStep="#" conditionClass="#" onSuccessJumpTo="#" onFailureJumpTo="#"/>
         <breaker forStep="#" conditionClass="#"/>
         <repeater forStep="#" conditionClass="#" repeatFromStep="#"/>
+        <pluginRequest name="#"/>
         <preSteps>
             <step>1</step>
             <step>2</step>

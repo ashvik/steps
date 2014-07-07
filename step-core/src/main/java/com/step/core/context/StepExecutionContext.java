@@ -1,8 +1,13 @@
 package com.step.core.context;
 
 import com.step.core.Attributes;
+import com.step.core.executor.StepExecutorProvider;
 import com.step.core.factory.ObjectFactory;
+import com.step.core.io.ExecutionResult;
 import com.step.core.io.StepInput;
+import com.step.core.repository.StepRepository;
+
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -25,5 +30,8 @@ public interface StepExecutionContext {
     void putAttribute(String name, Object value);
     void breakStepChainExecution();
     boolean hasStepChainExecutionBroken();
-
+    void setApplicablePluginRequest(List<String> applicablePluginRequest);
+    ExecutionResult applyPluginRequest(String request, Object input) throws Exception;
+    void setStepExecutorProvider(StepExecutorProvider stepExecutorProvider);
+    void setStepRepository(StepRepository stepRepository);
 }

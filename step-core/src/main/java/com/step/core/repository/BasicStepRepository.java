@@ -44,6 +44,10 @@ public class BasicStepRepository implements StepRepository{
         addCommonStepsInChainIfApplicable(chain, requestDetailsHolder.isCanApplyGenericSteps(), true, request, requestDetailsHolder.getPreSteps());
 
         chain.addStep(holder, request);
+        List<String> plugins = rootHolder.getMappedRequestDetailsHolder().getPluginsForRequest(req);
+        if(plugins != null){
+            chain.setPluginRequests(plugins);
+        }
         boolean isFinished = false;
 
         while(!isFinished){

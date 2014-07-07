@@ -97,6 +97,10 @@ public class StepConfigurationParser {
         NodeList postStepNodes = ele.getElementsByTagName("postSteps");
         populateInterceptorSteps(mr, postStepNodes, false);
 
+        //populating pluginRequests....
+        NodeList pluginRequestsNode = ele.getElementsByTagName("pluginRequest");
+        populatePluginRequests(mr, pluginRequestsNode);
+
         //populating jumpers....
         NodeList jumpers = ele.getElementsByTagName("jumper");
         populateJumpers(mr, jumpers);
@@ -164,6 +168,15 @@ public class StepConfigurationParser {
             NodeList steps = ele.getElementsByTagName("step");
             if(steps.getLength() > 0){
                 buildSteps(steps, mr, isPreStep);
+            }
+        }
+    }
+
+    private void populatePluginRequests(MapRequest mr, NodeList nodes) {
+        if(nodes != null && nodes.getLength()>0){
+            for(int i=0 ; i<nodes.getLength() ; i++){
+                Element e = (Element)nodes.item(i);
+                mr.addPluginRequest(e.getAttribute("name"));
             }
         }
     }

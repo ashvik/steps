@@ -37,10 +37,10 @@ public class Runner {
         data.put("description", "description_1");
 
         StepInput input = new StepInput("add", data);
-        ExecutionResult<BusinessObject> result = container.submit(input);
+        ExecutionResult<BusinessObject> result = container.submit(input);*/
 
         //Fetching
-        data = new HashMap();
+        /*data = new HashMap();
         data.put("id","1");
 
         input = new StepInput("fetch", data);
