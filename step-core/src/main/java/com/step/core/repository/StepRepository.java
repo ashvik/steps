@@ -13,6 +13,7 @@ public interface StepRepository {
     StepDefinitionHolder getRootStepForRequest(String request);
     StepDefinitionHolder getStepByName(String name);
     StepChain getStepExecutionChainForRequest(String request);
+    StepChain getStepExecutionChainForRequestUsingGenericStepsFlag(String request, boolean canUseGenericSteps);
     Set<String> getAllRequestsByName();
     Set<String> getAllStepsByName();
     void setConfiguration(Configuration configuration);

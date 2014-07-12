@@ -35,13 +35,19 @@ public class BasicStepRepository implements StepRepository{
 
     @Override
     public StepChain getStepExecutionChainForRequest(String req) {
+        return getStepExecutionChainForRequestUsingGenericStepsFlag(req, true);
+    }
+
+    @Override
+    public StepChain getStepExecutionChainForRequestUsingGenericStepsFlag(String req, boolean canUseGenericSteps) {
         StepDefinitionHolder rootHolder = stepDefinitionProvider.getStepDefinitionByRequest(req);
         MappedRequestDetailsHolder requestDetailsHolder = rootHolder.getMappedRequestDetailsHolder();
         StepDefinitionHolder holder = rootHolder;
         StepChain chain = new BasicStepChain();
         String request = requestDetailsHolder.getMappedRequest();
+        boolean canApplyGenSteps = canUseGenericSteps && requestDetailsHolder.isCanApplyGenericSteps();
 
-        addCommonStepsInChainIfApplicable(chain, requestDetailsHolder.isCanApplyGenericSteps(), true, request, requestDetailsHolder.getPreSteps());
+        addCommonStepsInChainIfApplicable(chain, canApplyGenSteps, true, request, requestDetailsHolder.getPreSteps());
 
         chain.addStep(holder, request);
         List<String> plugins = rootHolder.getMappedRequestDetailsHolder().getPluginsForRequest(req);
@@ -73,7 +79,7 @@ public class BasicStepRepository implements StepRepository{
             }
         }
 
-        addCommonStepsInChainIfApplicable(chain, requestDetailsHolder.isCanApplyGenericSteps(), false, request, requestDetailsHolder.getPostSteps());
+        addCommonStepsInChainIfApplicable(chain, canApplyGenSteps, false, request, requestDetailsHolder.getPostSteps());
 
         return chain;
     }

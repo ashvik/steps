@@ -12,19 +12,19 @@
         </step>
     </multiScopedSteps>
 
-    <mappedRequest request="nestedReq" rootStep="nestedReqStep" applyGenericSteps="false">
+    <mappedRequest request="nestedReq" rootStep="nestedReqStep">
         <preSteps>
             <step>testPreStepNew</step>
         </preSteps>
     </mappedRequest>
 
-    <mappedRequest request="add" rootStep="makeBusinessObjectFromInputStep">
+    <mappedRequest request="add" rootStep="makeBusinessObjectFromInputStep" applyGenericSteps="false">
         <pluginRequest name="nestedReq"/>
     </mappedRequest>
 
     <mappedRequest request="fetch" rootStep="makeBusinessObjectFromInputStep"/>
 
-    <mappedRequest request="jumpTest" rootStep="jumpTestStep1" applyGenericSteps="false">
+    <mappedRequest request="jumpTest" rootStep="jumpTestStep1" >
         <pluginRequest name="add"/>
         <!--<breaker forStep="jumpTestStep1" conditionClass="com.step.core.example.steps.TestBreakConditionNew"/>
         <breaker forStep="jumpTestStep1" conditionClass="com.step.core.example.steps.TestBreakCondition"/>

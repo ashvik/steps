@@ -129,7 +129,8 @@ public class BasicStepExecutionContext implements StepExecutionContext {
             context.setObjectFactory(objectFactory);
             context.setStepRepository(stepRepository);
             context.setStepExecutorProvider(stepExecutorProvider);
-            StepChain chain = stepRepository.getStepExecutionChainForRequest(input.getRequest());
+
+            StepChain chain = stepRepository.getStepExecutionChainForRequestUsingGenericStepsFlag(input.getRequest(), false);
             context.setApplicablePluginRequest(chain.getPluginRequests());
 
             return submit(context, chain, stepExecutorProvider);
