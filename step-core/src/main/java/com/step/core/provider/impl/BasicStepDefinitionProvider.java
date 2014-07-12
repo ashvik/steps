@@ -54,6 +54,7 @@ public class BasicStepDefinitionProvider implements StepDefinitionProvider {
                     cloned.getMappedRequestDetailsHolder().setPreSteps(definition.getMappedRequestDetailsHolder().getPreSteps());
                     cloned.getMappedRequestDetailsHolder().setPostSteps(definition.getMappedRequestDetailsHolder().getPostSteps());
                     cloned.getMappedRequestDetailsHolder().setCanApplyGenericSteps(definition.getMappedRequestDetailsHolder().isCanApplyGenericSteps());
+                    cloned.getMappedRequestDetailsHolder().addPluginRequests(request, definition.getMappedRequestDetailsHolder().getPluginsForRequest(request));
                     String key = request+"@"+name;
                     steps.put(key, cloned);
                     stepsRequestMapper.put(request, key);

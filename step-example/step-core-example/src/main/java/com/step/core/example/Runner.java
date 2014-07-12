@@ -23,7 +23,7 @@ public class Runner {
         StepExecutionContainer container = appContext.getBean(StepExecutionContainer.class);
        StepInformationService informationService = appContext.getBean(StepInformationService.class);
 
-        List<String> printInfo = informationService.getStepChainInfoDiagramForRequest("jumpTest");
+        List<String> printInfo = informationService.getStepChainInfoDiagramForRequest("runExternal");
 
         for(String str : printInfo){
             System.out.println(str);
@@ -55,7 +55,7 @@ public class Runner {
         //map.put("test","test");
         //map.put("break","test");
         //map.put("breakNew","test");
-        StepInput input1 = new StepInput("jumpTest", count);
+        StepInput input1 = new StepInput("jumpTestNew", count);
         input1.setInput(map);
         container.submit(input1);
        // Class c = (Class)((ParameterizedType)count.getClass().getGenericInterfaces()[0]).getActualTypeArguments()[0];

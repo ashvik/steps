@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<stepRequestMapper>
+<stepRequestMapper schemaLocation="classpath:steps.xsd">
     <multiScopedSteps>
         <step name="makeBusinessObjectFromInputStep">
             <scope request="add" nextStep="addBusinessObjectStep"/>
@@ -25,7 +25,7 @@
     <mappedRequest request="fetch" rootStep="makeBusinessObjectFromInputStep"/>
 
     <mappedRequest request="jumpTest" rootStep="jumpTestStep1" >
-        <pluginRequest name="add"/>
+        <pluginRequest name="runExternal"/>
         <!--<breaker forStep="jumpTestStep1" conditionClass="com.step.core.example.steps.TestBreakConditionNew"/>
         <breaker forStep="jumpTestStep1" conditionClass="com.step.core.example.steps.TestBreakCondition"/>
 
@@ -41,6 +41,7 @@
         <!--breaker forStep="jumpTestStep1" conditionClass="com.step.core.example.steps.TestBreakCondition"/-->
     </mappedRequest>
     <mappedRequest request="jumpTestNew" rootStep="jumpTestStep1">
+        <pluginRequest name="runExternal"/>
         <!--jumper forStep="jumpTestStep1" conditionClass="com.step.core.example.steps.TestJumpConditionNew" onSuccessJumpTo="jumpTestStep6"/-->
         <preSteps>
             <step>testPreStepNew</step>

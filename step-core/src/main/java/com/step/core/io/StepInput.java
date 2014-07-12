@@ -62,4 +62,9 @@ public class StepInput {
     public Object getAttribute(String name){
         return attributes.getAttribute(name);
     }
+
+    public void fromExternalInput(StepInput external){
+        this.collectedInputClass.addAll(external.collectedInputClass);
+        this.collectedInputs.addAll(external.collectedInputs);
+    }
 }

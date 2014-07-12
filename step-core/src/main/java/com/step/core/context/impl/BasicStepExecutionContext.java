@@ -125,6 +125,7 @@ public class BasicStepExecutionContext implements StepExecutionContext {
         @Override
         public ExecutionResult submit(StepInput input) throws Exception {
             StepExecutionContext context = new BasicStepExecutionContext();
+            input.fromExternalInput(BasicStepExecutionContext.this.input);
             context.setStepInput(input);
             context.setObjectFactory(objectFactory);
             context.setStepRepository(stepRepository);

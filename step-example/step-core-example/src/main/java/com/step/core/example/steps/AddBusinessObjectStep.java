@@ -7,7 +7,6 @@ import com.step.core.example.entity.BusinessObject;
 import com.step.core.example.services.DBService;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.logging.Logger;
 
 /**
@@ -27,7 +26,7 @@ public class AddBusinessObjectStep extends AbstractResponsiveStep<BusinessObject
 
     @Override
     public BusinessObject execute() throws Exception {
-        getStepExecutionContext().applyPluginRequest("nestedReq", new ArrayList());
+        getStepExecutionContext().applyPluginRequest("nestedReq", new Object());
         BusinessObject bo = getInput(BusinessObject.class);
         BusinessObject co = null;
         dbService.save(bo);

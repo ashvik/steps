@@ -3,19 +3,22 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>step-project</artifactId>
+        <artifactId>step-example</artifactId>
         <groupId>com.step</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>step-example</artifactId>
-    <packaging>pom</packaging>
-    <modules>
-        <module>step-core-example</module>
-        <module>step-web-example</module>
-        <module>step-core-external</module>
-    </modules>
+    <groupId>com.step.external</groupId>
+    <artifactId>external</artifactId>
 
+    <dependencies>
+        <dependency>
+            <groupId>com.step.core</groupId>
+            <artifactId>step-core</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
 
 </project>
