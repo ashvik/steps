@@ -104,9 +104,9 @@ public class BasicStepExecutionContext implements StepExecutionContext {
     }
 
     @Override
-    public ExecutionResult applyPluginRequest(String request, Object input) throws Exception{
+    public ExecutionResult applyPluginRequest(String request, Object... input) throws Exception{
         if(this.applicablePluginRequest.contains(request))
-            return stepExecutionContainer.submit(new StepInput(request, input));
+            return stepExecutionContainer.submit(request, input);
 
         throw new IllegalStateException("Request can not apply plugin request '"+request+"', make sure it is configured.");
     }

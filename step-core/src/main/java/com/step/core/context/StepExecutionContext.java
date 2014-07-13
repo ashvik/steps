@@ -31,7 +31,7 @@ public interface StepExecutionContext {
     void breakStepChainExecution();
     boolean hasStepChainExecutionBroken();
     void setApplicablePluginRequest(List<String> applicablePluginRequest);
-    ExecutionResult applyPluginRequest(String request, Object input) throws Exception;
+    ExecutionResult applyPluginRequest(String request, Object... input) throws Exception;
     void setStepExecutorProvider(StepExecutorProvider stepExecutorProvider);
     void setStepRepository(StepRepository stepRepository);
 }

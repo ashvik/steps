@@ -43,6 +43,15 @@ public class DefaultStepExecutionContainer implements StepExecutionContainer {
     }
 
     @Override
+    public ExecutionResult submit(String req, Object... ins) throws Exception {
+        StepInput input = new StepInput(req);
+        for(Object in : ins){
+            input.setInput(in);
+        }
+        return submit(input);
+    }
+
+    @Override
     public void setConfiguration(Configuration configuration) {
         this.configuration = configuration;
     }

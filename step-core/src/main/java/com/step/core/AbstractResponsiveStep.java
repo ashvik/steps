@@ -7,8 +7,4 @@ package com.step.core;
  * Time: 3:33 PM
  * To change this template use File | Settings | File Templates.
  */
-public abstract class AbstractResponsiveStep<T> extends AbstractStepExecutionContextAware implements ResponsiveStep<T> {
-    protected <I> I getInput(Class<I> clazz){
-        return getStepExecutionContext().getInput(clazz);
-    }
-}
+public abstract class AbstractResponsiveStep<T> extends AbstractStep implements ResponsiveStep<T> {}

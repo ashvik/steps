@@ -1,7 +1,6 @@
 package com.step.core.example;
 
 import com.step.core.container.StepExecutionContainer;
-import com.step.core.io.StepInput;
 import com.step.informar.service.StepInformationService;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -55,9 +54,9 @@ public class Runner {
         //map.put("test","test");
         //map.put("break","test");
         //map.put("breakNew","test");
-        StepInput input1 = new StepInput("jumpTestNew", count);
-        input1.setInput(map);
-        container.submit(input1);
+        //StepInput input1 = new StepInput("jumpTestNew", count);
+        //input1.setInput(map);
+        container.submit("jumpTestNew", count,map);
        // Class c = (Class)((ParameterizedType)count.getClass().getGenericInterfaces()[0]).getActualTypeArguments()[0];
        // System.out.println(c);
 

@@ -15,6 +15,7 @@ import com.step.core.repository.StepRepository;
  */
 public interface StepExecutionContainer {
     ExecutionResult submit(StepInput input) throws Exception;
+    ExecutionResult submit(String req, Object... ins) throws Exception;
     void setConfiguration(Configuration configuration);
     void setObjectFactory(ObjectFactory objectFactory);
     void setStepRepository(StepRepository stepRepository);

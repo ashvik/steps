@@ -21,7 +21,7 @@ public class JumpTestStep1 extends AbstractResponseLessStep {
         data.put("name","name_1");
         data.put("value", "value_1");
         data.put("description", "description_1");
-        ExecutionResult result = getStepExecutionContext().applyPluginRequest("runExternal", data);
+        ExecutionResult result = runPluginRequest("runExternal", data);
         System.out.println("IN STEP1: "+result.getResultObject());
     }
 }
