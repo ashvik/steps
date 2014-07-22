@@ -22,11 +22,11 @@ public class Runner {
         StepExecutionContainer container = appContext.getBean(StepExecutionContainer.class);
        StepInformationService informationService = appContext.getBean(StepInformationService.class);
 
-        List<String> printInfo = informationService.getStepChainInfoDiagramForRequest("runExternal");
+        //List<String> printInfo = informationService.getStepChainInfoDiagramForRequest("runExternal");
 
-        for(String str : printInfo){
+       /* for(String str : printInfo){
             System.out.println(str);
-        }
+        }*/
 
         //AddingXXXXXXXXXXXXX
         /*Map<String, String> data = new HashMap();

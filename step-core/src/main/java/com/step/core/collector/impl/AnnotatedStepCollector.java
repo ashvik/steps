@@ -4,10 +4,7 @@ import com.step.core.Configuration;
 import com.step.core.collector.StepCollector;
 import com.step.core.collector.StepDefinitionHolder;
 import com.step.core.collector.apply.AnnotationDefinitionCollectorApplier;
-import com.step.core.collector.apply.impl.ApplyChainBreakerCollector;
-import com.step.core.collector.apply.impl.ApplyStepDefinitionCollector;
-import com.step.core.collector.apply.impl.ApplyStepJumperCollector;
-import com.step.core.collector.apply.impl.ApplyStepRepeaterCollector;
+import com.step.core.collector.apply.impl.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +25,8 @@ public class AnnotatedStepCollector implements StepCollector{
 
     private AnnotationDefinitionCollectorApplier applyRepeaterCollector = new ApplyStepRepeaterCollector();
 
+    private AnnotationDefinitionCollectorApplier applyMultiScopedCollector = new ApplyMultiScopedCollector();
+
     @Override
     public List<StepDefinitionHolder> collect(Configuration conf) {
         List<StepDefinitionHolder> definitions = new ArrayList<StepDefinitionHolder>();
@@ -36,6 +35,7 @@ public class AnnotatedStepCollector implements StepCollector{
         definitions.addAll(applyStepJumperCollector.apply(stepPackages));
         definitions.addAll(applyChainBreakerCollector.apply(stepPackages));
         definitions.addAll(applyRepeaterCollector.apply(stepPackages));
+        definitions.addAll(applyMultiScopedCollector.apply(stepPackages));
 
         return definitions;
     }

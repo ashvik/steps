@@ -5,11 +5,11 @@
             <scope request="add" nextStep="addBusinessObjectStep"/>
             <scope request="fetch" nextStep="fetchBusinessObjectStep"/>
         </step>
-        <step name="jumpTestStep1">
+        <!--<step name="jumpTestStep1">
             <scope request="jumpTest" nextStep="jumpTestStep2"/>
             <scope request="jumpTestNew" nextStep="jumpTestStep5"/>
             <scope request="jumpTestNewAgain" nextStep="jumpTestStep6"/>
-        </step>
+        </step>-->
     </multiScopedSteps>
 
     <mappedRequest request="nestedReq" rootStep="nestedReqStep">

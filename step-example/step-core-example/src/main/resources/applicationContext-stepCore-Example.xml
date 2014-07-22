@@ -6,7 +6,7 @@
 
     <context:component-scan base-package="com.step.core.example"/>
 
-    <bean id="objectFactory" class="com.step.core.factory.spring.SpringManagedObjectFactory"></bean>
+    <bean id="objectFactory" class="com.step.core.factory.spring.SpringManagedObjectFactory"/>
 
     <bean id="stepConfigurations" class="com.step.core.BasicConfiguration">
         <property name="stepPackages" value="com.step.core.example.steps,
