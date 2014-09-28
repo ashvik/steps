@@ -1,5 +1,7 @@
 package com.step.core.collector;
 
+import com.step.core.parameter.RequestParameterContainer;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,6 +18,7 @@ public class MappedRequestDetailsHolder {
     private List<String> preSteps = new ArrayList<String>();
     private List<String> postSteps = new ArrayList<String>();
     private Map<String, List<String>> pluginRequests = new HashMap<String, List<String>>();
+    private RequestParameterContainer requestParameterContainer;
 
     public List<String> getPostSteps() {
         return postSteps;
@@ -73,12 +76,21 @@ public class MappedRequestDetailsHolder {
         this.pluginRequests.put(mappedRequest, pluginRequests);
     }
 
+    public RequestParameterContainer getRequestParameterContainer() {
+        return requestParameterContainer;
+    }
+
+    public void setRequestParameterContainer(RequestParameterContainer requestParameterContainer) {
+        this.requestParameterContainer = requestParameterContainer;
+    }
+
     public void merge(MappedRequestDetailsHolder other){
         this.mappedRequest = other.mappedRequest == null ? this.mappedRequest : other.mappedRequest ;
         this.canApplyGenericSteps = !this.canApplyGenericSteps ? this.canApplyGenericSteps : other.canApplyGenericSteps;
         this.preSteps = other.preSteps.isEmpty() ? this.preSteps : other.preSteps;
         this.postSteps = other.postSteps.isEmpty() ? this.postSteps : other.postSteps;
         this.pluginRequests.putAll(other.pluginRequests);
+        this.requestParameterContainer = other.requestParameterContainer;
     }
 
     public MappedRequestDetailsHolder cloneWithDifferentMappedRequest(String mappedRequest){
@@ -88,6 +100,7 @@ public class MappedRequestDetailsHolder {
         cloned.preSteps = this.preSteps;
         cloned.postSteps = this.postSteps;
         cloned.pluginRequests = this.pluginRequests;
+        cloned.requestParameterContainer = this.requestParameterContainer;
 
         return cloned;
     }

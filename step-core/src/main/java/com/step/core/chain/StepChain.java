@@ -4,6 +4,7 @@ import com.step.core.chain.impl.BasicStepChain;
 import com.step.core.chain.jump.JumpDetails;
 import com.step.core.chain.repeater.RepeatDetails;
 import com.step.core.collector.StepDefinitionHolder;
+import com.step.core.parameter.RequestParameterContainer;
 import com.step.core.utils.AnnotatedField;
 
 import java.util.List;
@@ -32,4 +33,6 @@ public interface StepChain {
     RepeatDetails getRepeatDetailsForStep(Class<?> step);
     void setPluginRequests(List<String> pluginRequests);
     List<String> getPluginRequests();
+    void setRequestParameterContainer(RequestParameterContainer requestParameterContainer);
+    RequestParameterContainer getRequestParameterContainer();
 }

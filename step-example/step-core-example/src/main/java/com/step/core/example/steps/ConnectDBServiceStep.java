@@ -25,6 +25,8 @@ public class ConnectDBServiceStep extends AbstractResponseLessStep {
 
     @Override
     public void execute() {
+        System.out.println("-->"+getParameterAsString("p1"));
+        System.out.println("-->"+getParameterAsInt("p2"));
         log.info("Connecting to DBService");
         dbService.connect();
     }

@@ -5,6 +5,7 @@ import com.step.core.executor.StepExecutorProvider;
 import com.step.core.factory.ObjectFactory;
 import com.step.core.io.ExecutionResult;
 import com.step.core.io.StepInput;
+import com.step.core.parameter.RequestParameterContainer;
 import com.step.core.repository.StepRepository;
 
 import java.util.List;
@@ -34,4 +35,6 @@ public interface StepExecutionContext {
     ExecutionResult applyPluginRequest(String request, Object... input) throws Exception;
     void setStepExecutorProvider(StepExecutorProvider stepExecutorProvider);
     void setStepRepository(StepRepository stepRepository);
+    void setRequestParameterContainer(RequestParameterContainer requestParameterContainer);
+    RequestParameterContainer getRequestParameterContainer();
 }

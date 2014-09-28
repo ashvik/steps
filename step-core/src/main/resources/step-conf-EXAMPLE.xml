@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<stepRequestMapper xsi:schemaLocation="step.xsd">
+<stepRequestMapper>
     <multiScopedSteps>
         <step name="#">
             <scope request="#" nextStep="#"/>
@@ -18,6 +18,16 @@
         <postSteps>
             <step>3</step>
         </postSteps>
+        <requestParameters>
+            <parameter name="11">
+                <value></value>
+                <value></value>
+            </parameter>
+            <parameter name="22">
+                <value></value>
+                <value></value>
+            </parameter>
+        </requestParameters>
     </mappedRequest>
     
     <mappedRequest request="#" rootStep="#" onSuccess="#" onFailure="#">

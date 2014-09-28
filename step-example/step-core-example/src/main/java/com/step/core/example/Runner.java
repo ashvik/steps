@@ -56,9 +56,11 @@ public class Runner {
         //map.put("breakNew","test");
         //StepInput input1 = new StepInput("jumpTestNew", count);
         //input1.setInput(map);
-        container.submit("jumpTestNew", count,map);
+        container.submit("paramTest1");
        // Class c = (Class)((ParameterizedType)count.getClass().getGenericInterfaces()[0]).getActualTypeArguments()[0];
        // System.out.println(c);
+
+        //System.out.println(Parameter.class.getSimpleName());
 
     }
 }

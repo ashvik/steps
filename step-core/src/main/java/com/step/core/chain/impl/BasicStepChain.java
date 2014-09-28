@@ -6,6 +6,7 @@ import com.step.core.chain.jump.JumpDetails;
 import com.step.core.chain.repeater.RepeatDetails;
 import com.step.core.collector.MappedRequestDetailsHolder;
 import com.step.core.collector.StepDefinitionHolder;
+import com.step.core.parameter.RequestParameterContainer;
 import com.step.core.utils.AnnotatedField;
 
 import java.util.*;
@@ -32,6 +33,7 @@ public class BasicStepChain implements StepChain {
     private StepNode rootNode;
     private Set<String> visitedNodes = new HashSet<String>();
     private List<String> pluginRequests = new ArrayList<String>();
+    private RequestParameterContainer requestParameterContainer;
 
     @Override
     public List<Class<?>> getPreSteps() {
@@ -189,6 +191,14 @@ public class BasicStepChain implements StepChain {
 
     public List<String> getPluginRequests(){
         return this.pluginRequests;
+    }
+
+    public RequestParameterContainer getRequestParameterContainer() {
+        return requestParameterContainer;
+    }
+
+    public void setRequestParameterContainer(RequestParameterContainer requestParameterContainer) {
+        this.requestParameterContainer = requestParameterContainer;
     }
 
     public static final class StepNode{

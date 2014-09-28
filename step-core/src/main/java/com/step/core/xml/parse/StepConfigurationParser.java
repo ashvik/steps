@@ -113,6 +113,10 @@ public class StepConfigurationParser {
         NodeList repeaters = ele.getElementsByTagName("repeater");
         populateRepeaters(mr, repeaters);
 
+        //populating repeaters....
+        NodeList parameters = ele.getElementsByTagName("parameter");
+        populateParameter(mr, parameters);
+
         return mr;
     }
 
@@ -157,6 +161,22 @@ public class StepConfigurationParser {
                 repeater.setRepeatFromStep(e.getAttribute("repeatFromStep"));
 
                 mr.addRepeater(repeater);
+            }
+        }
+    }
+
+    private void populateParameter(MapRequest mr, NodeList nodes) {
+        if(nodes != null && nodes.getLength()>0){
+            for(int i=0 ; i<nodes.getLength() ; i++){
+                Element e = (Element)nodes.item(i);
+                Parameter parameter = new Parameter(e.getAttribute("name"));
+                mr.addParameter(parameter);
+                NodeList values = e.getElementsByTagName("value");
+
+                for(int j=0 ; j<values.getLength() ; j++){
+                    Node val = nodes.item(i);
+                    parameter.addValue(val.getTextContent());
+                }
             }
         }
     }

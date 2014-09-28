@@ -38,6 +38,7 @@ public class DefaultStepExecutionContainer implements StepExecutionContainer {
         context.setStepRepository(stepRepository);
         context.setStepExecutorProvider(stepExecutorProvider);
         context.setApplicablePluginRequest(chain.getPluginRequests());
+        context.setRequestParameterContainer(chain.getRequestParameterContainer());
         StepExecutor executor = stepExecutorProvider.provide(chain, context);
         return executor.execute(chain, context);
     }

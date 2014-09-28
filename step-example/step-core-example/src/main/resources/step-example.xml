@@ -57,4 +57,31 @@
         <breaker forStep="jumpTestStep1" conditionClass="com.step.core.example.steps.TestBreakConditionNew"/>
         <!--repeater forStep="jumpTestStep6" conditionClass="com.step.core.example.steps.TestRepeatBreakCondition" repeatFromStep="jumpTestStep1"/-->
     </mappedRequest>
+    <mappedRequest request="paramTest" rootStep="parameterStep">
+        <parameters>
+            <parameter name="param1">
+                <value>PARAM1</value>
+            </parameter>
+            <parameter name="param2">
+                <value>1234</value>
+            </parameter>
+            <parameter name="param3">
+                <value>true</value>
+            </parameter>
+        </parameters>
+    </mappedRequest>
+
+    <mappedRequest request="paramTest1" rootStep="parameterStep">
+        <parameters>
+            <parameter name="p1">
+                <value>PARAM1</value>
+            </parameter>
+            <parameter name="p2">
+                <value>1234</value>
+            </parameter>
+            <parameter name="IParameter">
+                <value>com.step.core.example.steps.Parameter</value>
+            </parameter>
+        </parameters>
+    </mappedRequest>
 </stepRequestMapper>

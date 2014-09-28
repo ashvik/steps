@@ -9,6 +9,7 @@ import com.step.core.executor.StepExecutorProvider;
 import com.step.core.factory.ObjectFactory;
 import com.step.core.io.ExecutionResult;
 import com.step.core.io.StepInput;
+import com.step.core.parameter.RequestParameterContainer;
 import com.step.core.repository.StepRepository;
 
 import java.util.ArrayList;
@@ -33,6 +34,7 @@ public class BasicStepExecutionContext implements StepExecutionContext {
     private StepRepository stepRepository;
     private List<String> applicablePluginRequest = new ArrayList<String>();
     private StepExecutionContainer stepExecutionContainer = new LocalStepExecutionContainer();
+    private RequestParameterContainer requestParameterContainer;
 
     @Override
     public void put(String name, Object obj) {
@@ -121,6 +123,16 @@ public class BasicStepExecutionContext implements StepExecutionContext {
         this.stepRepository = stepRepository;
     }
 
+    @Override
+    public RequestParameterContainer getRequestParameterContainer() {
+        return requestParameterContainer;
+    }
+
+    @Override
+    public void setRequestParameterContainer(RequestParameterContainer requestParameterContainer) {
+        this.requestParameterContainer = requestParameterContainer;
+    }
+
     private class LocalStepExecutionContainer extends DefaultStepExecutionContainer {
         @Override
         public ExecutionResult submit(StepInput input) throws Exception {
@@ -133,6 +145,7 @@ public class BasicStepExecutionContext implements StepExecutionContext {
 
             StepChain chain = stepRepository.getStepExecutionChainForRequestUsingGenericStepsFlag(input.getRequest(), false);
             context.setApplicablePluginRequest(chain.getPluginRequests());
+            context.setRequestParameterContainer(chain.getRequestParameterContainer());
 
             return submit(context, chain, stepExecutorProvider);
         }

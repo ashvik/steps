@@ -7,6 +7,8 @@ import com.step.core.chain.repeater.RepeatDetails;
 import com.step.core.collector.MappedRequestDetailsHolder;
 import com.step.core.collector.StepCollector;
 import com.step.core.collector.StepDefinitionHolder;
+import com.step.core.parameter.RequestParameterContainer;
+import com.step.core.parameter.impl.BasicRequestParameterContainer;
 import com.step.core.xml.model.*;
 import com.step.core.xml.parse.StepConfigurationParser;
 
@@ -59,6 +61,17 @@ public class XmlStepCollector implements StepCollector {
                 StepDefinitionHolder holder = new StepDefinitionHolder(mr.getRootStep());
                 MappedRequestDetailsHolder requestDetailsHolder = new MappedRequestDetailsHolder();
                 holder.setMappedRequestDetailsHolder(requestDetailsHolder);
+                List<Parameter> parameters = mr.getParameters();
+
+                if(!parameters.isEmpty()){
+                    RequestParameterContainer requestParameterContainer = new BasicRequestParameterContainer();
+                    for(Parameter parameter : parameters){
+                        requestParameterContainer.addRequestParameter(parameter.getName(), parameter.getValues());
+                    }
+
+                    requestDetailsHolder.setRequestParameterContainer(requestParameterContainer);
+                }
+
                 requestDetailsHolder.setMappedRequest(mr.getRequest());
                 requestDetailsHolder.setCanApplyGenericSteps(mr.isApplyGenericSteps());
                 requestDetailsHolder.setPreSteps(mr.getPreSteps());

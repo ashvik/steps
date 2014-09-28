@@ -9,6 +9,7 @@ import com.step.core.collector.impl.AnnotatedGenericStepCollector;
 import com.step.core.collector.impl.AnnotatedStepCollector;
 import com.step.core.collector.impl.XmlStepCollector;
 import com.step.core.exceptions.StepChainException;
+import com.step.core.parameter.RequestParameterContainer;
 import com.step.core.provider.StepDefinitionProvider;
 import com.step.core.provider.impl.BasicStepDefinitionProvider;
 
@@ -51,8 +52,12 @@ public class BasicStepRepository implements StepRepository{
 
         chain.addStep(holder, request);
         List<String> plugins = rootHolder.getMappedRequestDetailsHolder().getPluginsForRequest(req);
+        RequestParameterContainer requestParameterContainer = rootHolder.getMappedRequestDetailsHolder().getRequestParameterContainer();
         if(plugins != null){
             chain.setPluginRequests(plugins);
+        }
+        if(requestParameterContainer != null){
+            chain.setRequestParameterContainer(requestParameterContainer);
         }
         boolean isFinished = false;
 

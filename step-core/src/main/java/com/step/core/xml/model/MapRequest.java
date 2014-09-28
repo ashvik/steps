@@ -22,6 +22,7 @@ public class MapRequest {
     private List<Breaker> breakers = new ArrayList<Breaker>();
     private List<Repeater> repeaters = new ArrayList<Repeater>();
     private List<String> pluginRequests = new ArrayList<String>();
+    private List<Parameter> parameters = new ArrayList<Parameter>();
 
     public void addJumper(Jumper jumper){
         this.jumpers.add(jumper);
@@ -109,5 +110,13 @@ public class MapRequest {
 
     public List<String> getPluginRequests(){
         return this.pluginRequests;
+    }
+
+    public void addParameter(Parameter parameter){
+        this.parameters.add(parameter);
+    }
+
+    public List<Parameter> getParameters(){
+        return this.parameters;
     }
 }
