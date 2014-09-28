@@ -8,8 +8,13 @@ import com.step.core.collector.StepDefinitionHolder;
 import com.step.core.collector.impl.AnnotatedGenericStepCollector;
 import com.step.core.collector.impl.AnnotatedStepCollector;
 import com.step.core.collector.impl.XmlStepCollector;
+import com.step.core.exceptions.RequestParameterNotFoundException;
 import com.step.core.exceptions.StepChainException;
+import com.step.core.parameter.GenericRequestParameterProvider;
+import com.step.core.parameter.ParameterNameValueHolder;
 import com.step.core.parameter.RequestParameterContainer;
+import com.step.core.parameter.impl.BasicGenericRequestParameterProvider;
+import com.step.core.parameter.impl.BasicRequestParameterContainer;
 import com.step.core.provider.StepDefinitionProvider;
 import com.step.core.provider.impl.BasicStepDefinitionProvider;
 
@@ -23,6 +28,7 @@ import java.util.Set;
 public class BasicStepRepository implements StepRepository{
     private Configuration configuration;
     private StepDefinitionProvider stepDefinitionProvider;
+    private GenericRequestParameterProvider genericRequestParameterProvider;
 
     @Override
     public StepDefinitionHolder getRootStepForRequest(String request) {
@@ -53,12 +59,20 @@ public class BasicStepRepository implements StepRepository{
         chain.addStep(holder, request);
         List<String> plugins = rootHolder.getMappedRequestDetailsHolder().getPluginsForRequest(req);
         RequestParameterContainer requestParameterContainer = rootHolder.getMappedRequestDetailsHolder().getRequestParameterContainer();
+        List<String> genericPrams = rootHolder.getMappedRequestDetailsHolder().getGenericParameters();
+
         if(plugins != null){
             chain.setPluginRequests(plugins);
         }
         if(requestParameterContainer != null){
+            populateGenericRequestParams(requestParameterContainer, genericPrams);
+            chain.setRequestParameterContainer(requestParameterContainer);
+        }else if(!genericPrams.isEmpty()){
+            requestParameterContainer = new BasicRequestParameterContainer();
+            populateGenericRequestParams(requestParameterContainer, genericPrams);
             chain.setRequestParameterContainer(requestParameterContainer);
         }
+
         boolean isFinished = false;
 
         while(!isFinished){
@@ -106,8 +120,9 @@ public class BasicStepRepository implements StepRepository{
 
     @Override
     public void buildRepository() {
+        genericRequestParameterProvider = new BasicGenericRequestParameterProvider();
         stepDefinitionProvider = new BasicStepDefinitionProvider(new AnnotatedStepCollector(),
-                new AnnotatedGenericStepCollector(), new XmlStepCollector());
+                new AnnotatedGenericStepCollector(), new XmlStepCollector(genericRequestParameterProvider));
         stepDefinitionProvider.prepare(configuration);
     }
 
@@ -122,6 +137,19 @@ public class BasicStepRepository implements StepRepository{
         }if(!steps.isEmpty()){
             for(String step : steps){
                 chain.addInterceptorStep(this.stepDefinitionProvider.getStepDefinitionByStepName(step), request, isPreStep);
+            }
+        }
+    }
+
+    private void populateGenericRequestParams(RequestParameterContainer requestParameterContainer, List<String> genericPrams){
+        for(String genericParam : genericPrams){
+            List<ParameterNameValueHolder> params = genericRequestParameterProvider.getRequestParameterNameValuePairs(genericParam);
+            if(params == null){
+                throw new RequestParameterNotFoundException(
+                        String.format("Generic parameters for ref '%s' is not found.", genericParam));
+            }
+            for(ParameterNameValueHolder param : params){
+                requestParameterContainer.addRequestParameter(param.getName(), param.getValues());
             }
         }
     }

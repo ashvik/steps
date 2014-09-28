@@ -7,6 +7,8 @@ import com.step.core.chain.repeater.RepeatDetails;
 import com.step.core.collector.MappedRequestDetailsHolder;
 import com.step.core.collector.StepCollector;
 import com.step.core.collector.StepDefinitionHolder;
+import com.step.core.parameter.GenericRequestParameterProvider;
+import com.step.core.parameter.ParameterNameValueHolder;
 import com.step.core.parameter.RequestParameterContainer;
 import com.step.core.parameter.impl.BasicRequestParameterContainer;
 import com.step.core.xml.model.*;
@@ -26,6 +28,11 @@ import java.util.Map;
  * To change this template use File | Settings | File Templates.
  */
 public class XmlStepCollector implements StepCollector {
+    private GenericRequestParameterProvider genericRequestParameterProvider;
+
+    public XmlStepCollector(GenericRequestParameterProvider genericRequestParameterProvider){
+        this.genericRequestParameterProvider = genericRequestParameterProvider;
+    }
 
     @Override
     public List<StepDefinitionHolder> collect(Configuration conf) {
@@ -48,6 +55,14 @@ public class XmlStepCollector implements StepCollector {
 
         try{
             StepRequestMapper mapper = parser.parse(in);
+
+            for(GenericParameterConfiguration genericParameterConfiguration : mapper.getGenericParameterConfigurations()){
+                String name = genericParameterConfiguration.getName();
+                for(Parameter parameter : genericParameterConfiguration.getParameters()){
+                    genericRequestParameterProvider.addRequestParameterNameValue(name, new ParameterNameValueHolder(parameter.getName(), parameter.getValues()));
+                }
+            }
+
             for(MultiScopedStep mss : mapper.getMultiScopedSteps()){
                 StepDefinitionHolder holder = new StepDefinitionHolder(mss.getName());
                 MappedRequestDetailsHolder requestDetailsHolder = new MappedRequestDetailsHolder();
@@ -78,6 +93,7 @@ public class XmlStepCollector implements StepCollector {
                 requestDetailsHolder.setPostSteps(mr.getPostSteps());
                 requestDetailsHolder.setOnSuccess(mr.getOnSuccess());
                 requestDetailsHolder.setOnFailure(mr.getOnFailure());
+                requestDetailsHolder.addGenericParameter(mr.getGenericParameters());
                 requestDetailsHolder.addPluginRequests(mr.getRequest(), mr.getPluginRequests());
                 definitions.add(holder);
 

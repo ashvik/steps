@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<stepRequestMapper schemaLocation="classpath:steps.xsd">
+    <parameterConfiguration name="GLOBAL_PARAMS">
+        <parameter name="g1">
+            <value>GLOBAL1</value>
+        </parameter>
+        <parameter name="g2">
+            <value>GLOBAL2</value>
+        </parameter>
+    </parameterConfiguration>
+
+    <parameterConfiguration name="GLOBAL_PARAMS_NEW">
+        <parameter name="gnew1">
+            <value>GLOBAL_NEW_HELLO!!</value>
+        </parameter>
+        <parameter name="gnew2">
+            <value>GLOBAL_NEW_2</value>
+        </parameter>
+    </parameterConfiguration>
+</stepRequestMapper>

@@ -13,6 +13,7 @@ import java.util.List;
 public class StepRequestMapper {
     private List<MapRequest> mapRequests = new ArrayList<MapRequest>();
     private List<MultiScopedStep> multiScopedSteps = new ArrayList<MultiScopedStep>();
+    private List<GenericParameterConfiguration> genericParameterConfigurations = new ArrayList<GenericParameterConfiguration>();
 
     public void add(MapRequest mr){
         this.mapRequests.add(mr);
@@ -28,5 +29,13 @@ public class StepRequestMapper {
 
     public List<MultiScopedStep> getMultiScopedSteps(){
         return this.multiScopedSteps;
+    }
+
+    public void addGenericParameterConfiguration(GenericParameterConfiguration genericParameterConfiguration){
+        this.genericParameterConfigurations.add(genericParameterConfiguration);
+    }
+
+    public List<GenericParameterConfiguration> getGenericParameterConfigurations(){
+        return genericParameterConfigurations;
     }
 }

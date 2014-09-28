@@ -72,16 +72,20 @@
     </mappedRequest>
 
     <mappedRequest request="paramTest1" rootStep="parameterStep">
-        <parameters>
-            <parameter name="p1">
-                <value>PARAM1</value>
-            </parameter>
-            <parameter name="p2">
-                <value>1234</value>
-            </parameter>
-            <parameter name="IParameter">
-                <value>com.step.core.example.steps.Parameter</value>
-            </parameter>
-        </parameters>
+        <requestParameters>
+            <configuration ref="GLOBAL_PARAMS"/>
+            <configuration ref="GLOBAL_PARAMS_NEW"/>
+            <parameters>
+                <parameter name="p1">
+                    <value>PARAM1</value>
+                </parameter>
+                <parameter name="p2">
+                    <value>1234</value>
+                </parameter>
+                <parameter name="IParameter">
+                    <value>com.step.core.example.steps.Parameter</value>
+                </parameter>
+            </parameters>
+        </requestParameters>
     </mappedRequest>
 </stepRequestMapper>

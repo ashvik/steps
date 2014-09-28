@@ -12,7 +12,8 @@
         <property name="stepPackages" value="com.step.core.example.steps,
                                              com.step.external.steps"/>
         <property name="stepConfigurationFiles" value="step-example.xml,
-                                                       external-steps-conf.xml"/>
+                                                       external-steps-conf.xml,
+                                                       step-request-params.xml"/>
     </bean>
 
     <bean id="stepRepository" class="com.step.core.repository.BasicStepRepository" init-method="buildRepository">

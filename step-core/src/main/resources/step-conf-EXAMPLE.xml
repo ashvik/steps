@@ -19,6 +19,7 @@
             <step>3</step>
         </postSteps>
         <requestParameters>
+            <configuration ref="#"/>
             <parameter name="11">
                 <value></value>
                 <value></value>
@@ -40,4 +41,16 @@
             <step>7</step>
         </postSteps>
     </mappedRequest>
+
+    <parameterConfiguration name="##">
+        <parameter name="11">
+            <value></value>
+            <value></value>
+        </parameter>
+        <parameter name="22">
+            <value></value>
+            <value></value>
+        </parameter>
+    </parameterConfiguration>
+
 </stepRequestMapper>

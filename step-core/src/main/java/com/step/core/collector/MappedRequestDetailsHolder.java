@@ -19,6 +19,7 @@ public class MappedRequestDetailsHolder {
     private List<String> postSteps = new ArrayList<String>();
     private Map<String, List<String>> pluginRequests = new HashMap<String, List<String>>();
     private RequestParameterContainer requestParameterContainer;
+    private List<String> genericParameters = new ArrayList<String>();
 
     public List<String> getPostSteps() {
         return postSteps;
@@ -84,11 +85,20 @@ public class MappedRequestDetailsHolder {
         this.requestParameterContainer = requestParameterContainer;
     }
 
+    public void addGenericParameter(List<String> param){
+        this.genericParameters = param;
+    }
+
+    public List<String> getGenericParameters(){
+        return this.genericParameters;
+    }
+
     public void merge(MappedRequestDetailsHolder other){
         this.mappedRequest = other.mappedRequest == null ? this.mappedRequest : other.mappedRequest ;
         this.canApplyGenericSteps = !this.canApplyGenericSteps ? this.canApplyGenericSteps : other.canApplyGenericSteps;
         this.preSteps = other.preSteps.isEmpty() ? this.preSteps : other.preSteps;
         this.postSteps = other.postSteps.isEmpty() ? this.postSteps : other.postSteps;
+        this.genericParameters = other.genericParameters.isEmpty() ? this.genericParameters : other.genericParameters;
         this.pluginRequests.putAll(other.pluginRequests);
         this.requestParameterContainer = other.requestParameterContainer;
     }
@@ -99,6 +109,7 @@ public class MappedRequestDetailsHolder {
         cloned.canApplyGenericSteps = this.canApplyGenericSteps;
         cloned.preSteps = this.preSteps;
         cloned.postSteps = this.postSteps;
+        cloned.genericParameters = this.genericParameters;
         cloned.pluginRequests = this.pluginRequests;
         cloned.requestParameterContainer = this.requestParameterContainer;
 

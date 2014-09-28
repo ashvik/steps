@@ -71,6 +71,17 @@ public class StepConfigurationParser {
             }
         }
 
+        NodeList genericParameters = doc.getElementsByTagName("parameterConfiguration");
+        for(int i=0; i<genericParameters.getLength(); i++){
+            Node node = genericParameters.item(i);
+
+            GenericParameterConfiguration genericParameterConfiguration = buildGenericParameters(node);
+
+            if(genericParameterConfiguration != null){
+                root.addGenericParameterConfiguration(genericParameterConfiguration);
+            }
+        }
+
         return root;
     }
 
@@ -117,7 +128,24 @@ public class StepConfigurationParser {
         NodeList parameters = ele.getElementsByTagName("parameter");
         populateParameter(mr, parameters);
 
+        //populating generic params....
+        NodeList genParams = ele.getElementsByTagName("configuration");
+        populateGenericParams(mr, genParams);
+
         return mr;
+    }
+
+    private GenericParameterConfiguration buildGenericParameters(Node node){
+        if(node.getNodeType() != Node.ELEMENT_NODE){
+            return null;
+        }
+        Element ele = (Element)node;
+        GenericParameterConfiguration genericParameterConfiguration = new GenericParameterConfiguration(ele.getAttribute("name"));
+
+        NodeList params = ele.getElementsByTagName("parameter");
+        populateGenericParameter(genericParameterConfiguration, params);
+
+        return genericParameterConfiguration;
     }
 
     private void populateJumpers(MapRequest mr, NodeList nodes) {
@@ -181,6 +209,22 @@ public class StepConfigurationParser {
         }
     }
 
+    private void populateGenericParameter(GenericParameterConfiguration mr, NodeList nodes) {
+        if(nodes != null && nodes.getLength()>0){
+            for(int i=0 ; i<nodes.getLength() ; i++){
+                Element e = (Element)nodes.item(i);
+                Parameter parameter = new Parameter(e.getAttribute("name"));
+                mr.addParameter(parameter);
+                NodeList values = e.getElementsByTagName("value");
+
+                for(int j=0 ; j<values.getLength() ; j++){
+                    Node val = nodes.item(i);
+                    parameter.addValue(val.getTextContent());
+                }
+            }
+        }
+    }
+
     private void populateInterceptorSteps(MapRequest mr, NodeList nodes, boolean isPreStep) {
         if(nodes != null && nodes.getLength()>0){
             Node node = nodes.item(0);
@@ -197,6 +241,15 @@ public class StepConfigurationParser {
             for(int i=0 ; i<nodes.getLength() ; i++){
                 Element e = (Element)nodes.item(i);
                 mr.addPluginRequest(e.getAttribute("name"));
+            }
+        }
+    }
+
+    private void populateGenericParams(MapRequest mr, NodeList nodes) {
+        if(nodes != null && nodes.getLength()>0){
+            for(int i=0 ; i<nodes.getLength() ; i++){
+                Element e = (Element)nodes.item(i);
+                mr.addGenericParameter(e.getAttribute("ref"));
             }
         }
     }
