@@ -1,6 +1,7 @@
 package com.step.core.context;
 
 import com.step.core.Attributes;
+import com.step.core.PluginRequest;
 import com.step.core.executor.StepExecutorProvider;
 import com.step.core.factory.ObjectFactory;
 import com.step.core.io.ExecutionResult;
@@ -31,10 +32,14 @@ public interface StepExecutionContext {
     void putAttribute(String name, Object value);
     void breakStepChainExecution();
     boolean hasStepChainExecutionBroken();
-    void setApplicablePluginRequest(List<String> applicablePluginRequest);
+    //void setApplicablePluginRequest(List<String> applicablePluginRequest);
+    void setApplicablePluginRequest(List<PluginRequest> applicablePluginRequest);
+    List<PluginRequest> getPluginRequests();
     ExecutionResult applyPluginRequest(String request, Object... input) throws Exception;
+    ExecutionResult applyPluginRequest(String request, boolean allowInputTransfer, boolean applyGenericSteps, Object... input) throws Exception;
     void setStepExecutorProvider(StepExecutorProvider stepExecutorProvider);
     void setStepRepository(StepRepository stepRepository);
     void setRequestParameterContainer(RequestParameterContainer requestParameterContainer);
     RequestParameterContainer getRequestParameterContainer();
+    //List<String> getPluginRequests();
 }

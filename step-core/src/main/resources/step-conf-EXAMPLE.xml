@@ -6,11 +6,19 @@
             <scope request="#" nextStep="#"/>
         </step>
     </multiScopedSteps>
-    <mappedRequest request="#" rootStep="#" applyGenericSteps="#" onSuccess="#" onFailure="#">
+    <mappedRequest request="#" rootStep="#" applyGenericSteps="#" onSuccess="#" onFailure="#" expectedOutCome="#" stepExceptionHandler="#">
+        <contract>
+            <requiredInputs>
+                <inputType>#</inputType>
+            </requiredInputs>
+            <expectedOutcome>#</expectedOutcome>
+        </contract>
+
+        <exceptionHandler>#</exceptionHandler>
         <jumper forStep="#" conditionClass="#" onSuccessJumpTo="#" onFailureJumpTo="#"/>
         <breaker forStep="#" conditionClass="#"/>
         <repeater forStep="#" conditionClass="#" repeatFromStep="#"/>
-        <pluginRequest name="#"/>
+        <pluginRequest name="#" runAutomatically="#"/>
         <preSteps>
             <step>1</step>
             <step>2</step>

@@ -1,6 +1,7 @@
 package com.step.core.context.impl;
 
 import com.step.core.Attributes;
+import com.step.core.PluginRequest;
 import com.step.core.chain.StepChain;
 import com.step.core.container.StepExecutionContainer;
 import com.step.core.container.impl.DefaultStepExecutionContainer;
@@ -33,6 +34,7 @@ public class BasicStepExecutionContext implements StepExecutionContext {
     private StepExecutorProvider stepExecutorProvider;
     private StepRepository stepRepository;
     private List<String> applicablePluginRequest = new ArrayList<String>();
+    private List<PluginRequest> applicablePluginRequestNew = new ArrayList<PluginRequest>();
     private StepExecutionContainer stepExecutionContainer = new LocalStepExecutionContainer();
     private RequestParameterContainer requestParameterContainer;
 
@@ -101,14 +103,33 @@ public class BasicStepExecutionContext implements StepExecutionContext {
     }
 
     @Override
-    public void setApplicablePluginRequest(List<String> applicablePluginRequest) {
-        this.applicablePluginRequest = applicablePluginRequest;
+    public void setApplicablePluginRequest(List<PluginRequest> applicablePluginRequest) {
+        this.applicablePluginRequestNew = applicablePluginRequest;
     }
 
     @Override
     public ExecutionResult applyPluginRequest(String request, Object... input) throws Exception{
         if(this.applicablePluginRequest.contains(request))
             return stepExecutionContainer.submit(request, input);
+
+        throw new IllegalStateException("Request can not apply plugin request '"+request+"', make sure it is configured.");
+    }
+
+    @Override
+    public ExecutionResult applyPluginRequest(String request, boolean allowInputTransfer, boolean applyGenericSteps, Object... input) throws Exception{
+        LocalStepInput localStepInput = new LocalStepInput(request);
+        localStepInput.setAllowInputTransfer(allowInputTransfer);
+        localStepInput.setApplyGenericSteps(applyGenericSteps);
+
+        for(Object in : input){
+            localStepInput.setInput(in);
+        }
+
+        for(PluginRequest pluginRequest : applicablePluginRequestNew){
+            if(pluginRequest.getRequest().equals(request)){
+                return stepExecutionContainer.submit(localStepInput);
+            }
+        }
 
         throw new IllegalStateException("Request can not apply plugin request '"+request+"', make sure it is configured.");
     }
@@ -129,6 +150,11 @@ public class BasicStepExecutionContext implements StepExecutionContext {
     }
 
     @Override
+    public List<PluginRequest> getPluginRequests() {
+        return applicablePluginRequestNew;
+    }
+
+    @Override
     public void setRequestParameterContainer(RequestParameterContainer requestParameterContainer) {
         this.requestParameterContainer = requestParameterContainer;
     }
@@ -137,17 +163,64 @@ public class BasicStepExecutionContext implements StepExecutionContext {
         @Override
         public ExecutionResult submit(StepInput input) throws Exception {
             StepExecutionContext context = new BasicStepExecutionContext();
-            input.fromExternalInput(BasicStepExecutionContext.this.input);
+            if(input instanceof LocalStepInput){
+                return submitLocalStepInput((LocalStepInput)input, context);
+            }else{
+                input.fromExternalInput(BasicStepExecutionContext.this.input);
+                context.setStepInput(input);
+                return submitInternal(input, context, false);
+            }
+        }
+
+        private ExecutionResult submitLocalStepInput(LocalStepInput input, StepExecutionContext context) throws Exception{
+            if(input.isAllowInputTransfer()){
+                input.fromExternalInput(BasicStepExecutionContext.this.input);
+            }
+
             context.setStepInput(input);
+            if(input.isApplyGenericSteps()){
+                return submitInternal(input, context, true);
+            }else{
+                return submitInternal(input, context, false);
+            }
+        }
+
+        private ExecutionResult submitInternal(StepInput input, StepExecutionContext context, boolean allowGenericSteps) throws Exception {
             context.setObjectFactory(objectFactory);
             context.setStepRepository(stepRepository);
             context.setStepExecutorProvider(stepExecutorProvider);
 
-            StepChain chain = stepRepository.getStepExecutionChainForRequestUsingGenericStepsFlag(input.getRequest(), false);
+            StepChain chain = stepRepository.getStepExecutionChainForRequestUsingGenericStepsFlag(input.getRequest(), allowGenericSteps);
             context.setApplicablePluginRequest(chain.getPluginRequests());
             context.setRequestParameterContainer(chain.getRequestParameterContainer());
 
             return submit(context, chain, stepExecutorProvider);
+        }
+    }
+
+    private class LocalStepInput extends StepInput{
+        private boolean allowInputTransfer;
+
+        private boolean applyGenericSteps;
+
+        public LocalStepInput(String request) {
+            super(request);
+        }
+
+        public boolean isAllowInputTransfer() {
+            return allowInputTransfer;
+        }
+
+        public void setAllowInputTransfer(boolean allowInputTransfer) {
+            this.allowInputTransfer = allowInputTransfer;
+        }
+
+        public boolean isApplyGenericSteps() {
+            return applyGenericSteps;
+        }
+
+        public void setApplyGenericSteps(boolean applyGenericSteps) {
+            this.applyGenericSteps = applyGenericSteps;
         }
     }
 }

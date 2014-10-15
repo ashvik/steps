@@ -1,9 +1,11 @@
 package com.step.core.chain;
 
+import com.step.core.PluginRequest;
 import com.step.core.chain.impl.BasicStepChain;
 import com.step.core.chain.jump.JumpDetails;
 import com.step.core.chain.repeater.RepeatDetails;
 import com.step.core.collector.StepDefinitionHolder;
+import com.step.core.exceptions.handler.StepExceptionHandler;
 import com.step.core.parameter.RequestParameterContainer;
 import com.step.core.utils.AnnotatedField;
 
@@ -31,8 +33,14 @@ public interface StepChain {
     BasicStepChain.StepNode getStepNodeByName(String name);
     Class<?> getRepeatBreakConditionClassForStep(Class<?> step);
     RepeatDetails getRepeatDetailsForStep(Class<?> step);
-    void setPluginRequests(List<String> pluginRequests);
-    List<String> getPluginRequests();
     void setRequestParameterContainer(RequestParameterContainer requestParameterContainer);
     RequestParameterContainer getRequestParameterContainer();
+    Class<?> getExpectedOutComeClass();
+    void setExpectedOutCome(String expectedOutCome);
+    Class<StepExceptionHandler> getStepExceptionHandler();
+    void setStepExceptionHandler(String stepExceptionHandler);
+    void setInputTypes(List<String> inputTypes);
+    List<Class> getInputType();
+    void setPluginRequests(List<PluginRequest> pluginRequests);
+    List<PluginRequest> getPluginRequests();
 }

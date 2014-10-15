@@ -10,6 +10,7 @@ import com.step.core.conditions.JumpCondition;
 import com.step.core.conditions.RepeatBreakCondition;
 import com.step.core.context.StepExecutionContext;
 import com.step.core.exceptions.StepExecutionException;
+import com.step.core.exceptions.handler.StepExceptionHandler;
 import com.step.core.executor.StepExecutor;
 import com.step.core.io.ExecutionResult;
 import com.step.core.utils.StepExecutionUtil;
@@ -30,6 +31,8 @@ public class BasicStepExecutor implements StepExecutor {
         String repeatToStep = null;
         BasicStepChain.StepNode currentNode = chain.getRootNode();
         BasicStepChain.StepNode moveToStep = null;
+        Class expectedOutCome = chain.getExpectedOutComeClass();
+        Class<StepExceptionHandler> stepExceptionHandlerClass = chain.getStepExceptionHandler();
 
         while (true) {
             Object step = null;
@@ -45,14 +48,38 @@ public class BasicStepExecutor implements StepExecutor {
             if (step instanceof ResponsiveStep) {
                 ResponsiveStep rs = (ResponsiveStep) step;
                 rs.setStepExecutionContext(context);
-                stepResult = rs.execute();
+                try{
+                    stepResult = rs.execute();
+                }catch(Exception e){
+                    if(stepExceptionHandlerClass != null){
+                        StepExceptionHandler handler = stepExceptionHandlerClass.newInstance();
+                        handler.setStepExecutionContext(context);
+                        handler.handleException(e);
+                        context.breakStepChainExecution();
+                        break;
+                    }else{
+                        throw e;
+                    }
+                }
                 context.getStepInput().setInput(stepResult);
                 moveToStep = breakOrMoveStepExecutionIfApplicable(currentNode, stepClass, context, chain,
                         jumpTo, repeatToStep);
             } else if (step instanceof ResponseLessStep) {
                 ResponseLessStep rls = (ResponseLessStep) step;
                 rls.setStepExecutionContext(context);
-                rls.execute();
+                try{
+                    rls.execute();
+                }catch(Exception e){
+                    if(stepExceptionHandlerClass != null){
+                        StepExceptionHandler handler = stepExceptionHandlerClass.newInstance();
+                        handler.setStepExecutionContext(context);
+                        handler.handleException(e);
+                        context.breakStepChainExecution();
+                        break;
+                    }else{
+                        throw e;
+                    }
+                }
                 stepResult = null;
                 moveToStep = breakOrMoveStepExecutionIfApplicable(currentNode, stepClass, context, chain,
                         jumpTo, repeatToStep);
@@ -70,7 +97,11 @@ public class BasicStepExecutor implements StepExecutor {
             }
         }
 
-        result = new ExecutionResult(stepResult, context.getAttributes());
+        if(expectedOutCome != null){
+            result = new ExecutionResult(context.getInput(expectedOutCome), context.getAttributes());
+        }else{
+            result = new ExecutionResult(stepResult, context.getAttributes());
+        }
 
         return result;
     }

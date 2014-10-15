@@ -16,14 +16,16 @@ public class MapRequest {
     private boolean applyGenericSteps = true;
     private String onSuccess;
     private String onFailure;
+    private String stepExceptionHandler;
     private List<String> preSteps = new ArrayList<String>();
     private List<String> postSteps = new ArrayList<String>();
     private List<Jumper> jumpers = new ArrayList<Jumper>();
     private List<Breaker> breakers = new ArrayList<Breaker>();
     private List<Repeater> repeaters = new ArrayList<Repeater>();
-    private List<String> pluginRequests = new ArrayList<String>();
     private List<Parameter> parameters = new ArrayList<Parameter>();
     private List<String> genericParameters = new ArrayList<String>();
+    private List<Plugins> plugins = new ArrayList<Plugins>();
+    private Contract contract;
 
     public void addJumper(Jumper jumper){
         this.jumpers.add(jumper);
@@ -63,6 +65,14 @@ public class MapRequest {
 
     public List<String> getPostSteps(){
         return this.postSteps;
+    }
+
+    public void addPlugin(Plugins plugin){
+        this.plugins.add(plugin);
+    }
+
+    public List<Plugins> getPlugins(){
+        return plugins;
     }
 
     public String getRequest() {
@@ -105,14 +115,6 @@ public class MapRequest {
         this.onFailure = onFailure;
     }
 
-    public void addPluginRequest(String request){
-        this.pluginRequests.add(request);
-    }
-
-    public List<String> getPluginRequests(){
-        return this.pluginRequests;
-    }
-
     public void addParameter(Parameter parameter){
         this.parameters.add(parameter);
     }
@@ -127,5 +129,21 @@ public class MapRequest {
 
     public List<String> getGenericParameters(){
         return this.genericParameters;
+    }
+
+    public String getStepExceptionHandler() {
+        return stepExceptionHandler;
+    }
+
+    public void setStepExceptionHandler(String stepExceptionHandler) {
+        this.stepExceptionHandler = stepExceptionHandler.isEmpty() ? null : stepExceptionHandler;
+    }
+
+    public Contract getContract() {
+        return contract;
+    }
+
+    public void setContract(Contract contract) {
+        this.contract = contract;
     }
 }

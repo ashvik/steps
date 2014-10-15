@@ -1,6 +1,7 @@
 package com.step.core.repository;
 
 import com.step.core.Configuration;
+import com.step.core.PluginRequest;
 import com.step.core.chain.StepChain;
 import com.step.core.chain.impl.BasicStepChain;
 import com.step.core.collector.MappedRequestDetailsHolder;
@@ -57,12 +58,24 @@ public class BasicStepRepository implements StepRepository{
         addCommonStepsInChainIfApplicable(chain, canApplyGenSteps, true, request, requestDetailsHolder.getPreSteps());
 
         chain.addStep(holder, request);
-        List<String> plugins = rootHolder.getMappedRequestDetailsHolder().getPluginsForRequest(req);
         RequestParameterContainer requestParameterContainer = rootHolder.getMappedRequestDetailsHolder().getRequestParameterContainer();
         List<String> genericPrams = rootHolder.getMappedRequestDetailsHolder().getGenericParameters();
+        String expectedOutCome = rootHolder.getMappedRequestDetailsHolder().getExpectedOutCome();
+        List<String> inputTypes = rootHolder.getMappedRequestDetailsHolder().getInputTypes();
+        String stepExceptionHandler = rootHolder.getMappedRequestDetailsHolder().getStepExceptionHandler();
+        List<PluginRequest> pluginRequests = rootHolder.getMappedRequestDetailsHolder().getPluginsForRequest(req);
 
-        if(plugins != null){
-            chain.setPluginRequests(plugins);
+        if(inputTypes != null && !inputTypes.isEmpty()){
+            chain.setInputTypes(inputTypes);
+        }
+        if(stepExceptionHandler != null){
+            chain.setStepExceptionHandler(stepExceptionHandler);
+        }
+        if(expectedOutCome != null){
+            chain.setExpectedOutCome(expectedOutCome);
+        }
+        if(pluginRequests != null){
+            chain.setPluginRequests(pluginRequests);
         }
         if(requestParameterContainer != null){
             populateGenericRequestParams(requestParameterContainer, genericPrams);

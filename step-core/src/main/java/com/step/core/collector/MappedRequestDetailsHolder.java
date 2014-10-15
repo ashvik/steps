@@ -1,5 +1,6 @@
 package com.step.core.collector;
 
+import com.step.core.PluginRequest;
 import com.step.core.parameter.RequestParameterContainer;
 
 import java.util.ArrayList;
@@ -14,12 +15,15 @@ public class MappedRequestDetailsHolder {
     private String mappedRequest;
     private String onSuccess;
     private String onFailure;
+    private String expectedOutCome;
+    private String stepExceptionHandler;
     private boolean canApplyGenericSteps = true;
     private List<String> preSteps = new ArrayList<String>();
     private List<String> postSteps = new ArrayList<String>();
-    private Map<String, List<String>> pluginRequests = new HashMap<String, List<String>>();
     private RequestParameterContainer requestParameterContainer;
     private List<String> genericParameters = new ArrayList<String>();
+    private List<String> inputTypes = new ArrayList<String>();
+    private Map<String, List<PluginRequest>> pluginRequest = new HashMap<String, List<PluginRequest>>();
 
     public List<String> getPostSteps() {
         return postSteps;
@@ -69,12 +73,12 @@ public class MappedRequestDetailsHolder {
         this.onFailure = onFailure;
     }
 
-    public List<String> getPluginsForRequest(String request) {
-        return pluginRequests.get(request);
+    public List<PluginRequest> getPluginsForRequest(String request) {
+        return pluginRequest.get(request);
     }
 
-    public void addPluginRequests(String mappedRequest, List<String> pluginRequests) {
-        this.pluginRequests.put(mappedRequest, pluginRequests);
+    public void addPluginRequests(String mappedRequest, List<PluginRequest> pluginRequests) {
+        this.pluginRequest.put(mappedRequest, pluginRequests);
     }
 
     public RequestParameterContainer getRequestParameterContainer() {
@@ -93,14 +97,41 @@ public class MappedRequestDetailsHolder {
         return this.genericParameters;
     }
 
+    public String getExpectedOutCome() {
+        return expectedOutCome;
+    }
+
+    public void setExpectedOutCome(String expectedOutCome) {
+        this.expectedOutCome = expectedOutCome;
+    }
+
+    public String getStepExceptionHandler() {
+        return stepExceptionHandler;
+    }
+
+    public void setStepExceptionHandler(String stepExceptionHandler) {
+        this.stepExceptionHandler = stepExceptionHandler;
+    }
+
+    public List<String> getInputTypes() {
+        return inputTypes;
+    }
+
+    public void setInputTypes(List<String> inputTypes) {
+        this.inputTypes = inputTypes;
+    }
+
     public void merge(MappedRequestDetailsHolder other){
         this.mappedRequest = other.mappedRequest == null ? this.mappedRequest : other.mappedRequest ;
         this.canApplyGenericSteps = !this.canApplyGenericSteps ? this.canApplyGenericSteps : other.canApplyGenericSteps;
         this.preSteps = other.preSteps.isEmpty() ? this.preSteps : other.preSteps;
         this.postSteps = other.postSteps.isEmpty() ? this.postSteps : other.postSteps;
         this.genericParameters = other.genericParameters.isEmpty() ? this.genericParameters : other.genericParameters;
-        this.pluginRequests.putAll(other.pluginRequests);
-        this.requestParameterContainer = other.requestParameterContainer;
+        this.inputTypes = other.inputTypes.isEmpty() ? this.inputTypes : other.inputTypes;
+        this.pluginRequest.putAll(other.pluginRequest);
+        this.requestParameterContainer = other.requestParameterContainer == null ? this.requestParameterContainer : other.requestParameterContainer;
+        this.expectedOutCome = other.expectedOutCome == null ? this.expectedOutCome : other.expectedOutCome;
+        this.stepExceptionHandler = other.stepExceptionHandler == null ? this.stepExceptionHandler : other.stepExceptionHandler;
     }
 
     public MappedRequestDetailsHolder cloneWithDifferentMappedRequest(String mappedRequest){
@@ -110,8 +141,11 @@ public class MappedRequestDetailsHolder {
         cloned.preSteps = this.preSteps;
         cloned.postSteps = this.postSteps;
         cloned.genericParameters = this.genericParameters;
-        cloned.pluginRequests = this.pluginRequests;
+        cloned.inputTypes = this.inputTypes;
+        cloned.pluginRequest = this.pluginRequest;
         cloned.requestParameterContainer = this.requestParameterContainer;
+        cloned.expectedOutCome = this.expectedOutCome;
+        cloned.stepExceptionHandler = this.stepExceptionHandler;
 
         return cloned;
     }

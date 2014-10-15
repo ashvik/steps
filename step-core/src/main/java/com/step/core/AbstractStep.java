@@ -6,6 +6,7 @@ import com.step.core.parameter.RequestParameterContainer;
 import com.step.core.parameter.RequestParameterValues;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by ashish on 13-07-2014.
@@ -17,6 +18,14 @@ public abstract class AbstractStep extends AbstractStepExecutionContextAware{
 
     protected <I> I getInput(Class<I> clazz) {
         return getStepExecutionContext().getInput(clazz);
+    }
+
+    protected <T> List<T> getListTypeInput(Class<T> type){
+        return getStepExecutionContext().getStepInput().getListTypeInput(type);
+    }
+
+    protected <T> Set<T> getSetTypeInput(Class<T> type){
+        return getStepExecutionContext().getStepInput().getSetTypeInput(type);
     }
 
     protected int getParameterAsInt(String name){

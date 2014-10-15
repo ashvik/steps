@@ -1,6 +1,7 @@
 package com.step.core.collector.impl;
 
 import com.step.core.Configuration;
+import com.step.core.PluginRequest;
 import com.step.core.chain.breaker.BreakDetails;
 import com.step.core.chain.jump.JumpDetails;
 import com.step.core.chain.repeater.RepeatDetails;
@@ -77,6 +78,7 @@ public class XmlStepCollector implements StepCollector {
                 MappedRequestDetailsHolder requestDetailsHolder = new MappedRequestDetailsHolder();
                 holder.setMappedRequestDetailsHolder(requestDetailsHolder);
                 List<Parameter> parameters = mr.getParameters();
+                Contract contract = mr.getContract();
 
                 if(!parameters.isEmpty()){
                     RequestParameterContainer requestParameterContainer = new BasicRequestParameterContainer();
@@ -87,6 +89,7 @@ public class XmlStepCollector implements StepCollector {
                     requestDetailsHolder.setRequestParameterContainer(requestParameterContainer);
                 }
 
+                requestDetailsHolder.setStepExceptionHandler(mr.getStepExceptionHandler());
                 requestDetailsHolder.setMappedRequest(mr.getRequest());
                 requestDetailsHolder.setCanApplyGenericSteps(mr.isApplyGenericSteps());
                 requestDetailsHolder.setPreSteps(mr.getPreSteps());
@@ -94,7 +97,22 @@ public class XmlStepCollector implements StepCollector {
                 requestDetailsHolder.setOnSuccess(mr.getOnSuccess());
                 requestDetailsHolder.setOnFailure(mr.getOnFailure());
                 requestDetailsHolder.addGenericParameter(mr.getGenericParameters());
-                requestDetailsHolder.addPluginRequests(mr.getRequest(), mr.getPluginRequests());
+
+                if(contract != null){
+                    requestDetailsHolder.setExpectedOutCome(contract.getExpectedOutCome());
+                    requestDetailsHolder.setInputTypes(contract.getInputTypes());
+                }
+
+                if(!mr.getPlugins().isEmpty()){
+                    List<PluginRequest> pluginRequests = new ArrayList<PluginRequest>();
+                    for(Plugins plugins : mr.getPlugins()){
+                        PluginRequest pluginRequest = new PluginRequest(plugins.getPlugin(), plugins.isApplyAutomatically());
+                        pluginRequests.add(pluginRequest);
+                    }
+
+                    requestDetailsHolder.addPluginRequests(mr.getRequest(), pluginRequests);
+                }
+
                 definitions.add(holder);
 
                 allJumpers.addAll(mr.getJumpers());

@@ -1,11 +1,13 @@
 package com.step.core.chain.impl;
 
+import com.step.core.PluginRequest;
 import com.step.core.chain.StepChain;
 import com.step.core.chain.breaker.BreakDetails;
 import com.step.core.chain.jump.JumpDetails;
 import com.step.core.chain.repeater.RepeatDetails;
 import com.step.core.collector.MappedRequestDetailsHolder;
 import com.step.core.collector.StepDefinitionHolder;
+import com.step.core.exceptions.handler.StepExceptionHandler;
 import com.step.core.parameter.RequestParameterContainer;
 import com.step.core.utils.AnnotatedField;
 
@@ -32,8 +34,11 @@ public class BasicStepChain implements StepChain {
     private Map<Class<?>, List<AnnotatedField>> dependenciesMap = new HashMap<Class<?>, List<AnnotatedField>>();
     private StepNode rootNode;
     private Set<String> visitedNodes = new HashSet<String>();
-    private List<String> pluginRequests = new ArrayList<String>();
+    private List<PluginRequest> pluginRequestsNew = new ArrayList<PluginRequest>();
     private RequestParameterContainer requestParameterContainer;
+    private String classForExpectedOutCome;
+    private String stepExceptionHandler;
+    private List<String> inputTypes;
 
     @Override
     public List<Class<?>> getPreSteps() {
@@ -185,16 +190,78 @@ public class BasicStepChain implements StepChain {
         return stepNodeMap.get(name);
     }
 
-    public void setPluginRequests(List<String> pluginRequests){
-        this.pluginRequests = pluginRequests;
+    @Override
+    public void setPluginRequests(List<PluginRequest> pluginRequests){
+        this.pluginRequestsNew = pluginRequests;
     }
 
-    public List<String> getPluginRequests(){
-        return this.pluginRequests;
+    @Override
+    public List<PluginRequest> getPluginRequests(){
+        return this.pluginRequestsNew;
     }
 
+    @Override
     public RequestParameterContainer getRequestParameterContainer() {
         return requestParameterContainer;
+    }
+
+    @Override
+    public Class<?> getExpectedOutComeClass() {
+        Class cls = null;
+
+        if(classForExpectedOutCome != null){
+            try {
+                cls = Class.forName(classForExpectedOutCome);
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return cls;
+    }
+
+    @Override
+    public void setExpectedOutCome(String expectedOutCome) {
+        this.classForExpectedOutCome = expectedOutCome;
+    }
+
+    @Override
+    public Class<StepExceptionHandler> getStepExceptionHandler() {
+        Class cls = null;
+
+        if(stepExceptionHandler != null){
+            try {
+                cls = Class.forName(stepExceptionHandler);
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return cls;
+    }
+
+    @Override
+    public void setStepExceptionHandler(String stepExceptionHandler) {
+        this.stepExceptionHandler = stepExceptionHandler;
+    }
+
+    @Override
+    public void setInputTypes(List<String> inputTypes) {
+        this.inputTypes = inputTypes;
+    }
+
+    @Override
+    public List<Class> getInputType() {
+        List<Class> classes = new ArrayList<Class>();
+
+        for(String inputType : inputTypes){
+            try {
+                classes.add(Class.forName(inputType));
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+        return classes;
     }
 
     public void setRequestParameterContainer(RequestParameterContainer requestParameterContainer) {

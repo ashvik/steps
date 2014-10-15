@@ -132,6 +132,14 @@ public class StepConfigurationParser {
         NodeList genParams = ele.getElementsByTagName("configuration");
         populateGenericParams(mr, genParams);
 
+        //populating contract
+        NodeList contract = ele.getElementsByTagName("contract");
+        populateContract(mr, contract);
+
+        //populating contract
+        NodeList exceptionHandler = ele.getElementsByTagName("exceptionHandler");
+        populateExceptionHandler(mr, exceptionHandler);
+
         return mr;
     }
 
@@ -202,7 +210,7 @@ public class StepConfigurationParser {
                 NodeList values = e.getElementsByTagName("value");
 
                 for(int j=0 ; j<values.getLength() ; j++){
-                    Node val = nodes.item(i);
+                    Node val = values.item(j);
                     parameter.addValue(val.getTextContent());
                 }
             }
@@ -218,7 +226,7 @@ public class StepConfigurationParser {
                 NodeList values = e.getElementsByTagName("value");
 
                 for(int j=0 ; j<values.getLength() ; j++){
-                    Node val = nodes.item(i);
+                    Node val = values.item(j);
                     parameter.addValue(val.getTextContent());
                 }
             }
@@ -240,7 +248,12 @@ public class StepConfigurationParser {
         if(nodes != null && nodes.getLength()>0){
             for(int i=0 ; i<nodes.getLength() ; i++){
                 Element e = (Element)nodes.item(i);
-                mr.addPluginRequest(e.getAttribute("name"));
+                Plugins p = new Plugins(e.getAttribute("name"));
+                String runAuto = e.getAttribute("runAutomatically");
+                if(runAuto != null && !runAuto.isEmpty()){
+                    p.setApplyAutomatically(Boolean.valueOf(runAuto));
+                }
+                mr.addPlugin(p);
             }
         }
     }
@@ -250,6 +263,54 @@ public class StepConfigurationParser {
             for(int i=0 ; i<nodes.getLength() ; i++){
                 Element e = (Element)nodes.item(i);
                 mr.addGenericParameter(e.getAttribute("ref"));
+            }
+        }
+    }
+
+    private void populateContract(MapRequest mr, NodeList nodes) {
+        if(nodes != null && nodes.getLength()>0){
+            for(int i=0 ; i<nodes.getLength() ; i++){
+                Element e = (Element)nodes.item(i);
+                Contract contract = new Contract();
+                mr.setContract(contract);
+                NodeList reqinputs = e.getElementsByTagName("requiredInputs");
+                populateRequiredInputs(contract, reqinputs);
+
+                NodeList expectedOutput = e.getElementsByTagName("expectedOutcome");
+                if(expectedOutput != null && expectedOutput.getLength()>0){
+                    for(int j=0 ; j<expectedOutput.getLength() ; j++){
+                        Element element = (Element)expectedOutput.item(j);
+                        String out = element.getTextContent().trim();
+                        contract.setExpectedOutCome(out);
+                    }
+                }
+            }
+        }
+    }
+
+    private void populateRequiredInputs(Contract contract, NodeList nodes){
+        if(nodes != null && nodes.getLength()>0){
+            for(int i=0 ; i<nodes.getLength() ; i++){
+                Element e = (Element)nodes.item(i);
+                NodeList reqinputs = e.getElementsByTagName("inputType");
+
+                if(reqinputs != null && reqinputs.getLength()>0){
+                    for(int j=0 ; j<reqinputs.getLength() ; j++){
+                        Element element = (Element)reqinputs.item(j);
+                        String in = element.getTextContent().trim();
+                        contract.addInputType(in);
+                    }
+                }
+            }
+        }
+    }
+
+    private void populateExceptionHandler(MapRequest mr, NodeList nodes){
+        if(nodes != null && nodes.getLength()>0){
+            for(int i=0 ; i<nodes.getLength() ; i++){
+                Element e = (Element)nodes.item(i);
+                String val = e.getTextContent().trim();
+                mr.setStepExceptionHandler(val);
             }
         }
     }
