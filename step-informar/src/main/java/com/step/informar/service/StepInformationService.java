@@ -1,5 +1,6 @@
 package com.step.informar.service;
 
+import com.step.core.Configuration;
 import com.step.core.repository.StepRepository;
 import com.step.informar.flat.StepChainInfo;
 import com.step.informar.flat.StepInfo;
@@ -17,4 +18,5 @@ public interface StepInformationService {
     StepChainInfo getStepChainInfoForRequest(String request);
     List<String> getStepChainInfoDiagramForRequest(String request);
     StepInfo getStepDetails(String name);
+    void generateDocumentation(String versionString, Configuration configuration);
 }

@@ -1,0 +1,16 @@
+<html>
+<head>
+<title></title>
+<style type="text/css">
+body {
+	font-family:verdana,arial,sans-serif;
+	font-size:10pt;
+	margin:10px;
+	background-color:#a08029;
+	}
+</style>
+</head>
+<body>
+<h3><font color="white">$SOFTWARE_VERSION$</font></h3>
+</body>
+</html>

@@ -3,7 +3,7 @@ package com.step.core;
 /**
  * Created by amishra on 10/14/14.
  */
-public class PluginRequest {
+public class PluginRequest{
     private String request;
     private boolean runAutomatically;
 

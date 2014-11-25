@@ -35,12 +35,12 @@ public interface StepChain {
     RepeatDetails getRepeatDetailsForStep(Class<?> step);
     void setRequestParameterContainer(RequestParameterContainer requestParameterContainer);
     RequestParameterContainer getRequestParameterContainer();
-    Class<?> getExpectedOutComeClass();
+    String getExpectedOutComeClass();
     void setExpectedOutCome(String expectedOutCome);
     Class<StepExceptionHandler> getStepExceptionHandler();
     void setStepExceptionHandler(String stepExceptionHandler);
     void setInputTypes(List<String> inputTypes);
-    List<Class> getInputType();
+    List<String> getInputType();
     void setPluginRequests(List<PluginRequest> pluginRequests);
     List<PluginRequest> getPluginRequests();
 }

@@ -3,7 +3,7 @@ package com.step.core.chain.breaker;
 /**
  * Created by amishra on 6/14/14.
  */
-public class BreakDetails {
+public class BreakDetails{
     private Class<?> conditionClass;
 
     public Class<?> getConditionClass() {

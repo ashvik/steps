@@ -1,18 +1,17 @@
 package com.step.informar.service.impl;
 
+import com.step.core.Configuration;
 import com.step.core.chain.StepChain;
 import com.step.core.collector.StepDefinitionHolder;
 import com.step.core.repository.StepRepository;
 import com.step.informar.flat.*;
 import com.step.informar.service.StepInformationService;
+import org.xml.sax.*;
+import org.xml.sax.ext.LexicalHandler;
+import org.xml.sax.helpers.XMLReaderFactory;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
+import java.io.*;
+import java.util.*;
 
 /**
  * Created by amishra on 6/21/14.
@@ -55,76 +54,7 @@ public class BasicStepInformationService implements StepInformationService {
 
     @Override
     public List<String> getStepChainInfoDiagramForRequest(String request) {
-        StepChainInfo stepChainInfo = getStepChainInfoForRequest(request);
-        List<StepInfo> steps = stepChainInfo.getDefaultExecutionChain();
-        List<String> print = new ArrayList<String>();
-        StringBuilder builder = new StringBuilder();
-        int stepNo = 1;
-
-        for(int i=0 ; i<steps.size() ; i++){
-            StepInfo stepInfo = steps.get(i);
-            String name = stepInfo.getStepName()+(stepInfo.getInterceptorType() != null ? " ("+stepInfo.getInterceptorType()+")" : "");
-            if(i != steps.size()-1){
-                builder.append("=>("+stepNo+") "+name+"\n");
-                stepNo++;
-            }else{
-                builder.append("=>("+stepNo+") "+name);
-            }
-        }
-        print.add("EXECUTION CHAIN:- ");
-        print.add(builder.toString()+"\n");
-
-        if(!stepChainInfo.getJumpers().isEmpty()){
-            print.add("JUMPERS:- ");
-            print.add(" ********************************************************************************************************************************************************************************************************************************************************");
-            print.add(" *                          FROM STEP                           |                           ON SUCCESS                           |                          ON FAILURE                         |                          CONDITION                     *");
-            print.add(" ********************************************************************************************************************************************************************************************************************************************************");
-
-            List<JumpInfo> jumpInfos = stepChainInfo.getJumpers();
-            if(!jumpInfos.isEmpty()){
-                for(JumpInfo jumpInfo : jumpInfos){
-                    String info = makeJumpInfoValueString(jumpInfo);
-                    print.add(info);
-                    print.add(" --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
-                }
-            }
-
-            print.add("\n");
-        }
-
-        if(!stepChainInfo.getBreakers().isEmpty()){
-            print.add("BREAKERS:- ");
-            print.add(" ********************************************************************************************************************************");
-            print.add(" *                          BREAK STEP                          |                         CONDITION                             *");
-            print.add(" ********************************************************************************************************************************");
-            List<BreakInfo> breakInfos = stepChainInfo.getBreakers();
-            if(!breakInfos.isEmpty()){
-                for(BreakInfo breakInfo : breakInfos){
-                    String info = makeBreakInfoValueString(breakInfo);
-                    print.add(info);
-                    print.add(" --------------------------------------------------------------------------------------------------------------------------------");
-                }
-            }
-
-            print.add("\n");
-        }
-
-        if(!stepChainInfo.getRepeaters().isEmpty()){
-            print.add("REPEATERS:- ");
-            print.add(" ***********************************************************************************************************************************************************************************************");
-            print.add(" *                          FROM STEP                          |                           UP TO STEP                            |                         CONDITION                           *");
-            print.add(" ***********************************************************************************************************************************************************************************************");
-            List<RepeatInfo> repeatInfos = stepChainInfo.getRepeaters();
-            if(!repeatInfos.isEmpty()){
-                for(RepeatInfo repeatInfo : repeatInfos){
-                    String info = makeRepeatInfoValueString(repeatInfo);
-                    print.add(info);
-                    print.add(" -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
-                }
-            }
-        }
-
-        return print;
+        return Collections.EMPTY_LIST;
     }
 
     @Override
@@ -136,81 +66,221 @@ public class BasicStepInformationService implements StepInformationService {
         return info;
     }
 
-    private String makeJumpInfoValueString(JumpInfo info){
-        StringBuffer buffer = new StringBuffer("| -F-                                                           " +
-                "| -S-                                                            " +
-                "| -X-                                                         " +
-                "| -C-");
-        int fromIndex = buffer.indexOf("| -F-");
-        int successIndex = buffer.indexOf("| -S-");
-        int failureIndex = buffer.indexOf("| -X-");
-        int conditionIndex = buffer.indexOf("| -C-");
+    @Override
+    public void generateDocumentation(String versionString,Configuration configuration) {
+        XmlCommentParser xmlCommentParser = new XmlCommentParser();
+        Map<String, String> serviceToCommentsMap = xmlCommentParser.parseComments(configuration.getStepConfigurationFiles());
+        String defaultService = null;
+        String menu = prepareMenu();
+        writeFile(menu, "menu");
 
-        buffer = buffer.replace(fromIndex, fromIndex+5, " | "+info.getFromStep());
+        Map<String,String> contents = prepareContent(serviceToCommentsMap);
+        for(String service : contents.keySet()){
+            if(defaultService == null)defaultService = service;
+            writeFile(contents.get(service), service);
+        }
 
-        buffer = buffer.replace(successIndex, successIndex+5, "| "+info.getOnSuccess());
-        successIndex = buffer.indexOf("| -S-");
-        if(successIndex > -1)
-            buffer = buffer.replace(successIndex, successIndex+5, "");
+        String header = prepareHeader(versionString);
+        writeFile(header, "header");
 
-        buffer = buffer.replace(failureIndex, failureIndex+5, "| "+info.getOnFailure());
-        failureIndex = buffer.indexOf("| -X-");
-        if(failureIndex > -1)
-            buffer = buffer.replace(failureIndex, failureIndex+5, "");
-
-        String cond = info.getCondition().getCondition().trim();
-        buffer = buffer.replace(conditionIndex, conditionIndex + 5,"| "+cond);
-        conditionIndex = buffer.indexOf("| -C-");
-        if(conditionIndex > -1)
-            buffer = buffer.replace(conditionIndex, conditionIndex+5, "");
-        String finalString = buffer.toString();
-
-        return finalString;
-
+        String framedContents = prepareFramedContent(defaultService);
+        writeFile(framedContents, "index");
     }
 
-    private String makeBreakInfoValueString(BreakInfo info){
-        StringBuffer buffer = new StringBuffer("| -B-                                                           " +
-                "| -C- ");
-        int fromIndex = buffer.indexOf("| -B-");
-        int conditionIndex = buffer.indexOf("| -C-");
-
-        buffer = buffer.replace(fromIndex, fromIndex+5, " | "+info.getBreakStep());
-
-        buffer = buffer.replace(conditionIndex, conditionIndex+5, "| "+info.getCondition().getCondition());
-        conditionIndex = buffer.indexOf("| -C-");
-        if(conditionIndex > -1)
-            buffer = buffer.replace(conditionIndex, conditionIndex+5, "");
-
-        String finalString = buffer.toString();
-
-        return finalString;
-
+    private void writeFile(String content, String name){
+        Writer writer = null;
+        try {
+            writer = new BufferedWriter(new OutputStreamWriter(
+                    new FileOutputStream("doc/"+name+".html"), "utf-8"));
+            writer.write(content);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        } finally {
+            try {writer.close();} catch (Exception ex) {ex.printStackTrace();}
+        }
     }
 
-    private String makeRepeatInfoValueString(RepeatInfo info){
-        StringBuffer buffer = new StringBuffer("| -F-                                                          " +
-                "| -U-                                                             " +
-                "| -C-                         ");
-        int fromIndex = buffer.indexOf("| -F-");
-        int upToIndex = buffer.indexOf("| -U-");
-        int conditionIndex = buffer.indexOf("| -C-");
+    private String prepareMenu(){
+        Set<String> services = fetchAllConfiguredRequests();
+        String menuTemplate = getTemplate("templates/menu.template");
+        StringBuilder sb = new StringBuilder();
 
-        buffer = buffer.replace(fromIndex, fromIndex+5, " | "+info.getStartRepeatFrom());
+        for(String service : services){
+            sb.append("<a href=\""+service+".html\" target=\"content\">"+service+"</a></td><br />\n");
+        }
 
-        buffer = buffer.replace(upToIndex, upToIndex+5, "| "+info.getRepeatUpTo());
-        upToIndex = buffer.indexOf("| -U-");
-        if(upToIndex > -1)
-            buffer = buffer.replace(upToIndex, upToIndex+5, "");
+        menuTemplate = menuTemplate.replaceAll("\\$SERVICES\\$", sb.toString());
 
-        buffer = buffer.replace(conditionIndex, conditionIndex + 5, "| "+info.getCondition().getCondition());
-        conditionIndex = buffer.indexOf("| -C-");
-        if(conditionIndex > -1)
-            buffer = buffer.replace(conditionIndex, conditionIndex+5, "");
+        return menuTemplate;
+    }
 
-        String finalString = buffer.toString();
+    private Map<String, String> prepareContent(Map<String, String> serviceToCommentsMap){
+        Map<String,String> serviceContent = new HashMap();
+        Set<String> services = fetchAllConfiguredRequests();
+        String contentTemplate = getTemplate("templates/content.template");
 
-        return finalString;
+        for(String service : services){
+            int stepNo = 1;
+            int inputs = 1;
+            int plugins = 1;
+            StepChainInfo stepChainInfo = getStepChainInfoForRequest(service);
+            List<StepInfo> steps = stepChainInfo.getDefaultExecutionChain();
+            String content = contentTemplate.replaceAll("\\$REQUEST\\$", service);
+            String description = serviceToCommentsMap.get(service);
 
+            StringBuilder builder = new StringBuilder();
+            for(int i=0 ; i<steps.size() ; i++){
+                StepInfo stepInfo = steps.get(i);
+                String name = stepInfo.getStepName()+(stepInfo.getInterceptorType() != null ? " ("+stepInfo.getInterceptorType()+")" : "");
+                builder.append("("+stepNo+")&nbsp;"+name+"<br>\n");
+                stepNo++;
+            }
+            content = content.replaceAll("\\$STEPS\\$", builder.toString());
+
+            content = content.replaceAll("\\$DESCRIPTION\\$",description == null ? "NA" : description);
+
+            builder = new StringBuilder();
+            for(String input : stepChainInfo.getInputs()){
+                builder.append("("+inputs+")&nbsp;"+input+"<br>\n");
+                inputs++;
+            }
+            content = content.replaceAll("\\$INPUTS\\$", builder.toString());
+
+            content = content.replaceAll("\\$OUTPUT\\$", stepChainInfo.getExpectedOutCome()==null?"NA" : stepChainInfo.getExpectedOutCome());
+
+            builder = new StringBuilder();
+            if(stepChainInfo.getPlugIns().isEmpty()){
+                builder.append("NA");
+            }else{
+                for(String plugin : stepChainInfo.getPlugIns()){
+                    builder.append("<a href=\""+plugin+".html\">"+"("+plugins+")&nbsp;"+plugin+"</a><br>\n");
+                    plugins++;
+                }
+            }
+            content = content.replaceAll("\\$PLUGINS\\$", builder.toString());
+
+            serviceContent.put(service, content);
+        }
+
+        return serviceContent;
+    }
+
+    private String prepareHeader(String projectVersion){
+        String headerTemplate = getTemplate("templates/header.template");
+        headerTemplate = headerTemplate.replaceAll("\\$SOFTWARE_VERSION\\$", projectVersion);
+        return headerTemplate;
+    }
+
+    private String prepareFramedContent(String defaultContent){
+        String indexTemplate = getTemplate("templates/index.template");
+        indexTemplate = indexTemplate.replaceAll("\\$CONTENT\\$", defaultContent);
+        return indexTemplate;
+    }
+
+    private String getTemplate(String path){
+        StringBuilder stringBuilder = new StringBuilder();
+        try {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(BasicStepInformationService.class.getClassLoader().getResourceAsStream(path)));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                stringBuilder.append(line);
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return stringBuilder.toString();
+    }
+
+    private class XmlCommentParser implements LexicalHandler {
+        private Map<String, String> comments = new HashMap<String, String>();
+        public void startDTD(String name, String publicId, String systemId)
+                throws SAXException {}
+        public void endDTD() throws SAXException {}
+        public void startEntity(String name) throws SAXException {}
+        public void endEntity(String name) throws SAXException {}
+        public void startCDATA() throws SAXException {}
+        public void endCDATA() throws SAXException {}
+
+        public void comment (char[] text, int start, int length)
+                throws SAXException {
+
+            String comment = new String(text, start, length);
+            int starting = comment.indexOf('[')+1;
+            int ending = comment.indexOf(']');
+
+            if(starting > -1 && ending > -1){
+                String service = comment.substring(starting, ending);
+                comment = comment.substring(ending+1, comment.length());
+
+                this.comments.put(service, comment);
+            }
+        }
+
+        public Map<String, String> parseComments(String[] args) {
+
+            // set up the parser
+            XMLReader parser;
+            try {
+                parser = XMLReaderFactory.createXMLReader();
+            }
+            catch (SAXException e) {
+                try {
+                    parser = XMLReaderFactory.createXMLReader("org.apache.xerces.parsers.SAXParser");
+                }
+                catch (SAXException e2) {
+                    System.err.println("Error: could not locate a parser.");
+                    return null;
+                }
+            }
+
+            // turn on comment handling
+            try {
+                parser.setProperty("http://xml.org/sax/properties/lexical-handler",
+                        this);
+            }
+            catch (SAXNotRecognizedException e) {
+                System.err.println(
+                        "Installed XML parser does not provide lexical events...");
+                return null;
+            }
+            catch (SAXNotSupportedException e) {
+                System.err.println(
+                        "Cannot turn on comment processing here");
+                return null;
+            }
+
+            if (args.length == 0) {
+                System.out.println("Usage: java SAXCommentReader URL1 URL2...");
+            }
+
+            // start parsing...
+            for (int i = 0; i < args.length; i++) {
+
+                try {
+                    InputStream stream = XmlCommentParser.class.getClassLoader().getResourceAsStream(args[i]);
+                    parser.parse(new InputSource(stream));
+                }
+                catch (SAXParseException e) { // well-formedness error
+                    System.out.println(args[i] + " is not well formed.");
+                    System.out.println(e.getMessage()
+                            + " at line " + e.getLineNumber()
+                            + ", column " + e.getColumnNumber());
+                }
+                catch (SAXException e) { // some other kind of error
+                    System.out.println(e.getMessage());
+                }
+                catch (IOException e) {
+                    System.out.println("Could not check " + args[i]
+                            + " because of the IOException " + e);
+                }
+
+            }
+
+            return this.comments;
+
+        }
     }
 }

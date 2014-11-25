@@ -1,0 +1,51 @@
+<html>
+<head>
+<title>Service Details</title>
+<style type="text/css">
+body {
+	font-family:verdana,arial,sans-serif;
+	font-size:10pt;
+	margin:30px;
+	background-color:#ffcc00;
+	}
+.boldtable, .boldtable TD, .boldtable TH
+	{
+	border:�5px solid double black;
+	font-family:verdana,arial,sans-serif;
+	font-size:10pt;
+	}
+</style>
+</head>
+<body>
+<table border="1" bordercolor="black" class=boldtable>
+<tr>
+<td bgcolor="#ffcc00">&nbsp;<font color="red"><b>REQUEST</font>&nbsp;</td>
+<td bgcolor="#ffcc00"><font color="red"><b>$REQUEST$</font></td>
+</tr>
+<tr>
+<td bgcolor="#ffcc00">&nbsp;STEPS&nbsp;</td>
+<td bgcolor="#ffcc00">
+$STEPS$
+</td>
+</tr>
+<tr>
+<td bgcolor="#ffcc00">&nbsp;DESCRIPTION&nbsp;</td>
+<td bgcolor="#ffcc00">$DESCRIPTION$</td>
+</tr>
+<tr>
+<td bgcolor="#ffcc00">&nbsp;INPUTS&nbsp;</td>
+<td bgcolor="#ffcc00">
+$INPUTS$
+</td>
+</tr>
+<tr>
+<td bgcolor="#ffcc00">&nbsp;OUTPUT&nbsp;</td>
+<td bgcolor="#ffcc00">$OUTPUT$</td>
+</tr>
+<tr>
+<td bgcolor="#ffcc00">&nbsp;PLUGINS&nbsp;</td>
+<td bgcolor="#ffcc00">$PLUGINS$
+</td></tr>
+</table>
+</body>
+</html>

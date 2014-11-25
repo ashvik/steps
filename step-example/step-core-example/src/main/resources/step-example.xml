@@ -58,22 +58,24 @@
         <!--repeater forStep="jumpTestStep6" conditionClass="com.step.core.example.steps.TestRepeatBreakCondition" repeatFromStep="jumpTestStep1"/-->
     </mappedRequest>
     <mappedRequest request="paramTest" rootStep="parameterStep">
-        <parameters>
-            <parameter name="param1">
-                <value>PARAM1</value>
-            </parameter>
-            <parameter name="param2">
-                <value>1234</value>
-            </parameter>
-            <parameter name="param3">
-                <value>true</value>
-            </parameter>
-        </parameters>
+        <requestParameters>
+            <configuration ref="GLOBAL_PARAMS"/>
+            <parameters>
+                <parameter name="param1">
+                    <value>PARAM1</value>
+                </parameter>
+                <parameter name="param2">
+                    <value>1234</value>
+                </parameter>
+                <parameter name="param3">
+                    <value>true</value>
+                </parameter>
+            </parameters>
+        </requestParameters>
     </mappedRequest>
 
     <mappedRequest request="paramTest1" rootStep="parameterStep">
         <requestParameters>
-            <configuration ref="GLOBAL_PARAMS"/>
             <configuration ref="GLOBAL_PARAMS_NEW"/>
             <parameters>
                 <parameter name="p1">
@@ -83,6 +85,7 @@
                     <value>1234</value>
                 </parameter>
                 <parameter name="IParameter">
+                    <value>com.step.core.example.steps.Parameter</value>
                     <value>com.step.core.example.steps.Parameter</value>
                 </parameter>
             </parameters>

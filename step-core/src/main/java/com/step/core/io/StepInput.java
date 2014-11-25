@@ -16,6 +16,7 @@ public class StepInput {
     private List<Object> collectedInputs = new ArrayList<Object>();
     private List<Class<?>> collectedInputClass = new ArrayList<Class<?>>();
     private Map<Class<?>, Collection<?>> collectedCollections = new HashMap<Class<?>, Collection<?>>();
+    private ClassLoader classLoader;
     private Attributes attributes = new Attributes();
 
     public StepInput(String request, Object input){
@@ -58,10 +59,16 @@ public class StepInput {
         throw new IllegalStateException("No input found for type: "+inputType.getName());
     }
 
-    public <T extends Collection> void setCollectionTypeInput(Collection input){
+    public <T extends Collection> void setCollectionTypeInput(T input){
         Object obj = input.iterator().next();
         if(!collectedCollections.containsKey(obj.getClass())){
             collectedCollections.put(obj.getClass(), input);
+        }
+    }
+
+    public  void setCollectionTypeInput(Object inputCollection, Class objType){
+        if(!collectedCollections.containsKey(objType)){
+            collectedCollections.put(objType, (Collection)inputCollection);
         }
     }
 
@@ -95,5 +102,13 @@ public class StepInput {
         this.collectedInputClass.addAll(external.collectedInputClass);
         this.collectedInputs.addAll(external.collectedInputs);
         this.collectedCollections.putAll(external.collectedCollections);
+    }
+
+    public ClassLoader getClassLoader() {
+        return classLoader;
+    }
+
+    public void setClassLoader(ClassLoader classLoader) {
+        this.classLoader = classLoader;
     }
 }

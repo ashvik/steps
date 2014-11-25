@@ -16,18 +16,9 @@
                                                        step-request-params.xml"/>
     </bean>
 
-    <bean id="stepRepository" class="com.step.core.repository.BasicStepRepository" init-method="buildRepository">
-        <property name="configuration" ref="stepConfigurations"/>
-    </bean>
-
-    <bean id="stepInformationService" class="com.step.informar.service.impl.BasicStepInformationService">
-        <property name="stepRepository" ref="stepRepository"/>
-    </bean>
-
-    <bean id="stepContainer" class="com.step.core.container.impl.DefaultStepExecutionContainer" init-method="init">
+    <bean id="initializeStepFramework" class="com.step.core.InitializeStepFramework" init-method="initialize">
         <property name="configuration" ref="stepConfigurations"/>
         <property name="objectFactory" ref="objectFactory"/>
-        <property name="stepRepository" ref="stepRepository"/>
     </bean>
 
 </beans>

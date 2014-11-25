@@ -32,7 +32,6 @@ public interface StepExecutionContext {
     void putAttribute(String name, Object value);
     void breakStepChainExecution();
     boolean hasStepChainExecutionBroken();
-    //void setApplicablePluginRequest(List<String> applicablePluginRequest);
     void setApplicablePluginRequest(List<PluginRequest> applicablePluginRequest);
     List<PluginRequest> getPluginRequests();
     ExecutionResult applyPluginRequest(String request, Object... input) throws Exception;
@@ -41,5 +40,6 @@ public interface StepExecutionContext {
     void setStepRepository(StepRepository stepRepository);
     void setRequestParameterContainer(RequestParameterContainer requestParameterContainer);
     RequestParameterContainer getRequestParameterContainer();
-    //List<String> getPluginRequests();
+    void setClassLoader(ClassLoader classLoader);
+    ClassLoader getClassLoader();
 }

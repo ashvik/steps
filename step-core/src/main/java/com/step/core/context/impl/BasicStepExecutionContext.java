@@ -33,10 +33,10 @@ public class BasicStepExecutionContext implements StepExecutionContext {
     private boolean breakStepChain;
     private StepExecutorProvider stepExecutorProvider;
     private StepRepository stepRepository;
-    private List<String> applicablePluginRequest = new ArrayList<String>();
     private List<PluginRequest> applicablePluginRequestNew = new ArrayList<PluginRequest>();
     private StepExecutionContainer stepExecutionContainer = new LocalStepExecutionContainer();
     private RequestParameterContainer requestParameterContainer;
+    private ClassLoader classLoader;
 
     @Override
     public void put(String name, Object obj) {
@@ -109,8 +109,11 @@ public class BasicStepExecutionContext implements StepExecutionContext {
 
     @Override
     public ExecutionResult applyPluginRequest(String request, Object... input) throws Exception{
-        if(this.applicablePluginRequest.contains(request))
-            return stepExecutionContainer.submit(request, input);
+        for(PluginRequest pluginRequest : applicablePluginRequestNew){
+            if(pluginRequest.getRequest().equals(request)){
+                return stepExecutionContainer.submit(request, input);
+            }
+        }
 
         throw new IllegalStateException("Request can not apply plugin request '"+request+"', make sure it is configured.");
     }
@@ -150,6 +153,16 @@ public class BasicStepExecutionContext implements StepExecutionContext {
     }
 
     @Override
+    public void setClassLoader(ClassLoader classLoader) {
+        this.classLoader = classLoader;
+    }
+
+    @Override
+    public ClassLoader getClassLoader() {
+        return classLoader;
+    }
+
+    @Override
     public List<PluginRequest> getPluginRequests() {
         return applicablePluginRequestNew;
     }
@@ -163,6 +176,7 @@ public class BasicStepExecutionContext implements StepExecutionContext {
         @Override
         public ExecutionResult submit(StepInput input) throws Exception {
             StepExecutionContext context = new BasicStepExecutionContext();
+            context.setClassLoader(input.getClassLoader());
             if(input instanceof LocalStepInput){
                 return submitLocalStepInput((LocalStepInput)input, context);
             }else{

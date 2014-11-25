@@ -7,12 +7,13 @@
     <groupId>com.step</groupId>
     <artifactId>step-project</artifactId>
     <packaging>pom</packaging>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
     <modules>
         <module>step-core</module>
         <module>step-web</module>
         <module>step-example</module>
 		<module>step-informar</module>
+        <module>step-test</module>
     </modules>
 
     <properties>
@@ -75,6 +76,11 @@
                 <groupId>javax.servlet</groupId>
                 <artifactId>servlet-api</artifactId>
                 <version>2.5</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-logging</groupId>
+                <artifactId>commons-logging</artifactId>
+                <version>1.1.1</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

@@ -1,0 +1,23 @@
+<html>
+<head>
+<title>Service Doc</title>
+<script type="text/javascript">
+function loadFrames() {
+        if (targetPage != "" && targetPage != "undefined")
+             top.classFrame.location = top.targetPage;
+    }
+</script>
+</head>
+<frameset rows="7%,93%" frameborder="0" border="0" framespacing="0" onload="top.loadFrames()">
+  <frame name="topNav" src="header.html">
+<frameset cols="25%,75%" frameborder="0" border="0" framespacing="0" onload="top.loadFrames()">
+	<frame name="menu" src="menu.html" marginheight="0" marginwidth="0" scrolling="auto" noresize>
+	<frame name="content" src="$CONTENT$.html" marginheight="0" marginwidth="0" scrolling="auto" noresize>
+</frameset>
+
+<noframes>
+<p>This section (everything between the 'noframes' tags) will only be displayed if the users' browser doesn't support frames. You can provide a link to a non-frames version of the website here. Feel free to use HTML tags within this section.</p>
+</noframes>
+
+</frameset>
+</html>

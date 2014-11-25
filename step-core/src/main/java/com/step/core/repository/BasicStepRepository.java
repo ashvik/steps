@@ -26,7 +26,7 @@ import java.util.Set;
 /**
  * Created by amishra on 6/20/14.
  */
-public class BasicStepRepository implements StepRepository{
+public class BasicStepRepository implements StepRepository {
     private Configuration configuration;
     private StepDefinitionProvider stepDefinitionProvider;
     private GenericRequestParameterProvider genericRequestParameterProvider;

@@ -9,6 +9,7 @@ import com.step.core.executor.StepExecutor;
 import com.step.core.interceptor.ExecutionInterceptor;
 import com.step.core.interceptor.ExecutionInterceptorHolder;
 import com.step.core.io.ExecutionResult;
+import com.step.core.utils.StepExecutionUtil;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
@@ -37,16 +38,49 @@ public class StepExecutorHandler implements InvocationHandler{
         List<ExecutionInterceptor> post = new ArrayList<ExecutionInterceptor>();
         StepChain chain = (StepChain)args[0];
         StepExecutionContext context = (StepExecutionContext)args[1];
+        List<String> ins = chain.getInputType();
+        String expectedOutCome = chain.getExpectedOutComeClass();
+        Class expectedOutComeClass = null;
+        Class expectedCollectionType = null;
+        boolean isCollectionTypeOutCome = false;
+        ClassLoader classLoader = context.getClassLoader();
 
-        List<Class> inputs = chain.getInputType();
-        Class expectedOutCome = chain.getExpectedOutComeClass();
+
         if(expectedOutCome != null){
-            context.getStepInput().setInput(expectedOutCome.newInstance());
+            String[] tokens = expectedOutCome.split(" of ");
+            if(tokens.length == 2){
+                try {
+                    expectedOutComeClass = StepExecutionUtil.loadClass(tokens[0], classLoader);
+                    expectedCollectionType = StepExecutionUtil.loadClass(tokens[1], classLoader);
+                    isCollectionTypeOutCome = true;
+                } catch (ClassNotFoundException e) {
+                    //e.printStackTrace();
+                    //TODO throw StepExecutionException
+                }
+            }else{
+                try {
+                    expectedOutComeClass = StepExecutionUtil.loadClass(expectedOutCome, classLoader);
+                } catch (ClassNotFoundException e) {
+                    //e.printStackTrace();
+                    //TODO throw StepExecutionException
+                }
+            }
         }
 
-        if(inputs != null && !inputs.isEmpty()){
-            for(Class input : inputs){
-                context.getInput(input);
+        //TODO throw StepExecutionException if input not found
+        if(ins != null && !ins.isEmpty()){
+            for(String in : ins){
+                String[] tokens = in.split(" of ");
+                if(tokens.length == 2){
+                    Class cls = StepExecutionUtil.loadClass(tokens[1], classLoader);
+                    if(tokens[0].contains("List")){
+                        context.getStepInput().getListTypeInput(cls);
+                    }else{
+                        context.getStepInput().getSetTypeInput(cls);
+                    }
+                }else {
+                    context.getInput(StepExecutionUtil.loadClass(in, classLoader));
+                }
             }
         }
 
@@ -59,8 +93,16 @@ public class StepExecutorHandler implements InvocationHandler{
                         StepExceptionHandler handler = chain.getStepExceptionHandler().newInstance();
                         handler.setStepExecutionContext(context);
                         handler.handleException(e);
-                        if(chain.getExpectedOutComeClass() != null){
-                            return new ExecutionResult(context.getInput(chain.getExpectedOutComeClass()), null);
+                        if(expectedOutComeClass != null){
+                            if(!isCollectionTypeOutCome){
+                                return new ExecutionResult(context.getInput(expectedOutComeClass), null);
+                            }else{
+                                if(expectedOutComeClass == List.class){
+                                    return new ExecutionResult(context.getStepInput().getListTypeInput(expectedCollectionType), null);
+                                }else{
+                                    return new ExecutionResult(context.getStepInput().getSetTypeInput(expectedCollectionType), null);
+                                }
+                            }
                         }else{
                             return null;
                         }

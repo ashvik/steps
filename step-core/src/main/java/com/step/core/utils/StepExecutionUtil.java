@@ -34,4 +34,12 @@ public abstract class StepExecutionUtil {
             }
         }
     }
+
+    public static Class loadClass(String classToLoad, ClassLoader classLoader) throws ClassNotFoundException {
+        if(classLoader != null){
+            return classLoader.loadClass(classToLoad);
+        }
+
+        return Class.forName(classToLoad);
+    }
 }

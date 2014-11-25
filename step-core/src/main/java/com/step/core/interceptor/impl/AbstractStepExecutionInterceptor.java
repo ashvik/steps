@@ -5,6 +5,8 @@ import com.step.core.chain.StepChain;
 import com.step.core.context.StepExecutionContext;
 import com.step.core.interceptor.ExecutionInterceptor;
 import com.step.core.utils.StepExecutionUtil;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.util.List;
 
@@ -16,6 +18,8 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 public abstract class AbstractStepExecutionInterceptor implements ExecutionInterceptor {
+    private final Log logger = LogFactory.getLog(getClass());
+
     protected void executeInterceptorSteps(List<Class<?>> steps, StepChain chain, StepExecutionContext context) {
         for(Class<?> stepClass : steps){
             try{
@@ -25,7 +29,7 @@ public abstract class AbstractStepExecutionInterceptor implements ExecutionInter
                 rls.setStepExecutionContext(context);
                 rls.execute();
             }catch(Exception e){
-                e.printStackTrace();
+                logger.info("Exception Occurred during execution of step: "+stepClass.getName()+", cause: "+e.getMessage());
                 throw new IllegalStateException(e.getMessage());
             }
         }

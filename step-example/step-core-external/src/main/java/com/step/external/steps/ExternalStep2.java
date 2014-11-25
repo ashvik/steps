@@ -12,5 +12,6 @@ public class ExternalStep2 extends AbstractResponseLessStep {
     @Override
     public void execute() throws Exception {
         System.out.println("ExternalStep2.....");
+        throw new RuntimeException("Throwing RuntimeException.....");
     }
 }

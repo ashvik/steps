@@ -14,6 +14,8 @@ import com.step.core.exceptions.handler.StepExceptionHandler;
 import com.step.core.executor.StepExecutor;
 import com.step.core.io.ExecutionResult;
 import com.step.core.utils.StepExecutionUtil;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.util.List;
 
@@ -22,6 +24,8 @@ import java.util.List;
  * change this template use File | Settings | File Templates.
  */
 public class BasicStepExecutor implements StepExecutor {
+    private final Log logger = LogFactory.getLog(getClass());
+
     @Override
     public ExecutionResult execute(StepChain chain, StepExecutionContext context)
             throws Exception {
@@ -31,12 +35,17 @@ public class BasicStepExecutor implements StepExecutor {
         String repeatToStep = null;
         BasicStepChain.StepNode currentNode = chain.getRootNode();
         BasicStepChain.StepNode moveToStep = null;
-        Class expectedOutCome = chain.getExpectedOutComeClass();
-        Class<StepExceptionHandler> stepExceptionHandlerClass = chain.getStepExceptionHandler();
+        String expectedOutCome = chain.getExpectedOutComeClass();
+        ClassLoader classLoader = context.getClassLoader();
+        Class<StepExceptionHandler> stepExceptionHandlerClass = null;
+        if(chain.getStepExceptionHandler() != null){
+            stepExceptionHandlerClass = StepExecutionUtil.loadClass(chain.getStepExceptionHandler().getName(), classLoader);
+        }
+
 
         while (true) {
             Object step = null;
-            Class<?> stepClass = currentNode.getStepClass();
+            Class<?> stepClass = StepExecutionUtil.loadClass(currentNode.getStepClass().getName(), classLoader);
 
             if (context.hasStepChainExecutionBroken()) {
                 break;
@@ -51,6 +60,7 @@ public class BasicStepExecutor implements StepExecutor {
                 try{
                     stepResult = rs.execute();
                 }catch(Exception e){
+                    logger.error("Exception Occurred during execution of step: "+stepClass.getName()+", cause: "+e.getMessage());
                     if(stepExceptionHandlerClass != null){
                         StepExceptionHandler handler = stepExceptionHandlerClass.newInstance();
                         handler.setStepExecutionContext(context);
@@ -70,6 +80,7 @@ public class BasicStepExecutor implements StepExecutor {
                 try{
                     rls.execute();
                 }catch(Exception e){
+                    logger.error("Exception Occurred during execution of step: "+stepClass.getName()+", cause: "+e.getMessage());
                     if(stepExceptionHandlerClass != null){
                         StepExceptionHandler handler = stepExceptionHandlerClass.newInstance();
                         handler.setStepExecutionContext(context);
@@ -98,7 +109,17 @@ public class BasicStepExecutor implements StepExecutor {
         }
 
         if(expectedOutCome != null){
-            result = new ExecutionResult(context.getInput(expectedOutCome), context.getAttributes());
+            String[] tokens = expectedOutCome.split(" of ");
+            if(tokens.length == 2){
+                Class type = StepExecutionUtil.loadClass(tokens[1], classLoader);
+                if(tokens[0].contains("List")){
+                     result = new ExecutionResult(context.getStepInput().getListTypeInput(type), context.getAttributes());
+                }else{
+                     result = new ExecutionResult(context.getStepInput().getSetTypeInput(type), context.getAttributes());
+                }
+            }else{
+                result = new ExecutionResult(context.getInput(StepExecutionUtil.loadClass(expectedOutCome, classLoader)), context.getAttributes());
+            }
         }else{
             result = new ExecutionResult(stepResult, context.getAttributes());
         }

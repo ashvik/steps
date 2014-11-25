@@ -206,8 +206,8 @@ public class BasicStepChain implements StepChain {
     }
 
     @Override
-    public Class<?> getExpectedOutComeClass() {
-        Class cls = null;
+    public String getExpectedOutComeClass() {
+        /*Class cls = null;
 
         if(classForExpectedOutCome != null){
             try {
@@ -216,8 +216,8 @@ public class BasicStepChain implements StepChain {
                 e.printStackTrace();
             }
         }
-
-        return cls;
+*/
+        return classForExpectedOutCome;
     }
 
     @Override
@@ -251,17 +251,8 @@ public class BasicStepChain implements StepChain {
     }
 
     @Override
-    public List<Class> getInputType() {
-        List<Class> classes = new ArrayList<Class>();
-
-        for(String inputType : inputTypes){
-            try {
-                classes.add(Class.forName(inputType));
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            }
-        }
-        return classes;
+    public List<String> getInputType() {
+       return inputTypes;
     }
 
     public void setRequestParameterContainer(RequestParameterContainer requestParameterContainer) {
