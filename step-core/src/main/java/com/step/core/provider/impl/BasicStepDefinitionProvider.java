@@ -22,6 +22,7 @@ public class BasicStepDefinitionProvider implements StepDefinitionProvider {
     private Map<String, String> stepsRequestMapper = new HashMap<String, String>();
     private List<StepDefinitionHolder> genericPreSteps = new ArrayList<StepDefinitionHolder>();
     private List<StepDefinitionHolder> genericPostSteps = new ArrayList<StepDefinitionHolder>();
+    private Set<String> registeredSteps = new HashSet<String>();
     private StepCollector[] stepCollectors;
 
     public BasicStepDefinitionProvider(StepCollector... stepCollectors){
@@ -64,11 +65,13 @@ public class BasicStepDefinitionProvider implements StepDefinitionProvider {
                     String key = request+"@"+name;
                     steps.put(key, cloned);
                     stepsRequestMapper.put(request, key);
+                    registeredSteps.add(name);
                     continue;
                 }
                 def.merge(definition);
             }else{
                 steps.put(definition.getName(), definition);
+                registeredSteps.add(name);
             }
 
             if(type != null){
@@ -126,8 +129,20 @@ public class BasicStepDefinitionProvider implements StepDefinitionProvider {
     private void validateSteps(){
         for(String step : steps.keySet()){
             StepDefinitionHolder stepDefinitionHolder = steps.get(step);
+            String next = stepDefinitionHolder.getNextStep();
+            Set<String> nextScopeSteps = stepDefinitionHolder.getNextStepsForAllApplicableScopes();
             if(stepDefinitionHolder.getStepClass() == null){
-                throw new StepClassNotFoundException("No Step Class found for step having name '"+step+"'.");
+                throw new StepClassNotFoundException("No Step Class found for step having name '"+stepDefinitionHolder.getName()+"'.");
+            }if(next != null && !next.isEmpty()){
+                if(!registeredSteps.contains(next)){
+                    throw new StepClassNotFoundException("No Step Class found for step having name '"+next+"'.");
+                }
+            }if(!nextScopeSteps.isEmpty()){
+                for(String nextScopeStep : nextScopeSteps){
+                    if(!registeredSteps.contains(nextScopeStep)){
+                        throw new StepClassNotFoundException("No Step Class found for step having name '"+nextScopeStep+"'.");
+                    }
+                }
             }
         }
     }

@@ -6,10 +6,7 @@ import com.step.core.chain.repeater.RepeatDetails;
 import com.step.core.enums.GenericStepType;
 import com.step.core.utils.AnnotatedField;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -71,6 +68,10 @@ public class StepDefinitionHolder {
 
     public String getNextStepForScope(String scope){
         return this.scopes.get(scope);
+    }
+
+    public Set<String> getNextStepsForAllApplicableScopes(){
+        return new HashSet<String>(this.scopes.values());
     }
 
     public List<AnnotatedField> getAnnotatedFields() {
