@@ -176,7 +176,7 @@ public class BasicStepExecutionContext implements StepExecutionContext {
         @Override
         public ExecutionResult submit(StepInput input) throws Exception {
             StepExecutionContext context = new BasicStepExecutionContext();
-            context.setClassLoader(input.getClassLoader());
+            context.setClassLoader(classLoader);
             if(input instanceof LocalStepInput){
                 return submitLocalStepInput((LocalStepInput)input, context);
             }else{

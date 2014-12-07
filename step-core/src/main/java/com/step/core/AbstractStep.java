@@ -45,22 +45,22 @@ public abstract class AbstractStep extends AbstractStepExecutionContextAware{
 
     protected <T> List<T> getParameterAsObjects(String name){
         RequestParameterValues requestParameterValues = getRequestParameterValues(name);
-        return requestParameterValues.getValueAsObjects();
+        return requestParameterValues.getValueAsObjects(getStepExecutionContext().getClassLoader());
     }
 
     protected <T> List<T> getParameterAsObjects(Class<T> cls){
         RequestParameterValues requestParameterValues = getRequestParameterValues(cls.getSimpleName());
-        return requestParameterValues.getValueAsObjects();
+        return requestParameterValues.getValueAsObjects(getStepExecutionContext().getClassLoader());
     }
 
     protected <T> T getParameterAsSingleObject(String name){
         RequestParameterValues requestParameterValues = getRequestParameterValues(name);
-        return (T)requestParameterValues.getValueAsObjects().get(0);
+        return (T)requestParameterValues.getValueAsObjects(getStepExecutionContext().getClassLoader()).get(0);
     }
 
     protected <T> T getParameterAsSingleObject(Class<T> cls){
         RequestParameterValues requestParameterValues = getRequestParameterValues(cls.getSimpleName());
-        return (T)requestParameterValues.getValueAsObjects().get(0);
+        return (T)requestParameterValues.getValueAsObjects(getStepExecutionContext().getClassLoader()).get(0);
     }
 
 

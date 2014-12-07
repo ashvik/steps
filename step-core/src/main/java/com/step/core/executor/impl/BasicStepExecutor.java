@@ -38,6 +38,7 @@ public class BasicStepExecutor implements StepExecutor {
         String expectedOutCome = chain.getExpectedOutComeClass();
         ClassLoader classLoader = context.getClassLoader();
         Class<StepExceptionHandler> stepExceptionHandlerClass = null;
+        Class<?> originalStepClass = null;
         if(chain.getStepExceptionHandler() != null){
             stepExceptionHandlerClass = StepExecutionUtil.loadClass(chain.getStepExceptionHandler().getName(), classLoader);
         }
@@ -45,6 +46,7 @@ public class BasicStepExecutor implements StepExecutor {
 
         while (true) {
             Object step = null;
+            originalStepClass = currentNode.getStepClass();
             Class<?> stepClass = StepExecutionUtil.loadClass(currentNode.getStepClass().getName(), classLoader);
 
             if (context.hasStepChainExecutionBroken()) {
@@ -72,7 +74,7 @@ public class BasicStepExecutor implements StepExecutor {
                     }
                 }
                 context.getStepInput().setInput(stepResult);
-                moveToStep = breakOrMoveStepExecutionIfApplicable(currentNode, stepClass, context, chain,
+                moveToStep = breakOrMoveStepExecutionIfApplicable(currentNode, originalStepClass, context, chain,
                         jumpTo, repeatToStep);
             } else if (step instanceof ResponseLessStep) {
                 ResponseLessStep rls = (ResponseLessStep) step;
@@ -92,7 +94,7 @@ public class BasicStepExecutor implements StepExecutor {
                     }
                 }
                 stepResult = null;
-                moveToStep = breakOrMoveStepExecutionIfApplicable(currentNode, stepClass, context, chain,
+                moveToStep = breakOrMoveStepExecutionIfApplicable(currentNode, originalStepClass, context, chain,
                         jumpTo, repeatToStep);
             } else {
                 throw new StepExecutionException(stepClass,
@@ -131,7 +133,7 @@ public class BasicStepExecutor implements StepExecutor {
                                                                          Class<?> stepClass,
                                                                          StepExecutionContext context, StepChain chain, String jumpTo,
                                                                          String repeatToStep) throws IllegalAccessException,
-            InstantiationException {
+            InstantiationException, ClassNotFoundException {
         jumpTo = checkJumpCondition(chain, stepClass, context);
         if (jumpTo == null || jumpTo.isEmpty()) {
             repeatToStep = checkRepeatBreakCondition(chain, stepClass, context);
@@ -205,12 +207,14 @@ public class BasicStepExecutor implements StepExecutor {
 
     private void checkBreakCondition(StepChain chain, Class<?> stepClass,
                                      StepExecutionContext context) throws IllegalAccessException,
-            InstantiationException {
+            InstantiationException, ClassNotFoundException {
         List<Class<?>> condition = chain.getBreakConditionClassForStep(stepClass);
+        ClassLoader classLoader = context.getClassLoader();
 
         if (condition != null) {
             for(int i=0 ; i<condition.size() ; i++){
-                BreakCondition breakCondition = (BreakCondition) condition.get(i)
+                BreakCondition breakCondition = classLoader != null ? (BreakCondition)StepExecutionUtil.loadClass(condition.get(i).getName(),classLoader).newInstance():
+                        (BreakCondition) condition.get(i)
                         .newInstance();
                 breakCondition.setStepExecutionContext(context);
                 boolean res = breakCondition.check();
@@ -225,12 +229,13 @@ public class BasicStepExecutor implements StepExecutor {
 
     private String checkRepeatBreakCondition(StepChain chain,
                                              Class<?> stepClass, StepExecutionContext context)
-            throws IllegalAccessException, InstantiationException {
+            throws IllegalAccessException, InstantiationException, ClassNotFoundException {
         Class condition = chain.getRepeatBreakConditionClassForStep(stepClass);
+        ClassLoader classLoader = context.getClassLoader();
 
         if (condition != null) {
-            RepeatBreakCondition breakCondition = (RepeatBreakCondition) condition
-                    .newInstance();
+            RepeatBreakCondition breakCondition = classLoader != null ? (RepeatBreakCondition)StepExecutionUtil.loadClass(condition.getName(),classLoader).newInstance():
+                    (RepeatBreakCondition) condition.newInstance();
             breakCondition.setStepExecutionContext(context);
             boolean res = breakCondition.check();
 

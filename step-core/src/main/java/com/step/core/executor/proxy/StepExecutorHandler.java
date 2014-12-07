@@ -3,6 +3,7 @@ package com.step.core.executor.proxy;
 import com.step.core.chain.StepChain;
 import com.step.core.context.StepExecutionContext;
 import com.step.core.enums.InterceptorType;
+import com.step.core.exceptions.RequestContractException;
 import com.step.core.exceptions.StepExecutionException;
 import com.step.core.exceptions.handler.StepExceptionHandler;
 import com.step.core.executor.StepExecutor;
@@ -16,6 +17,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.
@@ -54,32 +56,39 @@ public class StepExecutorHandler implements InvocationHandler{
                     expectedCollectionType = StepExecutionUtil.loadClass(tokens[1], classLoader);
                     isCollectionTypeOutCome = true;
                 } catch (ClassNotFoundException e) {
-                    //e.printStackTrace();
-                    //TODO throw StepExecutionException
+                    throw new StepExecutionException(null,e.getMessage());
                 }
             }else{
                 try {
                     expectedOutComeClass = StepExecutionUtil.loadClass(expectedOutCome, classLoader);
                 } catch (ClassNotFoundException e) {
-                    //e.printStackTrace();
-                    //TODO throw StepExecutionException
+                    throw new StepExecutionException(null,e.getMessage());
                 }
             }
         }
 
-        //TODO throw StepExecutionException if input not found
         if(ins != null && !ins.isEmpty()){
             for(String in : ins){
                 String[] tokens = in.split(" of ");
                 if(tokens.length == 2){
                     Class cls = StepExecutionUtil.loadClass(tokens[1], classLoader);
                     if(tokens[0].contains("List")){
-                        context.getStepInput().getListTypeInput(cls);
+                        List list = context.getStepInput().getListTypeInput(cls);
+                        if(list.isEmpty()){
+                            throw new RequestContractException("Required input "+in+" is not provided.");
+                        }
                     }else{
-                        context.getStepInput().getSetTypeInput(cls);
+                        Set set = context.getStepInput().getSetTypeInput(cls);
+                        if(set.isEmpty()){
+                            throw new RequestContractException("Required input "+in+" is not provided.");
+                        }
                     }
                 }else {
-                    context.getInput(StepExecutionUtil.loadClass(in, classLoader));
+                    try{
+                        context.getInput(StepExecutionUtil.loadClass(in, classLoader));
+                    }catch (IllegalStateException e){
+                        throw new RequestContractException("Required input "+in+" is not provided.");
+                    }
                 }
             }
         }
@@ -90,7 +99,7 @@ public class StepExecutorHandler implements InvocationHandler{
                     interceptor.getInterceptor().intercept(chain, context);
                 }catch(Exception e){
                     if(chain.getStepExceptionHandler() != null){
-                        StepExceptionHandler handler = chain.getStepExceptionHandler().newInstance();
+                        StepExceptionHandler handler = (StepExceptionHandler)StepExecutionUtil.loadClass(chain.getStepExceptionHandler().getName(), classLoader).newInstance();
                         handler.setStepExecutionContext(context);
                         handler.handleException(e);
                         if(expectedOutComeClass != null){
@@ -124,12 +133,8 @@ public class StepExecutorHandler implements InvocationHandler{
             throw new StepExecutionException(null,e.getTargetException().getMessage());
         }
 
-        /*if(context.hasStepChainExecutionBroken() && chain.getStepExceptionHandler() != null){
-            return result;
-        }else{*/
-            for(ExecutionInterceptor interceptor : post){
-                interceptor.intercept(chain, context);
-            //}
+        for(ExecutionInterceptor interceptor : post){
+            interceptor.intercept(chain, context);
         }
 
         return result;

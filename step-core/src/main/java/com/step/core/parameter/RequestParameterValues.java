@@ -31,12 +31,12 @@ public class RequestParameterValues {
         return Boolean.parseBoolean(values.get(0));
     }
 
-    public <T> List<T> getValueAsObjects(){
+    public <T> List<T> getValueAsObjects(ClassLoader classLoader){
         List<T> objectValues = new ArrayList<T>();
 
         for(String val : values){
             try {
-                Class<T> c = (Class<T>)Class.forName(val);
+                Class<T> c = classLoader != null ? (Class<T>)classLoader.loadClass(val) : (Class<T>)Class.forName(val);
                 objectValues.add(c.newInstance());
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
