@@ -1,12 +1,13 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://www.stepframework.com/StepRequestMapper"
+           xmlns="http://www.stepframework.com/StepRequestMapper">
     <xs:element name="stepRequestMapper">
         <xs:complexType>
             <xs:sequence>
-                <xs:element name="multiScopedSteps">
+                <xs:element name="multiScopedSteps" minOccurs="0" maxOccurs="1">
                     <xs:complexType>
                         <xs:sequence>
-                            <xs:element name="step">
+                            <xs:element name="step" minOccurs="1" maxOccurs="unbounded">
                                 <xs:complexType>
                                     <xs:sequence>
                                         <xs:element name="scope" maxOccurs="unbounded" minOccurs="1">
@@ -26,22 +27,37 @@
                         </xs:sequence>
                     </xs:complexType>
                 </xs:element>
-                <xs:element name="mappedRequest" maxOccurs="unbounded" minOccurs="0">
+                <xs:element name="mappedRequest" minOccurs="0" maxOccurs="unbounded">
                     <xs:complexType>
                         <xs:sequence>
-                            <xs:element name="jumper" maxOccurs="unbounded" minOccurs="0">
+                            <xs:element name="contract" minOccurs="0" maxOccurs="1">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="requiredInputs" minOccurs="1" maxOccurs="1">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element type="xs:string" name="inputType" maxOccurs="unbounded" minOccurs="1"/>
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <xs:element type="xs:string" name="expectedOutcome" minOccurs="1" maxOccurs="1"/>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element type="xs:string" name="exceptionHandler" minOccurs="0" maxOccurs="1"/>
+                            <xs:element name="jumper" minOccurs="0" maxOccurs="unbounded">
                                 <xs:complexType>
                                     <xs:simpleContent>
                                         <xs:extension base="xs:string">
                                             <xs:attribute type="xs:string" name="forStep" use="required"/>
                                             <xs:attribute type="xs:string" name="conditionClass" use="required"/>
-                                            <xs:attribute type="xs:string" name="onSuccessJumpTo"/>
-                                            <xs:attribute type="xs:string" name="onFailureJumpTo"/>
+                                            <xs:attribute type="xs:string" name="onSuccessJumpTo" use="required"/>
+                                            <xs:attribute type="xs:string" name="onFailureJumpTo" use="optional"/>
                                         </xs:extension>
                                     </xs:simpleContent>
                                 </xs:complexType>
                             </xs:element>
-                            <xs:element name="breaker" maxOccurs="unbounded" minOccurs="0">
+                            <xs:element name="breaker" minOccurs="0" maxOccurs="unbounded">
                                 <xs:complexType>
                                     <xs:simpleContent>
                                         <xs:extension base="xs:string">
@@ -51,7 +67,7 @@
                                     </xs:simpleContent>
                                 </xs:complexType>
                             </xs:element>
-                            <xs:element name="repeater" maxOccurs="unbounded" minOccurs="0">
+                            <xs:element name="repeater" minOccurs="0" maxOccurs="unbounded">
                                 <xs:complexType>
                                     <xs:simpleContent>
                                         <xs:extension base="xs:string">
@@ -67,21 +83,45 @@
                                     <xs:simpleContent>
                                         <xs:extension base="xs:string">
                                             <xs:attribute type="xs:string" name="name" use="required"/>
+                                            <xs:attribute type="xs:string" name="runAutomatically" use="optional"/>
                                         </xs:extension>
                                     </xs:simpleContent>
                                 </xs:complexType>
                             </xs:element>
-                            <xs:element name="preSteps">
+                            <xs:element name="preSteps" minOccurs="0" maxOccurs="1">
                                 <xs:complexType>
                                     <xs:sequence>
-                                        <xs:element type="xs:byte" name="step" maxOccurs="unbounded" minOccurs="0"/>
+                                        <xs:element type="xs:byte" name="step" maxOccurs="unbounded" minOccurs="1"/>
                                     </xs:sequence>
                                 </xs:complexType>
                             </xs:element>
-                            <xs:element name="postSteps">
+                            <xs:element name="postSteps" minOccurs="0" maxOccurs="1">
                                 <xs:complexType>
                                     <xs:sequence>
-                                        <xs:element type="xs:byte" name="step" maxOccurs="unbounded" minOccurs="0"/>
+                                        <xs:element type="xs:byte" name="step" maxOccurs="unbounded" minOccurs="1"/>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="requestParameters" minOccurs="0" maxOccurs="1">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="configuration" minOccurs="0" maxOccurs="1">
+                                            <xs:complexType>
+                                                <xs:simpleContent>
+                                                    <xs:extension base="xs:string">
+                                                        <xs:attribute type="xs:string" name="ref" use="required"/>
+                                                    </xs:extension>
+                                                </xs:simpleContent>
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <xs:element name="parameter" maxOccurs="unbounded" minOccurs="0">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element type="xs:string" name="value" maxOccurs="unbounded" minOccurs="1"/>
+                                                </xs:sequence>
+                                                <xs:attribute type="xs:string" name="name" use="required"/>
+                                            </xs:complexType>
+                                        </xs:element>
                                     </xs:sequence>
                                 </xs:complexType>
                             </xs:element>
@@ -91,6 +131,21 @@
                         <xs:attribute type="xs:string" name="applyGenericSteps" use="optional"/>
                         <xs:attribute type="xs:string" name="onSuccess" use="optional"/>
                         <xs:attribute type="xs:string" name="onFailure" use="optional"/>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="parameterConfiguration" minOccurs="0" maxOccurs="unbounded">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="parameter" maxOccurs="unbounded" minOccurs="1">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element type="xs:string" name="value" maxOccurs="unbounded" minOccurs="1"/>
+                                    </xs:sequence>
+                                    <xs:attribute type="xs:string" name="name" use="required"/>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                        <xs:attribute type="xs:string" name="name" use="required"/>
                     </xs:complexType>
                 </xs:element>
             </xs:sequence>
