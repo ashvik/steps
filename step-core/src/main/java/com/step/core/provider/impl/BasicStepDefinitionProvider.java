@@ -5,6 +5,7 @@ import com.step.core.collector.MappedRequestDetailsHolder;
 import com.step.core.collector.StepCollector;
 import com.step.core.collector.StepDefinitionHolder;
 import com.step.core.enums.GenericStepType;
+import com.step.core.exceptions.StepClassNotFoundException;
 import com.step.core.provider.StepDefinitionProvider;
 
 import java.util.*;
@@ -84,6 +85,8 @@ public class BasicStepDefinitionProvider implements StepDefinitionProvider {
                 stepsRequestMapper.put(request, name);
             }
         }
+
+        validateSteps();
     }
 
     @Override
@@ -118,5 +121,14 @@ public class BasicStepDefinitionProvider implements StepDefinitionProvider {
     @Override
     public Set<String> allSteps() {
         return this.steps.keySet();
+    }
+
+    private void validateSteps(){
+        for(String step : steps.keySet()){
+            StepDefinitionHolder stepDefinitionHolder = steps.get(step);
+            if(stepDefinitionHolder.getStepClass() == null){
+                throw new StepClassNotFoundException("No Step Class found for step having name '"+step+"'.");
+            }
+        }
     }
 }
