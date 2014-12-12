@@ -1,16 +1,21 @@
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title>Services</title>
-<style type="text/css">
-body {
-	font-family:verdana,arial,sans-serif;
-	font-size:10pt;
-	margin:10px;
-	background-color:#ff9900;
-	}
-</style>
+ <meta name="generator"
+    content="HTML Tidy for Java (vers. 26 Sep 2004), see www.w3.org" />
+<link type="text/css" href="bootstrap.min.css" rel="stylesheet"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 </head>
 <body>
-$SERVICES$
+	<div class="container-fluid">
+	<div class="row-fluid">
+        <div class="span25">
+	<ul class="nav nav-tabs nav-stacked"> 
+		$SERVICES$
+	</ul>
+        </div>
+	</div>
+	</div>
 </body>
 </html>

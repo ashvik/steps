@@ -1,16 +1,5 @@
-<html>
-<head>
-<title></title>
-<style type="text/css">
-body {
-	font-family:verdana,arial,sans-serif;
-	font-size:10pt;
-	margin:10px;
-	background-color:#a08029;
-	}
-</style>
-</head>
-<body>
-<h3><font color="white">$SOFTWARE_VERSION$</font></h3>
-</body>
-</html>
+<html><head><title></title><link type="text/css" href="bootstrap.min.css" rel="stylesheet"/><style type="text/css">body {	font-family:verdana,arial,sans-serif;	font-size:11pt;	margin:13px;	background-color:#f0eef0;	}</style></head><body>
+<table width="100%">
+<tr>
+<td width="100%" align="right">
+<span class="label label-info"><h5>$SOFTWARE_VERSION$</h5></span></td></tr></table></body></html>

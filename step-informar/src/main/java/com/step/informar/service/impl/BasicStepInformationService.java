@@ -72,26 +72,29 @@ public class BasicStepInformationService implements StepInformationService {
         Map<String, String> serviceToCommentsMap = xmlCommentParser.parseComments(configuration.getStepConfigurationFiles());
         String defaultService = null;
         String menu = prepareMenu();
-        writeFile(menu, "menu");
+        writeFile(menu, "menu", true);
 
         Map<String,String> contents = prepareContent(serviceToCommentsMap);
         for(String service : contents.keySet()){
             if(defaultService == null)defaultService = service;
-            writeFile(contents.get(service), service);
+            writeFile(contents.get(service), service, true);
         }
 
         String header = prepareHeader(versionString);
-        writeFile(header, "header");
+        writeFile(header, "header", true);
 
         String framedContents = prepareFramedContent(defaultService);
-        writeFile(framedContents, "index");
+        writeFile(framedContents, "index", true);
+
+        String cssContent = getTemplate("templates/bootstrap.min.css");
+        writeFile(cssContent, "bootstrap.min.css", false);
     }
 
-    private void writeFile(String content, String name){
+    private void writeFile(String content, String name, boolean isHtml){
         Writer writer = null;
         try {
             writer = new BufferedWriter(new OutputStreamWriter(
-                    new FileOutputStream("doc/"+name+".html"), "utf-8"));
+                    new FileOutputStream("doc/"+name+(isHtml ? ".html" :"")), "utf-8"));
             writer.write(content);
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -106,7 +109,7 @@ public class BasicStepInformationService implements StepInformationService {
         StringBuilder sb = new StringBuilder();
 
         for(String service : services){
-            sb.append("<a href=\""+service+".html\" target=\"content\">"+service+"</a></td><br />\n");
+            sb.append("<li><a href=\""+service+".html\" target=\"content\"><font size=\"1\" color=\"\">"+service+"</font></a></li>\n");
         }
 
         menuTemplate = menuTemplate.replaceAll("\\$SERVICES\\$", sb.toString());
@@ -131,8 +134,8 @@ public class BasicStepInformationService implements StepInformationService {
             StringBuilder builder = new StringBuilder();
             for(int i=0 ; i<steps.size() ; i++){
                 StepInfo stepInfo = steps.get(i);
-                String name = stepInfo.getStepName()+(stepInfo.getInterceptorType() != null ? " ("+stepInfo.getInterceptorType()+")" : "");
-                builder.append("("+stepNo+")&nbsp;"+name+"<br>\n");
+                String name = stepInfo.getStepName()+(stepInfo.getInterceptorType() != null ? " <span class=\"label label-info\">("+stepInfo.getInterceptorType()+")" : "");
+                builder.append("<code>("+stepNo+")&nbsp;"+name+"</code></span><br>\n");
                 stepNo++;
             }
             content = content.replaceAll("\\$STEPS\\$", builder.toString());
@@ -141,19 +144,19 @@ public class BasicStepInformationService implements StepInformationService {
 
             builder = new StringBuilder();
             for(String input : stepChainInfo.getInputs()){
-                builder.append("("+inputs+")&nbsp;"+input+"<br>\n");
+                builder.append("<span class=\"label label-important\">"+input+"</span>&nbsp;\n");
                 inputs++;
             }
             content = content.replaceAll("\\$INPUTS\\$", builder.toString());
 
-            content = content.replaceAll("\\$OUTPUT\\$", stepChainInfo.getExpectedOutCome()==null?"NA" : stepChainInfo.getExpectedOutCome());
+            content = content.replaceAll("\\$OUTPUT\\$", stepChainInfo.getExpectedOutCome()==null?"NA" : "<span class=\"label label-success\">"+stepChainInfo.getExpectedOutCome()+"</span>");
 
             builder = new StringBuilder();
             if(stepChainInfo.getPlugIns().isEmpty()){
                 builder.append("NA");
             }else{
                 for(String plugin : stepChainInfo.getPlugIns()){
-                    builder.append("<a href=\""+plugin+".html\">"+"("+plugins+")&nbsp;"+plugin+"</a><br>\n");
+                    builder.append("<a href=\""+plugin+".html\">"+"<span class=\"label label-info\">"+plugin+"</span></a>&nbsp;\n");
                     plugins++;
                 }
             }

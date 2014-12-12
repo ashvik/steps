@@ -1,51 +1,38 @@
-<html>
-<head>
-<title>Service Details</title>
-<style type="text/css">
-body {
-	font-family:verdana,arial,sans-serif;
-	font-size:10pt;
-	margin:30px;
-	background-color:#ffcc00;
-	}
-.boldtable, .boldtable TD, .boldtable TH
-	{
-	border:�5px solid double black;
-	font-family:verdana,arial,sans-serif;
-	font-size:10pt;
-	}
-</style>
-</head>
-<body>
-<table border="1" bordercolor="black" class=boldtable>
+<html><head><title>Service Details</title>
+<link type="text/css" href="bootstrap.min.css" rel="stylesheet"/>
+</head><body><br><br>
+<table class="table table-condensed table-hover table-striped table-bordered" >
 <tr>
-<td bgcolor="#ffcc00">&nbsp;<font color="red"><b>REQUEST</font>&nbsp;</td>
-<td bgcolor="#ffcc00"><font color="red"><b>$REQUEST$</font></td>
+<td>&nbsp;<font colspan="2"><span class="label label-info">$REQUEST$</span></td>
 </tr>
 <tr>
-<td bgcolor="#ffcc00">&nbsp;STEPS&nbsp;</td>
-<td bgcolor="#ffcc00">
-$STEPS$
+<td  >&nbsp;Steps&nbsp;</td>
+<td>
+	$STEPS$
 </td>
 </tr>
 <tr>
-<td bgcolor="#ffcc00">&nbsp;DESCRIPTION&nbsp;</td>
-<td bgcolor="#ffcc00">$DESCRIPTION$</td>
+<td >&nbsp;Description&nbsp;</td>
+<td>
+    <div class="alert alert-info"$DESCRIPTION$</div>
+</td>
 </tr>
 <tr>
-<td bgcolor="#ffcc00">&nbsp;INPUTS&nbsp;</td>
-<td bgcolor="#ffcc00">
+<td >&nbsp;Inputs&nbsp;</td>
+<td>
 $INPUTS$
 </td>
 </tr>
 <tr>
-<td bgcolor="#ffcc00">&nbsp;OUTPUT&nbsp;</td>
-<td bgcolor="#ffcc00">$OUTPUT$</td>
+<td >&nbsp;Output&nbsp;</td>
+<td>$OUTPUT$</td>
 </tr>
 <tr>
-<td bgcolor="#ffcc00">&nbsp;PLUGINS&nbsp;</td>
-<td bgcolor="#ffcc00">$PLUGINS$
-</td></tr>
+<td >&nbsp;Plugins&nbsp;</td>
+<td >
+$PLUGINS$
+</td>
+</tr>
 </table>
 </body>
 </html>
