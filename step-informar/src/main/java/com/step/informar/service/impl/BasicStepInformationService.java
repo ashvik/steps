@@ -6,6 +6,8 @@ import com.step.core.collector.StepDefinitionHolder;
 import com.step.core.repository.StepRepository;
 import com.step.informar.flat.*;
 import com.step.informar.service.StepInformationService;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.xml.sax.*;
 import org.xml.sax.ext.LexicalHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
@@ -17,6 +19,7 @@ import java.util.*;
  * Created by amishra on 6/21/14.
  */
 public class BasicStepInformationService implements StepInformationService {
+    private final Log logger = LogFactory.getLog(getClass());
     private StepRepository stepRepository;
     private Map<String, StepChainInfo> stepChainInfoMap = new HashMap<String, StepChainInfo>();
 
@@ -71,6 +74,17 @@ public class BasicStepInformationService implements StepInformationService {
         XmlCommentParser xmlCommentParser = new XmlCommentParser();
         Map<String, String> serviceToCommentsMap = xmlCommentParser.parseComments(configuration.getStepConfigurationFiles());
         String defaultService = null;
+        File file = new File("docs");
+        if (!file.exists()) {
+            if (file.mkdir()) {
+                logger.info("Directory docs is created!");
+            }else{
+                logger.info("Unable to create directory 'docs'.");
+                throw new IllegalStateException("Unable to create directory 'docs'.");
+            }
+        }
+
+
         String menu = prepareMenu();
         writeFile(menu, "menu", true);
 
@@ -94,7 +108,7 @@ public class BasicStepInformationService implements StepInformationService {
         Writer writer = null;
         try {
             writer = new BufferedWriter(new OutputStreamWriter(
-                    new FileOutputStream("doc/"+name+(isHtml ? ".html" :"")), "utf-8"));
+                    new FileOutputStream("docs/"+name+(isHtml ? ".html" :"")), "utf-8"));
             writer.write(content);
         } catch (IOException ex) {
             ex.printStackTrace();
