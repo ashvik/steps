@@ -14,7 +14,7 @@
 <tr>
 <td >&nbsp;Description&nbsp;</td>
 <td>
-    <div class="alert alert-info"$DESCRIPTION$</div>
+    <div class="alert alert-info">$DESCRIPTION$</div>
 </td>
 </tr>
 <tr>

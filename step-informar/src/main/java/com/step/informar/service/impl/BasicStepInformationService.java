@@ -123,7 +123,19 @@ public class BasicStepInformationService implements StepInformationService {
         StringBuilder sb = new StringBuilder();
 
         for(String service : services){
-            sb.append("<li><a href=\""+service+".html\" target=\"content\"><font size=\"1\" color=\"\">"+service+"</font></a></li>\n");
+            boolean hasLowerCase = false;
+            char[] characters = service.toCharArray();
+            for(Character ch : characters){
+                if(Character.isLowerCase(ch)){
+                    hasLowerCase = true;
+                    break;
+                }
+            }
+            if(!hasLowerCase){
+                sb.append("<li><a href=\""+service+".html\" target=\"content\"><font size=\"1\" color=\"\">"+service+"</font></a></li>\n");
+            }else{
+                sb.append("<li><a href=\""+service+".html\" target=\"content\">"+service+"</a></li>\n");
+            }
         }
 
         menuTemplate = menuTemplate.replaceAll("\\$SERVICES\\$", sb.toString());
@@ -154,20 +166,24 @@ public class BasicStepInformationService implements StepInformationService {
             }
             content = content.replaceAll("\\$STEPS\\$", builder.toString());
 
-            content = content.replaceAll("\\$DESCRIPTION\\$",description == null ? "NA" : description);
+            content = content.replaceAll("\\$DESCRIPTION\\$",description == null ? "N/A" : description);
 
             builder = new StringBuilder();
-            for(String input : stepChainInfo.getInputs()){
-                builder.append("<span class=\"label label-important\">"+input+"</span>&nbsp;\n");
-                inputs++;
+            if(stepChainInfo.getInputs().isEmpty()){
+                builder.append("<span class=\"label label-info\">N/A</span>");
+            }else{
+                for(String input : stepChainInfo.getInputs()){
+                    builder.append("<span class=\"label label-important\">"+input+"</span>&nbsp;\n");
+                    inputs++;
+                }
             }
             content = content.replaceAll("\\$INPUTS\\$", builder.toString());
 
-            content = content.replaceAll("\\$OUTPUT\\$", stepChainInfo.getExpectedOutCome()==null?"NA" : "<span class=\"label label-success\">"+stepChainInfo.getExpectedOutCome()+"</span>");
+            content = content.replaceAll("\\$OUTPUT\\$", stepChainInfo.getExpectedOutCome()==null?"<span class=\"label label-info\">N/A</span>" : "<span class=\"label label-success\">"+stepChainInfo.getExpectedOutCome()+"</span>");
 
             builder = new StringBuilder();
             if(stepChainInfo.getPlugIns().isEmpty()){
-                builder.append("NA");
+                builder.append("<span class=\"label label-info\">N/A</span>");
             }else{
                 for(String plugin : stepChainInfo.getPlugIns()){
                     builder.append("<a href=\""+plugin+".html\">"+"<span class=\"label label-info\">"+plugin+"</span></a>&nbsp;\n");
