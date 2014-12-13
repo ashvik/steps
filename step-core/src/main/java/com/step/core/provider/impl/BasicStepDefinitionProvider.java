@@ -1,10 +1,12 @@
 package com.step.core.provider.impl;
 
 import com.step.core.Configuration;
+import com.step.core.PluginRequest;
 import com.step.core.collector.MappedRequestDetailsHolder;
 import com.step.core.collector.StepCollector;
 import com.step.core.collector.StepDefinitionHolder;
 import com.step.core.enums.GenericStepType;
+import com.step.core.exceptions.PluginRequestNotFoundException;
 import com.step.core.exceptions.StepClassNotFoundException;
 import com.step.core.provider.StepDefinitionProvider;
 
@@ -127,10 +129,26 @@ public class BasicStepDefinitionProvider implements StepDefinitionProvider {
     }
 
     private void validateSteps(){
+        Set<String> allRequests = allRequests();
+
         for(String step : steps.keySet()){
             StepDefinitionHolder stepDefinitionHolder = steps.get(step);
             String next = stepDefinitionHolder.getNextStep();
             Set<String> nextScopeSteps = stepDefinitionHolder.getNextStepsForAllApplicableScopes();
+
+            if(stepDefinitionHolder.getMappedRequestDetailsHolder() != null){
+                String request = stepDefinitionHolder.getMappedRequestDetailsHolder().getMappedRequest();
+                if(request != null && !request.isEmpty()){
+                    List<PluginRequest> plugins = stepDefinitionHolder.getMappedRequestDetailsHolder().getPluginsForRequest(request);
+                    if(plugins != null && !plugins.isEmpty()){
+                        for(PluginRequest pluginRequest : plugins){
+                            if(!allRequests.contains(pluginRequest.getRequest())){
+                                throw new PluginRequestNotFoundException("Plugin request '"+pluginRequest.getRequest()+"' not found, configured in request '"+request+"'.");
+                            }
+                        }
+                    }
+                }
+            }
             if(stepDefinitionHolder.getStepClass() == null){
                 throw new StepClassNotFoundException("No Step Class found for step having name '"+stepDefinitionHolder.getName()+"'.");
             }if(next != null && !next.isEmpty()){
