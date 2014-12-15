@@ -8,8 +8,8 @@ function loadFrames() {
     }
 </script>
 </head>
-<frameset rows="7%,93%" frameborder="0" border="0" framespacing="0" onload="top.loadFrames()">
-  <frame name="topNav" src="header.html">
+<frameset rows="4%,96%" frameborder="0" border="0" framespacing="0" onload="top.loadFrames()">
+  <frame name="topNav" src="header.html" scrolling="no" marginheight="0" marginwidth="0">
 <frameset cols="25%,75%" frameborder="0" border="0" framespacing="0" onload="top.loadFrames()">
 	<frame name="menu" src="menu.html" marginheight="0" marginwidth="0" scrolling="auto" noresize>
 	<frame name="content" src="$CONTENT$.html" marginheight="0" marginwidth="0" scrolling="auto" noresize>

@@ -1,6 +1,6 @@
 <html><head><title>Service Details</title>
 <link type="text/css" href="bootstrap.min.css" rel="stylesheet"/>
-</head><body><br><br>
+</head><body><br>
 <table class="table table-condensed table-hover table-striped table-bordered" >
 <tr>
 <td>&nbsp;<font colspan="2"><span class="label label-info">$REQUEST$</span></td>

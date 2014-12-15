@@ -1,5 +1,2 @@
-<html><head><title></title><link type="text/css" href="bootstrap.min.css" rel="stylesheet"/><style type="text/css">body {	font-family:verdana,arial,sans-serif;	font-size:11pt;	margin:13px;	background-color:#f0eef0;	}</style></head><body>
-<table width="100%">
-<tr>
-<td width="100%" align="right">
-<span class="label label-info"><h5>$SOFTWARE_VERSION$</h5></span></td></tr></table></body></html>
+<html><head><title></title><link type="text/css" href="bootstrap.min.css" rel="stylesheet"/><style type="text/css">body {	font-family:verdana,arial,sans-serif;	font-size:15pt;	margin:8px 22px;	background-color:#f0eef0;	}</style></head><body>
+<span class="label label-warning">$SOFTWARE_VERSION$</span></body></html>
