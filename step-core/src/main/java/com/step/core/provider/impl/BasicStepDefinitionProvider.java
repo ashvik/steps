@@ -91,7 +91,7 @@ public class BasicStepDefinitionProvider implements StepDefinitionProvider {
             }
         }
 
-        validateSteps();
+        validate();
     }
 
     @Override
@@ -128,16 +128,17 @@ public class BasicStepDefinitionProvider implements StepDefinitionProvider {
         return this.steps.keySet();
     }
 
-    private void validateSteps(){
+    private void validate(){
         Set<String> allRequests = allRequests();
 
         for(String step : steps.keySet()){
             StepDefinitionHolder stepDefinitionHolder = steps.get(step);
             String next = stepDefinitionHolder.getNextStep();
             Set<String> nextScopeSteps = stepDefinitionHolder.getNextStepsForAllApplicableScopes();
+            String request = null;
 
             if(stepDefinitionHolder.getMappedRequestDetailsHolder() != null){
-                String request = stepDefinitionHolder.getMappedRequestDetailsHolder().getMappedRequest();
+                request = stepDefinitionHolder.getMappedRequestDetailsHolder().getMappedRequest();
                 if(request != null && !request.isEmpty()){
                     List<PluginRequest> plugins = stepDefinitionHolder.getMappedRequestDetailsHolder().getPluginsForRequest(request);
                     if(plugins != null && !plugins.isEmpty()){
@@ -150,15 +151,15 @@ public class BasicStepDefinitionProvider implements StepDefinitionProvider {
                 }
             }
             if(stepDefinitionHolder.getStepClass() == null){
-                throw new StepClassNotFoundException("No Step Class found for step having name '"+stepDefinitionHolder.getName()+"'.");
+                throw new StepClassNotFoundException("No Step Class found for step having name '"+stepDefinitionHolder.getName()+"'"+(request == null ? "." : "configured in request '"+request+"'."));
             }if(next != null && !next.isEmpty()){
                 if(!registeredSteps.contains(next)){
-                    throw new StepClassNotFoundException("No Step Class found for step having name '"+next+"'.");
+                    throw new StepClassNotFoundException("No Step Class found for step having name '"+next+"'"+(request == null ? "." : "configured in request '"+request+"'."));
                 }
             }if(!nextScopeSteps.isEmpty()){
                 for(String nextScopeStep : nextScopeSteps){
                     if(!registeredSteps.contains(nextScopeStep)){
-                        throw new StepClassNotFoundException("No Step Class found for step having name '"+nextScopeStep+"'.");
+                        throw new StepClassNotFoundException("No Step Class found for step having name '"+nextScopeStep+"'"+(request == null ? "." : "configured in request '"+request+"'."));
                     }
                 }
             }
