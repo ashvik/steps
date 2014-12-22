@@ -1,11 +1,11 @@
-package com.step.informar.flat.visitor.impl;
+package com.step.informer.flat.visitor.impl;
 
 import com.step.core.chain.StepChain;
 import com.step.core.chain.impl.BasicStepChain;
 import com.step.core.chain.jump.JumpDetails;
 import com.step.core.chain.repeater.RepeatDetails;
-import com.step.informar.flat.*;
-import com.step.informar.flat.visitor.FlatInfoVisitor;
+import com.step.informer.flat.*;
+import com.step.informer.flat.visitor.FlatInfoVisitor;
 
 import java.util.List;
 

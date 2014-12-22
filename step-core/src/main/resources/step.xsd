@@ -91,14 +91,14 @@
                             <xs:element name="preSteps" minOccurs="0" maxOccurs="1">
                                 <xs:complexType>
                                     <xs:sequence>
-                                        <xs:element type="xs:byte" name="step" maxOccurs="unbounded" minOccurs="1"/>
+                                        <xs:element type="xs:string" name="step" maxOccurs="unbounded" minOccurs="1"/>
                                     </xs:sequence>
                                 </xs:complexType>
                             </xs:element>
                             <xs:element name="postSteps" minOccurs="0" maxOccurs="1">
                                 <xs:complexType>
                                     <xs:sequence>
-                                        <xs:element type="xs:byte" name="step" maxOccurs="unbounded" minOccurs="1"/>
+                                        <xs:element type="xs:string" name="step" maxOccurs="unbounded" minOccurs="1"/>
                                     </xs:sequence>
                                 </xs:complexType>
                             </xs:element>

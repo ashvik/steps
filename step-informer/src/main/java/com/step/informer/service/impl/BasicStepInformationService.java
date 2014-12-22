@@ -1,11 +1,12 @@
-package com.step.informar.service.impl;
+package com.step.informer.service.impl;
 
 import com.step.core.Configuration;
 import com.step.core.chain.StepChain;
 import com.step.core.collector.StepDefinitionHolder;
 import com.step.core.repository.StepRepository;
-import com.step.informar.flat.*;
-import com.step.informar.service.StepInformationService;
+import com.step.informer.flat.StepChainInfo;
+import com.step.informer.flat.StepInfo;
+import com.step.informer.service.StepInformationService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.xml.sax.*;
@@ -156,13 +157,18 @@ public class BasicStepInformationService implements StepInformationService {
             List<StepInfo> steps = stepChainInfo.getDefaultExecutionChain();
             String content = contentTemplate.replaceAll("\\$REQUEST\\$", service);
             String description = serviceToCommentsMap.get(service);
+            String lastStep = null;
 
             StringBuilder builder = new StringBuilder();
             for(int i=0 ; i<steps.size() ; i++){
                 StepInfo stepInfo = steps.get(i);
-                String name = stepInfo.getStepName()+(stepInfo.getInterceptorType() != null ? " <span class=\"label label-info\">("+stepInfo.getInterceptorType()+")" : "");
+                String interceptorType = stepInfo.getInterceptorType();
+                String name = stepInfo.getStepName()+(interceptorType != null ? " <span class=\"label label-info\">("+interceptorType+")" : "");
                 builder.append("<code>("+stepNo+")&nbsp;"+name+"</code></span><br>\n");
                 stepNo++;
+                if(interceptorType == null){
+                    lastStep = stepInfo.getStepName();
+                }
             }
             content = content.replaceAll("\\$STEPS\\$", builder.toString());
 
@@ -179,7 +185,7 @@ public class BasicStepInformationService implements StepInformationService {
             }
             content = content.replaceAll("\\$INPUTS\\$", builder.toString());
 
-            content = content.replaceAll("\\$OUTPUT\\$", stepChainInfo.getExpectedOutCome()==null?"<span class=\"label label-info\">N/A</span>" : "<span class=\"label label-success\">"+stepChainInfo.getExpectedOutCome()+"</span>");
+            content = content.replaceAll("\\$OUTPUT\\$", stepChainInfo.getExpectedOutCome()==null?"<span class=\"label label-info\">output of step '"+lastStep+"'.</span>" : "<span class=\"label label-success\">"+stepChainInfo.getExpectedOutCome()+"</span>");
 
             builder = new StringBuilder();
             if(stepChainInfo.getPlugIns().isEmpty()){

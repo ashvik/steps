@@ -1,9 +1,9 @@
-package com.step.informar;
+package com.step.informer;
 
 import com.step.core.Configuration;
 import com.step.core.repository.BasicStepRepository;
-import com.step.informar.service.StepInformationService;
-import com.step.informar.service.impl.BasicStepInformationService;
+import com.step.informer.service.StepInformationService;
+import com.step.informer.service.impl.BasicStepInformationService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 

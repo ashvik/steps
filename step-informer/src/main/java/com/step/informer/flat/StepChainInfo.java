@@ -1,9 +1,9 @@
-package com.step.informar.flat;
+package com.step.informer.flat;
 
 import com.step.core.PluginRequest;
 import com.step.core.chain.StepChain;
 import com.step.core.chain.impl.BasicStepChain;
-import com.step.informar.flat.visitor.impl.BasicFlatInfoVisitor;
+import com.step.informer.flat.visitor.impl.BasicFlatInfoVisitor;
 
 import java.util.ArrayList;
 import java.util.List;

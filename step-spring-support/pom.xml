@@ -3,46 +3,39 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>step-example</artifactId>
+        <artifactId>step-project</artifactId>
         <groupId>com.step</groupId>
         <version>1.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>step-core-example</artifactId>
+    <artifactId>step-spring-support</artifactId>
+    <groupId>com.step.spring.support</groupId>
 
     <dependencies>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
-            <version>3.1.1.RELEASE</version>
+            <scope>provided</scope>
         </dependency>
+
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-beans</artifactId>
-            <version>3.1.1.RELEASE</version>
+            <scope>provided</scope>
         </dependency>
+
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
-            <version>3.1.1.RELEASE</version>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <scope>provided</scope>
         </dependency>
+
         <dependency>
             <groupId>com.step.core</groupId>
             <artifactId>step-core</artifactId>
             <version>1.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.step</groupId>
-            <artifactId>step-informer</artifactId>
-            <version>1.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.step.external</groupId>
-            <artifactId>external</artifactId>
-            <version>1.0</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
-
-
 </project>

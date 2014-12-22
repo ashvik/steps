@@ -1,4 +1,4 @@
-package com.step.core.factory.spring;
+package com.step.spring.support.factory;
 
 import com.step.core.factory.ObjectFactory;
 import org.springframework.beans.BeansException;

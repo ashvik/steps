@@ -1,6 +1,6 @@
-package com.step.informar.flat.visitor;
+package com.step.informer.flat.visitor;
 
-import com.step.informar.flat.*;
+import com.step.informer.flat.*;
 
 /**
  * Created by amishra on 6/21/14.

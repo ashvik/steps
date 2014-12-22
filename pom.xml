@@ -12,8 +12,9 @@
         <module>step-core</module>
         <module>step-web</module>
         <module>step-example</module>
-		<module>step-informar</module>
+		<module>step-informer</module>
         <module>step-test</module>
+        <module>step-spring-support</module>
     </modules>
 
     <properties>

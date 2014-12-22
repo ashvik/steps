@@ -1,9 +1,9 @@
-package com.step.informar.service;
+package com.step.informer.service;
 
 import com.step.core.Configuration;
 import com.step.core.repository.StepRepository;
-import com.step.informar.flat.StepChainInfo;
-import com.step.informar.flat.StepInfo;
+import com.step.informer.flat.StepChainInfo;
+import com.step.informer.flat.StepInfo;
 
 import java.util.List;
 import java.util.Set;

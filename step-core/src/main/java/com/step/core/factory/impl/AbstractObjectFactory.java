@@ -2,7 +2,6 @@ package com.step.core.factory.impl;
 
 import com.step.core.annotations.Initialize;
 import com.step.core.factory.ObjectFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
@@ -195,7 +194,7 @@ public abstract class AbstractObjectFactory implements ObjectFactory {
 
     private boolean isApplicableAnnotation(Annotation[] annotations){
         for(Annotation ann : annotations){
-            if(ann.annotationType() == Initialize.class || ann.annotationType() == Autowired.class){
+            if(ann.annotationType() == Initialize.class){
                 return true;
             }
         }
