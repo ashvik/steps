@@ -1,9 +1,13 @@
 package com.step.core.context;
 
 import com.step.core.Attributes;
-import com.step.core.PluginRequest;
+import com.step.core.chain.breaker.BreakDetails;
+import com.step.core.chain.jump.JumpDetails;
+import com.step.core.chain.repeater.RepeatDetails;
 import com.step.core.executor.StepExecutorProvider;
 import com.step.core.factory.ObjectFactory;
+import com.step.core.interceptor.event.ExecutionDecisionEvent;
+import com.step.core.interceptor.event.PluginEvent;
 import com.step.core.io.ExecutionResult;
 import com.step.core.io.StepInput;
 import com.step.core.parameter.RequestParameterContainer;
@@ -32,8 +36,6 @@ public interface StepExecutionContext {
     void putAttribute(String name, Object value);
     void breakStepChainExecution();
     boolean hasStepChainExecutionBroken();
-    void setApplicablePluginRequest(List<PluginRequest> applicablePluginRequest);
-    List<PluginRequest> getPluginRequests();
     ExecutionResult applyPluginRequest(String request, Object... input) throws Exception;
     ExecutionResult applyPluginRequest(String request, boolean allowInputTransfer, boolean applyGenericSteps, Object... input) throws Exception;
     void setStepExecutorProvider(StepExecutorProvider stepExecutorProvider);
@@ -42,4 +44,12 @@ public interface StepExecutionContext {
     RequestParameterContainer getRequestParameterContainer();
     void setClassLoader(ClassLoader classLoader);
     ClassLoader getClassLoader();
+    List<ExecutionDecisionEvent<BreakDetails>> getBreakExecutionDecisionEvents();
+    List<ExecutionDecisionEvent<JumpDetails>> getJumpExecutionDecisionEvents();
+    List<ExecutionDecisionEvent<RepeatDetails>> getRepeatExecutionDecisionEvents();
+    void setBreakExecutionDecisionEvents(List<ExecutionDecisionEvent<BreakDetails>> breakExecutionDecisionEvents);
+    void setJumpExecutionDecisionEvents(List<ExecutionDecisionEvent<JumpDetails>> jumpExecutionDecisionEvents);
+    void setRepeatExecutionDecisionEvents(List<ExecutionDecisionEvent<RepeatDetails>> repeatExecutionDecisionEvents);
+    List<PluginEvent> getAutomatedPluginEvent();
+    void setAutomatedPluginEvent(List<PluginEvent> automatedPluginEvent);
 }

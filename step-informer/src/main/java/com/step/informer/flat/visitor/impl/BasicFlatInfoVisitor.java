@@ -3,11 +3,8 @@ package com.step.informer.flat.visitor.impl;
 import com.step.core.chain.StepChain;
 import com.step.core.chain.impl.BasicStepChain;
 import com.step.core.chain.jump.JumpDetails;
-import com.step.core.chain.repeater.RepeatDetails;
 import com.step.informer.flat.*;
 import com.step.informer.flat.visitor.FlatInfoVisitor;
-
-import java.util.List;
 
 /**
  * Created by amishra on 6/21/14.
@@ -35,26 +32,6 @@ public class BasicFlatInfoVisitor implements FlatInfoVisitor {
         stepInfo.setStepName(stepName);
         stepInfo.setNextStep(nextStepName);
         stepChainInfo.addStepInfo(stepInfo);
-
-        List<JumpDetails> jumpDetailsList = stepChain.getJumpDetailsForStep(stepClass);
-
-        if(jumpDetailsList != null){
-            for(JumpDetails details : jumpDetailsList){
-                JumpInfo jumpInfo = new JumpInfo();
-                this.currentJumpDetails = details;
-                jumpInfo.accept(this);
-            }
-        }
-
-        List<Class<?>> breakClasses = stepChain.getBreakConditionClassForStep(stepClass);
-
-        if(breakClasses != null){
-            for(Class<?> details : breakClasses){
-                BreakInfo breakInfo = new BreakInfo();
-                this.currentBreakDetails = details;
-                breakInfo.accept(this);
-            }
-        }
 
         RepeatInfo repeatInfo = new RepeatInfo();
         repeatInfo.accept(this);
@@ -95,7 +72,7 @@ public class BasicFlatInfoVisitor implements FlatInfoVisitor {
     public void visitRepeatInfo(RepeatInfo repeatInfo) {
         Class<?> stepClass = currentNode.getStepClass();
         String stepName = stepChain.getStepName(stepClass);
-        RepeatDetails details = stepChain.getRepeatDetailsForStep(stepClass);
+        /*RepeatDetails details = stepChain.getRepeatDetailsForStep(stepClass);
 
         if(details != null){
             String repeatFrom = details.getRepeatFromStep();
@@ -106,7 +83,7 @@ public class BasicFlatInfoVisitor implements FlatInfoVisitor {
             repeatInfo.setCondition(new ConditionInfo(condition));
 
             stepChainInfo.addRepeatInfo(repeatInfo);
-        }
+        }*/
     }
 
     public void setCurrentNode(BasicStepChain.StepNode currentNode){

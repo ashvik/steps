@@ -1,12 +1,19 @@
 package com.step.core.collector;
 
 import com.step.core.PluginRequest;
+import com.step.core.chain.breaker.BreakDetails;
+import com.step.core.chain.jump.JumpDetails;
+import com.step.core.chain.repeater.RepeatDetails;
+import com.step.core.interceptor.event.ExecutionDecisionEvent;
+import com.step.core.interceptor.event.PluginEvent;
+import com.step.core.interceptor.event.impl.AutomatedRunnablePluginEvent;
+import com.step.core.interceptor.event.impl.BreakExecutionDecisionEvent;
+import com.step.core.interceptor.event.impl.JumpExecutionDecisionEvent;
+import com.step.core.interceptor.event.impl.RepeatExecutionDecisionEvent;
 import com.step.core.parameter.RequestParameterContainer;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by amishra on 7/4/14.
@@ -17,13 +24,17 @@ public class MappedRequestDetailsHolder {
     private String onFailure;
     private String expectedOutCome;
     private String stepExceptionHandler;
+    private String rootStep;
     private boolean canApplyGenericSteps = true;
     private List<String> preSteps = new ArrayList<String>();
     private List<String> postSteps = new ArrayList<String>();
     private RequestParameterContainer requestParameterContainer;
     private List<String> genericParameters = new ArrayList<String>();
     private List<String> inputTypes = new ArrayList<String>();
-    private Map<String, List<PluginRequest>> pluginRequest = new HashMap<String, List<PluginRequest>>();
+    private List<ExecutionDecisionEvent<BreakDetails>> breakExecutionDecisionEvents = new ArrayList<ExecutionDecisionEvent<BreakDetails>>();
+    private List<ExecutionDecisionEvent<JumpDetails>> jumpExecutionDecisionEvents = new ArrayList<ExecutionDecisionEvent<JumpDetails>>();
+    private List<ExecutionDecisionEvent<RepeatDetails>> repeatExecutionDecisionEvents = new ArrayList<ExecutionDecisionEvent<RepeatDetails>>();
+    private List<PluginEvent> autoPluginEvents = new ArrayList<PluginEvent>();
 
     public List<String> getPostSteps() {
         return postSteps;
@@ -73,14 +84,6 @@ public class MappedRequestDetailsHolder {
         this.onFailure = onFailure;
     }
 
-    public List<PluginRequest> getPluginsForRequest(String request) {
-        return pluginRequest.get(request);
-    }
-
-    public void addPluginRequests(String mappedRequest, List<PluginRequest> pluginRequests) {
-        this.pluginRequest.put(mappedRequest, pluginRequests);
-    }
-
     public RequestParameterContainer getRequestParameterContainer() {
         return requestParameterContainer;
     }
@@ -121,32 +124,47 @@ public class MappedRequestDetailsHolder {
         this.inputTypes = inputTypes;
     }
 
-    public void merge(MappedRequestDetailsHolder other){
-        this.mappedRequest = other.mappedRequest == null ? this.mappedRequest : other.mappedRequest ;
-        this.canApplyGenericSteps = !this.canApplyGenericSteps ? this.canApplyGenericSteps : other.canApplyGenericSteps;
-        this.preSteps = other.preSteps.isEmpty() ? this.preSteps : other.preSteps;
-        this.postSteps = other.postSteps.isEmpty() ? this.postSteps : other.postSteps;
-        this.genericParameters = other.genericParameters.isEmpty() ? this.genericParameters : other.genericParameters;
-        this.inputTypes = other.inputTypes.isEmpty() ? this.inputTypes : other.inputTypes;
-        this.pluginRequest.putAll(other.pluginRequest);
-        this.requestParameterContainer = other.requestParameterContainer == null ? this.requestParameterContainer : other.requestParameterContainer;
-        this.expectedOutCome = other.expectedOutCome == null ? this.expectedOutCome : other.expectedOutCome;
-        this.stepExceptionHandler = other.stepExceptionHandler == null ? this.stepExceptionHandler : other.stepExceptionHandler;
+    public void addBreakExecutionDecisionEvent(BreakDetails breakDetails, String step){
+        BreakExecutionDecisionEvent breakExecutionDecisionEvent = new BreakExecutionDecisionEvent(breakDetails, step);
+        this.breakExecutionDecisionEvents.add(breakExecutionDecisionEvent);
     }
 
-    public MappedRequestDetailsHolder cloneWithDifferentMappedRequest(String mappedRequest){
-        MappedRequestDetailsHolder cloned = new MappedRequestDetailsHolder();
-        cloned.mappedRequest = mappedRequest;
-        cloned.canApplyGenericSteps = this.canApplyGenericSteps;
-        cloned.preSteps = this.preSteps;
-        cloned.postSteps = this.postSteps;
-        cloned.genericParameters = this.genericParameters;
-        cloned.inputTypes = this.inputTypes;
-        cloned.pluginRequest = this.pluginRequest;
-        cloned.requestParameterContainer = this.requestParameterContainer;
-        cloned.expectedOutCome = this.expectedOutCome;
-        cloned.stepExceptionHandler = this.stepExceptionHandler;
+    public void addJumpExecutionDecisionEvent(JumpDetails jumpDetails, String step){
+        JumpExecutionDecisionEvent jumpExecutionDecisionEvent = new JumpExecutionDecisionEvent(jumpDetails, step);
+        this.jumpExecutionDecisionEvents.add(jumpExecutionDecisionEvent);
+    }
 
-        return cloned;
+    public void addRepeatExecutionDecisionEvent(RepeatDetails repeatDetails, String step){
+        RepeatExecutionDecisionEvent repeatExecutionDecisionEvent = new RepeatExecutionDecisionEvent(repeatDetails, step);
+        this.repeatExecutionDecisionEvents.add(repeatExecutionDecisionEvent);
+    }
+
+    public List<ExecutionDecisionEvent<BreakDetails>> getBreakExecutionDecisionEvents(){
+        return this.breakExecutionDecisionEvents;
+    }
+
+    public List<ExecutionDecisionEvent<JumpDetails>> getJumpExecutionDecisionEvents(){
+        return this.jumpExecutionDecisionEvents;
+    }
+
+    public List<ExecutionDecisionEvent<RepeatDetails>> getRepeatExecutionDecisionEvents(){
+        return this.repeatExecutionDecisionEvents;
+    }
+
+    public void addPluginEvent(PluginRequest request){
+        AutomatedRunnablePluginEvent automatedRunnablePluginEvent = new AutomatedRunnablePluginEvent(request);
+        this.autoPluginEvents.add(automatedRunnablePluginEvent);
+    }
+
+    public List<PluginEvent> getAutoPluginEvents(){
+        return this.autoPluginEvents;
+    }
+
+    public String getRootStep() {
+        return rootStep;
+    }
+
+    public void setRootStep(String rootStep) {
+        this.rootStep = rootStep;
     }
 }

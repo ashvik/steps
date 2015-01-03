@@ -29,6 +29,7 @@ public class StepDefinitionAnnotationDefinitionBuilder extends AbstractAnnotatio
                     definition.addDefinition("name", name);
                     definition.addDefinition("next", next);
                     definition.addDefinition("dependencies", collectAnnotatedFields(cls));
+                    definition.addDefinition("plugins", collectPluginAnnotatedFields(cls));
 
                     definitions.add(definition);
                 }

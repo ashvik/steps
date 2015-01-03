@@ -49,8 +49,11 @@ public class BasicStepInformationService implements StepInformationService {
 
         if(stepChainInfo == null){
             StepChain chain = stepRepository.getStepExecutionChainForRequest(request);
+            String alias = stepRepository.getAliasForRequest(request);
             stepChainInfo = new StepChainInfo();
             stepChainInfo.prepareStepChainInfo(chain);
+            if(alias != null)
+                stepChainInfo.setAlias(alias);
             stepChainInfoMap.put(request, stepChainInfo);
         }
         return stepChainInfo;
@@ -172,6 +175,8 @@ public class BasicStepInformationService implements StepInformationService {
             }
             content = content.replaceAll("\\$STEPS\\$", builder.toString());
 
+            content = content.replaceAll("\\$ALIAS\\$", stepChainInfo.getAlias()==null?"<span class=\"label label-info\">N/A</span>" : "<span class=\"label label-info\">"+stepChainInfo.getAlias()+"</span>");
+
             content = content.replaceAll("\\$DESCRIPTION\\$",description == null ? "N/A" : description);
 
             builder = new StringBuilder();
@@ -192,6 +197,7 @@ public class BasicStepInformationService implements StepInformationService {
                 builder.append("<span class=\"label label-info\">N/A</span>");
             }else{
                 for(String plugin : stepChainInfo.getPlugIns()){
+                    plugin = stepRepository.getRequestForAlias(plugin) == null ? plugin : stepRepository.getRequestForAlias(plugin);
                     builder.append("<a href=\""+plugin+".html\">"+"<span class=\"label label-info\">"+plugin+"</span></a>&nbsp;\n");
                     plugins++;
                 }

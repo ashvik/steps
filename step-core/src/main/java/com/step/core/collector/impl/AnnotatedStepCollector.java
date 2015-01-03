@@ -18,13 +18,6 @@ import java.util.List;
  */
 public class AnnotatedStepCollector implements StepCollector{
     private AnnotationDefinitionCollectorApplier applyStepDefinitionCollector = new ApplyStepDefinitionCollector();
-
-    private AnnotationDefinitionCollectorApplier applyStepJumperCollector = new ApplyStepJumperCollector();
-
-    private AnnotationDefinitionCollectorApplier applyChainBreakerCollector = new ApplyChainBreakerCollector();
-
-    private AnnotationDefinitionCollectorApplier applyRepeaterCollector = new ApplyStepRepeaterCollector();
-
     private AnnotationDefinitionCollectorApplier applyMultiScopedCollector = new ApplyMultiScopedCollector();
 
     @Override
@@ -32,9 +25,6 @@ public class AnnotatedStepCollector implements StepCollector{
         List<StepDefinitionHolder> definitions = new ArrayList<StepDefinitionHolder>();
         String[] stepPackages = conf.getStepPackages();
         definitions.addAll(applyStepDefinitionCollector.apply(stepPackages));
-        definitions.addAll(applyStepJumperCollector.apply(stepPackages));
-        definitions.addAll(applyChainBreakerCollector.apply(stepPackages));
-        definitions.addAll(applyRepeaterCollector.apply(stepPackages));
         definitions.addAll(applyMultiScopedCollector.apply(stepPackages));
 
         return definitions;

@@ -1,5 +1,6 @@
 package com.step.core.annotations.builder.impl;
 
+import com.step.core.annotations.Plugin;
 import com.step.core.annotations.StepDependency;
 import com.step.core.annotations.builder.AnnotationDefinitionBuilder;
 import com.step.core.utils.AnnotatedField;
@@ -29,6 +30,20 @@ public abstract class AbstractAnnotationDefinitionBuilder implements AnnotationD
             StepDependency sd = field.getAnnotation(StepDependency.class);
             if(sd != null){
                 annotatedFields.add(new AnnotatedField(field.getType(), field.getName(), sd.name()));
+            }
+        }
+
+        return annotatedFields;
+    }
+
+    protected List<AnnotatedField> collectPluginAnnotatedFields(Class<?> root){
+        List<AnnotatedField> annotatedFields = new ArrayList<AnnotatedField>();
+        Field[] fields = root.getDeclaredFields();
+
+        for(Field field : fields){
+            Plugin plugin = field.getAnnotation(Plugin.class);
+            if(plugin != null){
+                annotatedFields.add(new AnnotatedField(field.getType(), field.getName(), plugin.request()));
             }
         }
 

@@ -3,15 +3,17 @@ package com.step.core.executor.impl;
 import com.step.core.ResponseLessStep;
 import com.step.core.ResponsiveStep;
 import com.step.core.chain.StepChain;
+import com.step.core.chain.breaker.BreakDetails;
 import com.step.core.chain.impl.BasicStepChain;
 import com.step.core.chain.jump.JumpDetails;
-import com.step.core.conditions.BreakCondition;
-import com.step.core.conditions.JumpCondition;
-import com.step.core.conditions.RepeatBreakCondition;
+import com.step.core.chain.repeater.RepeatDetails;
 import com.step.core.context.StepExecutionContext;
 import com.step.core.exceptions.StepExecutionException;
 import com.step.core.exceptions.handler.StepExceptionHandler;
 import com.step.core.executor.StepExecutor;
+import com.step.core.interceptor.event.ExecutionDecisionEvent;
+import com.step.core.interceptor.event.PluginEvent;
+import com.step.core.interceptor.event.StepEventType;
 import com.step.core.io.ExecutionResult;
 import com.step.core.utils.StepExecutionUtil;
 import org.apache.commons.logging.Log;
@@ -43,7 +45,6 @@ public class BasicStepExecutor implements StepExecutor {
             stepExceptionHandlerClass = StepExecutionUtil.loadClass(chain.getStepExceptionHandler().getName(), classLoader);
         }
 
-
         while (true) {
             Object step = null;
             originalStepClass = currentNode.getStepClass();
@@ -54,7 +55,11 @@ public class BasicStepExecutor implements StepExecutor {
             }
             step = stepClass.newInstance();
             StepExecutionUtil.makeRichStepObject(step,
-                    chain.getDependenciesForStep(stepClass), context);
+                    chain.getDependenciesForStep(originalStepClass), chain.getAnnotatedPluginsForStep(originalStepClass), context);
+
+            //Run plugin request automatically if configured before execution of particular step.
+            List<PluginEvent> pluginEvents = context.getAutomatedPluginEvent();
+            runPluginsAutomatically(pluginEvents, chain.getStepName(originalStepClass), StepEventType.PRE_EVENT);
 
             if (step instanceof ResponsiveStep) {
                 ResponsiveStep rs = (ResponsiveStep) step;
@@ -100,6 +105,9 @@ public class BasicStepExecutor implements StepExecutor {
                 throw new StepExecutionException(stepClass,
                         "Step can only be the instanceof ResponsiveStep or ResponseLessStep.");
             }
+
+            //Run plugin request automatically if configured after execution of particular step.
+            runPluginsAutomatically(pluginEvents, chain.getStepName(originalStepClass), StepEventType.POST_EVENT);
 
             if(moveToStep != null){
                 currentNode = moveToStep;
@@ -174,17 +182,14 @@ public class BasicStepExecutor implements StepExecutor {
     private String checkJumpCondition(StepChain chain, Class<?> stepClass,
                                       StepExecutionContext context) throws IllegalAccessException,
             InstantiationException {
-        List<Class<?>> condition = chain.getJumpConditionClassForStep(stepClass);
         String jumpTo = null;
 
-        if (condition != null) {
-            for(int i=0 ; i<condition.size() ; i++){
-                JumpCondition jumpCondition = (JumpCondition) condition.get(i)
-                        .newInstance();
-                jumpCondition.setStepExecutionContext(context);
-                boolean res = jumpCondition.check();
+        List<ExecutionDecisionEvent<JumpDetails>> jumpExecutionDecisionEvents = context.getJumpExecutionDecisionEvents();
+        for(ExecutionDecisionEvent<JumpDetails> jumpExecutionDecisionEvent : jumpExecutionDecisionEvents){
+            if(jumpExecutionDecisionEvent.getStep().equals(chain.getStepName(stepClass))){
+                boolean res = jumpExecutionDecisionEvent.runEvent(context.getClassLoader());
 
-                JumpDetails info = chain.getJumpDetailsForStep(stepClass).get(i);
+                JumpDetails info = jumpExecutionDecisionEvent.getDecisionDetails();
                 if (info == null) {
                     throw new IllegalStateException(
                             "Jump info should be configured if condition is present.");
@@ -208,16 +213,11 @@ public class BasicStepExecutor implements StepExecutor {
     private void checkBreakCondition(StepChain chain, Class<?> stepClass,
                                      StepExecutionContext context) throws IllegalAccessException,
             InstantiationException, ClassNotFoundException {
-        List<Class<?>> condition = chain.getBreakConditionClassForStep(stepClass);
-        ClassLoader classLoader = context.getClassLoader();
 
-        if (condition != null) {
-            for(int i=0 ; i<condition.size() ; i++){
-                BreakCondition breakCondition = classLoader != null ? (BreakCondition)StepExecutionUtil.loadClass(condition.get(i).getName(),classLoader).newInstance():
-                        (BreakCondition) condition.get(i)
-                        .newInstance();
-                breakCondition.setStepExecutionContext(context);
-                boolean res = breakCondition.check();
+        List<ExecutionDecisionEvent<BreakDetails>> breakExecutionDecisionEvents = context.getBreakExecutionDecisionEvents();
+        for(ExecutionDecisionEvent<BreakDetails> breakExecutionDecisionEvent : breakExecutionDecisionEvents){
+            if(breakExecutionDecisionEvent.getStep().equals(chain.getStepName(stepClass))){
+                boolean res = breakExecutionDecisionEvent.runEvent(context.getClassLoader());
 
                 if (res) {
                     context.breakStepChainExecution();
@@ -230,22 +230,29 @@ public class BasicStepExecutor implements StepExecutor {
     private String checkRepeatBreakCondition(StepChain chain,
                                              Class<?> stepClass, StepExecutionContext context)
             throws IllegalAccessException, InstantiationException, ClassNotFoundException {
-        Class condition = chain.getRepeatBreakConditionClassForStep(stepClass);
-        ClassLoader classLoader = context.getClassLoader();
 
-        if (condition != null) {
-            RepeatBreakCondition breakCondition = classLoader != null ? (RepeatBreakCondition)StepExecutionUtil.loadClass(condition.getName(),classLoader).newInstance():
-                    (RepeatBreakCondition) condition.newInstance();
-            breakCondition.setStepExecutionContext(context);
-            boolean res = breakCondition.check();
+        List<ExecutionDecisionEvent<RepeatDetails>> repeatExecutionDecisionEvents = context.getRepeatExecutionDecisionEvents();
+        for(ExecutionDecisionEvent<RepeatDetails> repeatDetailsExecutionDecisionEvent : repeatExecutionDecisionEvents){
+            if(repeatDetailsExecutionDecisionEvent.getStep().equals(chain.getStepName(stepClass))){
+                boolean res = repeatDetailsExecutionDecisionEvent.runEvent(context.getClassLoader());
+                RepeatDetails repeatDetails = repeatDetailsExecutionDecisionEvent.getDecisionDetails();
 
-            if (!res) {
-                return chain.getRepeatDetailsForStep(stepClass)
-                        .getRepeatFromStep();
+                if (!res) {
+                    return repeatDetails.getRepeatFromStep();
+                }
             }
         }
 
         return null;
 
+    }
+
+    private void runPluginsAutomatically(List<PluginEvent> pluginEvents, String currentStep, StepEventType stepEventType){
+        for(PluginEvent pluginEvent : pluginEvents){
+            if(pluginEvent.getStep().equals(currentStep) && pluginEvent.getEventType()==stepEventType){
+                pluginEvent.runPlugins();
+                break;
+            }
+        }
     }
 }

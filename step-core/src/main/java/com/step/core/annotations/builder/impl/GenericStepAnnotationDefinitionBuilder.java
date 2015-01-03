@@ -28,6 +28,7 @@ public class GenericStepAnnotationDefinitionBuilder extends AbstractAnnotationDe
                     definition.addDefinition("type", type);
                     definition.addDefinition("priority", priority);
                     definition.addDefinition("dependencies", collectAnnotatedFields(cls));
+                    definition.addDefinition("plugins", collectPluginAnnotatedFields(cls));
 
                     definitions.add(definition);
                 }

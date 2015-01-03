@@ -21,4 +21,5 @@ public interface StepDefinitionProvider {
     List<StepDefinitionHolder> getGenericPostSteps();
     Set<String> allRequests();
     Set<String> allSteps();
+    Set<String> allRegisteredSteps();
 }

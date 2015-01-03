@@ -14,6 +14,7 @@ public class StepRequestMapper {
     private List<MapRequest> mapRequests = new ArrayList<MapRequest>();
     private List<MultiScopedStep> multiScopedSteps = new ArrayList<MultiScopedStep>();
     private List<GenericParameterConfiguration> genericParameterConfigurations = new ArrayList<GenericParameterConfiguration>();
+    private List<Alias> requestAliases = new ArrayList<Alias>();
 
     public void add(MapRequest mr){
         this.mapRequests.add(mr);
@@ -37,5 +38,13 @@ public class StepRequestMapper {
 
     public List<GenericParameterConfiguration> getGenericParameterConfigurations(){
         return genericParameterConfigurations;
+    }
+
+    public void addRequestAlias(Alias alias){
+        this.requestAliases.add(alias);
+    }
+
+    public List<Alias> getRequestAliases(){
+        return this.requestAliases;
     }
 }

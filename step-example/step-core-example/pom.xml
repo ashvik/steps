@@ -42,6 +42,11 @@
             <artifactId>external</artifactId>
             <version>1.0</version>
         </dependency>
+        <dependency>
+            <groupId>com.step.spring.support</groupId>
+            <artifactId>step-spring-support</artifactId>
+            <version>1.0</version>
+        </dependency>
     </dependencies>
 
 

@@ -82,6 +82,24 @@ public class StepConfigurationParser {
             }
         }
 
+        NodeList requestAliases = doc.getElementsByTagName("requestAliases");
+        if(requestAliases != null ){
+            Node node = requestAliases.item(0);
+            Element ele = (Element)node;
+            if(ele != null){
+                NodeList aliases = ele.getElementsByTagName("alias");
+                for(int i=0 ; i<aliases.getLength() ; i++){
+                    Node mss = aliases.item(i);
+                    Element alias = (Element)mss;
+
+                    if(alias != null){
+                        Alias al = new Alias(alias.getAttribute("name"), alias.getAttribute("request"));
+                        root.addRequestAlias(al);
+                    }
+                }
+            }
+        }
+
         return root;
     }
 
@@ -109,7 +127,7 @@ public class StepConfigurationParser {
         populateInterceptorSteps(mr, postStepNodes, false);
 
         //populating pluginRequests....
-        NodeList pluginRequestsNode = ele.getElementsByTagName("pluginRequest");
+        NodeList pluginRequestsNode = ele.getElementsByTagName("automatedPluginExecution");
         populatePluginRequests(mr, pluginRequestsNode);
 
         //populating jumpers....
@@ -248,12 +266,21 @@ public class StepConfigurationParser {
         if(nodes != null && nodes.getLength()>0){
             for(int i=0 ; i<nodes.getLength() ; i++){
                 Element e = (Element)nodes.item(i);
-                Plugins p = new Plugins(e.getAttribute("name"));
-                String runAuto = e.getAttribute("runAutomatically");
-                if(runAuto != null && !runAuto.isEmpty()){
-                    p.setApplyAutomatically(Boolean.valueOf(runAuto));
+                NodeList executablePlugins = e.getElementsByTagName("execute");
+
+                for(int j=0 ; j<executablePlugins.getLength() ; j++){
+                    Element exe = (Element)executablePlugins.item(j);
+                    Plugins plugins = new Plugins(exe.getAttribute("interceptingStep"));
+                    plugins.setType(exe.getAttribute("type"));
+                    NodeList pls = exe.getElementsByTagName("plugin");
+
+                    for(int k=0 ; k<pls.getLength() ; k++){
+                        Node p = pls.item(k);
+                        plugins.addPlugin(p.getTextContent());
+                    }
+
+                    mr.addPlugin(plugins);
                 }
-                mr.addPlugin(p);
             }
         }
     }

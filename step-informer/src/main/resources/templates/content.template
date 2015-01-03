@@ -12,6 +12,12 @@
 </td>
 </tr>
 <tr>
+<td  >&nbsp;Alias&nbsp;</td>
+<td>
+	$ALIAS$
+</td>
+</tr>
+<tr>
 <td >&nbsp;Description&nbsp;</td>
 <td>
     <div class="alert alert-info">$DESCRIPTION$</div>

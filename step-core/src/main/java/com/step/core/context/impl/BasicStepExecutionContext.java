@@ -1,13 +1,18 @@
 package com.step.core.context.impl;
 
 import com.step.core.Attributes;
-import com.step.core.PluginRequest;
 import com.step.core.chain.StepChain;
+import com.step.core.chain.breaker.BreakDetails;
+import com.step.core.chain.jump.JumpDetails;
+import com.step.core.chain.repeater.RepeatDetails;
+import com.step.core.collector.MappedRequestDetailsHolder;
 import com.step.core.container.StepExecutionContainer;
 import com.step.core.container.impl.DefaultStepExecutionContainer;
 import com.step.core.context.StepExecutionContext;
 import com.step.core.executor.StepExecutorProvider;
 import com.step.core.factory.ObjectFactory;
+import com.step.core.interceptor.event.ExecutionDecisionEvent;
+import com.step.core.interceptor.event.PluginEvent;
 import com.step.core.io.ExecutionResult;
 import com.step.core.io.StepInput;
 import com.step.core.parameter.RequestParameterContainer;
@@ -33,10 +38,13 @@ public class BasicStepExecutionContext implements StepExecutionContext {
     private boolean breakStepChain;
     private StepExecutorProvider stepExecutorProvider;
     private StepRepository stepRepository;
-    private List<PluginRequest> applicablePluginRequestNew = new ArrayList<PluginRequest>();
     private StepExecutionContainer stepExecutionContainer = new LocalStepExecutionContainer();
     private RequestParameterContainer requestParameterContainer;
     private ClassLoader classLoader;
+    private List<ExecutionDecisionEvent<BreakDetails>> breakExecutionDecisionEvents = new ArrayList<ExecutionDecisionEvent<BreakDetails>>();
+    private List<ExecutionDecisionEvent<JumpDetails>> jumpExecutionDecisionEvents = new ArrayList<ExecutionDecisionEvent<JumpDetails>>();
+    private List<ExecutionDecisionEvent<RepeatDetails>> repeatExecutionDecisionEvents = new ArrayList<ExecutionDecisionEvent<RepeatDetails>>();
+    private List<PluginEvent> autoPluginEvents = new ArrayList<PluginEvent>();
 
     @Override
     public void put(String name, Object obj) {
@@ -103,38 +111,18 @@ public class BasicStepExecutionContext implements StepExecutionContext {
     }
 
     @Override
-    public void setApplicablePluginRequest(List<PluginRequest> applicablePluginRequest) {
-        this.applicablePluginRequestNew = applicablePluginRequest;
-    }
-
-    @Override
     public ExecutionResult applyPluginRequest(String request, Object... input) throws Exception{
-        for(PluginRequest pluginRequest : applicablePluginRequestNew){
-            if(pluginRequest.getRequest().equals(request)){
-                return stepExecutionContainer.submit(request, input);
-            }
-        }
-
-        throw new IllegalStateException("Request can not apply plugin request '"+request+"', make sure it is configured.");
+        String aliasRequest = stepRepository.getRequestForAlias(request);
+        request = aliasRequest != null ? aliasRequest : request;
+        return stepExecutionContainer.submit(request, input);
     }
 
     @Override
     public ExecutionResult applyPluginRequest(String request, boolean allowInputTransfer, boolean applyGenericSteps, Object... input) throws Exception{
-        LocalStepInput localStepInput = new LocalStepInput(request);
-        localStepInput.setAllowInputTransfer(allowInputTransfer);
-        localStepInput.setApplyGenericSteps(applyGenericSteps);
-
-        for(Object in : input){
-            localStepInput.setInput(in);
-        }
-
-        for(PluginRequest pluginRequest : applicablePluginRequestNew){
-            if(pluginRequest.getRequest().equals(request)){
-                return stepExecutionContainer.submit(localStepInput);
-            }
-        }
-
-        throw new IllegalStateException("Request can not apply plugin request '"+request+"', make sure it is configured.");
+        LocalStepInput localStepInput = createLocalStepInput(request, allowInputTransfer, applyGenericSteps, input);
+        String aliasRequest = stepRepository.getRequestForAlias(request);
+        localStepInput = aliasRequest != null ? createLocalStepInput(aliasRequest, allowInputTransfer, applyGenericSteps, input) : localStepInput;
+        return stepExecutionContainer.submit(localStepInput);
     }
 
     @Override
@@ -163,13 +151,72 @@ public class BasicStepExecutionContext implements StepExecutionContext {
     }
 
     @Override
-    public List<PluginRequest> getPluginRequests() {
-        return applicablePluginRequestNew;
+    public List<ExecutionDecisionEvent<BreakDetails>> getBreakExecutionDecisionEvents() {
+        return breakExecutionDecisionEvents;
+    }
+
+    @Override
+    public List<ExecutionDecisionEvent<JumpDetails>> getJumpExecutionDecisionEvents() {
+        return jumpExecutionDecisionEvents;
+    }
+
+    @Override
+    public List<ExecutionDecisionEvent<RepeatDetails>> getRepeatExecutionDecisionEvents() {
+        return repeatExecutionDecisionEvents;
+    }
+
+    @Override
+    public void setBreakExecutionDecisionEvents(List<ExecutionDecisionEvent<BreakDetails>> breakExecutionDecisionEvents) {
+        for(ExecutionDecisionEvent<BreakDetails> breakExecutionDecisionEvent : breakExecutionDecisionEvents){
+            breakExecutionDecisionEvent.setStepExecutionContext(this);
+            this.breakExecutionDecisionEvents.add(breakExecutionDecisionEvent);
+        }
+    }
+
+    @Override
+    public void setJumpExecutionDecisionEvents(List<ExecutionDecisionEvent<JumpDetails>> jumpExecutionDecisionEvents) {
+        for(ExecutionDecisionEvent<JumpDetails> jumpExecutionDecisionEvent : jumpExecutionDecisionEvents){
+            jumpExecutionDecisionEvent.setStepExecutionContext(this);
+            this.jumpExecutionDecisionEvents.add(jumpExecutionDecisionEvent);
+        }
+    }
+
+    @Override
+    public void setRepeatExecutionDecisionEvents(List<ExecutionDecisionEvent<RepeatDetails>> repeatExecutionDecisionEvents) {
+        for(ExecutionDecisionEvent<RepeatDetails> repeatExecutionDecisionEvent : repeatExecutionDecisionEvents){
+            repeatExecutionDecisionEvent.setStepExecutionContext(this);
+            this.repeatExecutionDecisionEvents.add(repeatExecutionDecisionEvent);
+        }
+    }
+
+    @Override
+    public List<PluginEvent> getAutomatedPluginEvent() {
+        return autoPluginEvents;
+    }
+
+    @Override
+    public void setAutomatedPluginEvent(List<PluginEvent> automatedPluginEvent) {
+        for(PluginEvent pluginEvent : automatedPluginEvent){
+            pluginEvent.setStepExecutionContext(this);
+            this.autoPluginEvents.add(pluginEvent);
+        }
     }
 
     @Override
     public void setRequestParameterContainer(RequestParameterContainer requestParameterContainer) {
         this.requestParameterContainer = requestParameterContainer;
+    }
+
+    private LocalStepInput createLocalStepInput(String request, boolean allowInputTransfer, boolean applyGenericSteps, Object... input){
+        LocalStepInput localStepInput = new LocalStepInput(request);
+        localStepInput.setAllowInputTransfer(allowInputTransfer);
+        localStepInput.setApplyGenericSteps(applyGenericSteps);
+
+        for(Object in : input){
+            localStepInput.setInput(in);
+        }
+
+        return localStepInput;
     }
 
     private class LocalStepExecutionContainer extends DefaultStepExecutionContainer {
@@ -205,8 +252,12 @@ public class BasicStepExecutionContext implements StepExecutionContext {
             context.setStepExecutorProvider(stepExecutorProvider);
 
             StepChain chain = stepRepository.getStepExecutionChainForRequestUsingGenericStepsFlag(input.getRequest(), allowGenericSteps);
-            context.setApplicablePluginRequest(chain.getPluginRequests());
+            MappedRequestDetailsHolder mappedRequestDetailsHolder = stepRepository.getMappedRequestDetails(input.getRequest());
             context.setRequestParameterContainer(chain.getRequestParameterContainer());
+            context.setBreakExecutionDecisionEvents(mappedRequestDetailsHolder.getBreakExecutionDecisionEvents());
+            context.setJumpExecutionDecisionEvents(mappedRequestDetailsHolder.getJumpExecutionDecisionEvents());
+            context.setRepeatExecutionDecisionEvents(mappedRequestDetailsHolder.getRepeatExecutionDecisionEvents());
+            context.setAutomatedPluginEvent(mappedRequestDetailsHolder.getAutoPluginEvents());
 
             return submit(context, chain, stepExecutorProvider);
         }

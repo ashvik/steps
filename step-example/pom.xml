@@ -13,7 +13,6 @@
     <packaging>pom</packaging>
     <modules>
         <module>step-core-example</module>
-        <module>step-web-example</module>
         <module>step-core-external</module>
     </modules>
 

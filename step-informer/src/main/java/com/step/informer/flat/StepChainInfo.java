@@ -1,6 +1,5 @@
 package com.step.informer.flat;
 
-import com.step.core.PluginRequest;
 import com.step.core.chain.StepChain;
 import com.step.core.chain.impl.BasicStepChain;
 import com.step.informer.flat.visitor.impl.BasicFlatInfoVisitor;
@@ -19,6 +18,7 @@ public class StepChainInfo {
     private List<String> inputs = new ArrayList<String>();
     private List<String> plugIns = new ArrayList<String>();
     private String expectedOutCome;
+    private String alias;
 
     public StepChainInfo(){}
 
@@ -49,9 +49,9 @@ public class StepChainInfo {
             }
         }
 
-        for(PluginRequest request : chain.getPluginRequests()){
+        /*for(PluginRequest request : chain.getPluginRequests()){
             plugIns.add(request.getRequest());
-        }
+        }*/
 
         expectedOutCome = chain.getExpectedOutComeClass();
     }
@@ -98,6 +98,14 @@ public class StepChainInfo {
 
     public String getExpectedOutCome() {
         return expectedOutCome;
+    }
+
+    public String getAlias() {
+        return alias;
+    }
+
+    public void setAlias(String alias) {
+        this.alias = alias;
     }
 
     private void handleInterceptorSteps(List<Class<?>> steps, StepChain chain, BasicFlatInfoVisitor visitor, String type){

@@ -1,6 +1,8 @@
 package com.step.core.utils;
 
+import com.step.core.PluginGateway;
 import com.step.core.context.StepExecutionContext;
+import com.step.core.io.ExecutionResult;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -13,7 +15,7 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 public abstract class StepExecutionUtil {
-    public static void makeRichStepObject(Object stepObject, List<AnnotatedField> fields, StepExecutionContext context){
+    public static void makeRichStepObject(Object stepObject, List<AnnotatedField> fields, List<AnnotatedField> plugins, StepExecutionContext context){
         for(AnnotatedField field : fields){
             String name = field.getAnnotatedName();
             Object dependency = null;
@@ -33,6 +35,18 @@ public abstract class StepExecutionUtil {
                 e.printStackTrace();
             }
         }
+
+        for(AnnotatedField field : plugins){
+            String name = field.getAnnotatedName();
+            try{
+                PluginGateway gateway = getPluginGateway(name, context);
+                Field f = stepObject.getClass().getDeclaredField(field.getFieldName());
+                f.setAccessible(true);
+                f.set(stepObject, gateway);
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+        }
     }
 
     public static Class loadClass(String classToLoad, ClassLoader classLoader) throws ClassNotFoundException {
@@ -41,5 +55,14 @@ public abstract class StepExecutionUtil {
         }
 
         return Class.forName(classToLoad);
+    }
+
+    private static PluginGateway getPluginGateway(final String name, final StepExecutionContext context){
+        return new PluginGateway() {
+            @Override
+            public ExecutionResult runPlugin(Object... inputs) throws Exception {
+                return context.applyPluginRequest(name, inputs);
+            }
+        };
     }
 }

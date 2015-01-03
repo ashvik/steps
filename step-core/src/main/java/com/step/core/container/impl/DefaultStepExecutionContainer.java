@@ -2,7 +2,7 @@ package com.step.core.container.impl;
 
 import com.step.core.Configuration;
 import com.step.core.chain.StepChain;
-import com.step.core.collector.StepDefinitionHolder;
+import com.step.core.collector.MappedRequestDetailsHolder;
 import com.step.core.container.StepExecutionContainer;
 import com.step.core.context.StepExecutionContext;
 import com.step.core.context.impl.BasicStepExecutionContext;
@@ -31,15 +31,19 @@ public class DefaultStepExecutionContainer implements StepExecutionContainer {
     public ExecutionResult submit(StepInput input) throws Exception {
         String req = input.getRequest();
         StepChain chain = stepRepository.getStepExecutionChainForRequest(req);
+        MappedRequestDetailsHolder mappedRequestDetailsHolder = stepRepository.getMappedRequestDetails(req);
         StepExecutionContext context = new BasicStepExecutionContext();
 
         context.setStepInput(input);
         context.setObjectFactory(this.objectFactory);
         context.setStepRepository(stepRepository);
         context.setStepExecutorProvider(stepExecutorProvider);
-        context.setApplicablePluginRequest(chain.getPluginRequests());
         context.setRequestParameterContainer(chain.getRequestParameterContainer());
         context.setClassLoader(input.getClassLoader());
+        context.setBreakExecutionDecisionEvents(mappedRequestDetailsHolder.getBreakExecutionDecisionEvents());
+        context.setJumpExecutionDecisionEvents(mappedRequestDetailsHolder.getJumpExecutionDecisionEvents());
+        context.setRepeatExecutionDecisionEvents(mappedRequestDetailsHolder.getRepeatExecutionDecisionEvents());
+        context.setAutomatedPluginEvent(mappedRequestDetailsHolder.getAutoPluginEvents());
         StepExecutor executor = stepExecutorProvider.provide(chain, context);
         return executor.execute(chain, context);
     }
@@ -72,10 +76,6 @@ public class DefaultStepExecutionContainer implements StepExecutionContainer {
     public void init() {
         stepExecutorProvider = new BasicStepExecutorProvider();
         stepExecutorProvider.initInterceptors(configuration);
-    }
-
-    protected StepDefinitionHolder getStepDefinition(String request){
-       return stepRepository.getRootStepForRequest(request);
     }
 
     protected ExecutionResult submit(StepExecutionContext context, StepChain chain, StepExecutorProvider stepExecutorProvider) throws Exception {

@@ -2,7 +2,6 @@ package com.step.core.collector.apply.impl;
 
 import com.step.core.annotations.builder.impl.MultiScopedAnnotationDefinitionBuilder;
 import com.step.core.annotations.collector.BasicAnnotationDefinitionCollector;
-import com.step.core.collector.MappedRequestDetailsHolder;
 import com.step.core.collector.StepDefinitionHolder;
 import com.step.core.collector.apply.AnnotationDefinitionCollectorApplier;
 import com.step.core.utils.AnnotatedDefinition;
@@ -31,8 +30,7 @@ public class ApplyMultiScopedCollector implements AnnotationDefinitionCollectorA
             String[] scopes = (String[])ad.getDefinition("scopes");
             String[] next = (String[])ad.getDefinition("next");
             StepDefinitionHolder holder = new StepDefinitionHolder(names, ad.getAnnotatedClass());
-            MappedRequestDetailsHolder requestDetailsHolder = new MappedRequestDetailsHolder();
-            holder.setMappedRequestDetailsHolder(requestDetailsHolder);
+            holder.setPlugins((List)ad.getDefinition("plugins"));
 
             for(int i=0 ; i<scopes.length ; i++){
                 holder.addScope(scopes[i], next[i]);

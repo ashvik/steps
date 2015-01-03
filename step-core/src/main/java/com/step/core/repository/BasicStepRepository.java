@@ -1,7 +1,8 @@
 package com.step.core.repository;
 
 import com.step.core.Configuration;
-import com.step.core.PluginRequest;
+import com.step.core.alias.RequestAliasProvider;
+import com.step.core.alias.impl.BasicRequestAliasProvider;
 import com.step.core.chain.StepChain;
 import com.step.core.chain.impl.BasicStepChain;
 import com.step.core.collector.MappedRequestDetailsHolder;
@@ -9,15 +10,20 @@ import com.step.core.collector.StepDefinitionHolder;
 import com.step.core.collector.impl.AnnotatedGenericStepCollector;
 import com.step.core.collector.impl.AnnotatedStepCollector;
 import com.step.core.collector.impl.XmlStepCollector;
+import com.step.core.exceptions.PluginRequestNotFoundException;
 import com.step.core.exceptions.RequestParameterNotFoundException;
 import com.step.core.exceptions.StepChainException;
+import com.step.core.exceptions.StepClassNotFoundException;
 import com.step.core.parameter.GenericRequestParameterProvider;
 import com.step.core.parameter.ParameterNameValueHolder;
 import com.step.core.parameter.RequestParameterContainer;
 import com.step.core.parameter.impl.BasicGenericRequestParameterProvider;
 import com.step.core.parameter.impl.BasicRequestParameterContainer;
+import com.step.core.provider.MappedRequestDetailsProvider;
 import com.step.core.provider.StepDefinitionProvider;
+import com.step.core.provider.impl.BasicMappedRequestDetailsProvider;
 import com.step.core.provider.impl.BasicStepDefinitionProvider;
+import com.step.core.utils.AnnotatedField;
 
 import java.util.Collections;
 import java.util.List;
@@ -30,6 +36,8 @@ public class BasicStepRepository implements StepRepository {
     private Configuration configuration;
     private StepDefinitionProvider stepDefinitionProvider;
     private GenericRequestParameterProvider genericRequestParameterProvider;
+    private RequestAliasProvider requestAliasProvider;
+    private MappedRequestDetailsProvider mappedRequestDetailsProvider;
 
     @Override
     public StepDefinitionHolder getRootStepForRequest(String request) {
@@ -48,22 +56,20 @@ public class BasicStepRepository implements StepRepository {
 
     @Override
     public StepChain getStepExecutionChainForRequestUsingGenericStepsFlag(String req, boolean canUseGenericSteps) {
-        StepDefinitionHolder rootHolder = stepDefinitionProvider.getStepDefinitionByRequest(req);
-        MappedRequestDetailsHolder requestDetailsHolder = rootHolder.getMappedRequestDetailsHolder();
+        MappedRequestDetailsHolder requestDetailsHolder = mappedRequestDetailsProvider.getMappedRequestDetails(req);
+        StepDefinitionHolder rootHolder = stepDefinitionProvider.getStepDefinitionByStepName(requestDetailsHolder.getRootStep());
         StepDefinitionHolder holder = rootHolder;
         StepChain chain = new BasicStepChain();
         String request = requestDetailsHolder.getMappedRequest();
         boolean canApplyGenSteps = canUseGenericSteps && requestDetailsHolder.isCanApplyGenericSteps();
 
         addCommonStepsInChainIfApplicable(chain, canApplyGenSteps, true, request, requestDetailsHolder.getPreSteps());
-
         chain.addStep(holder, request);
-        RequestParameterContainer requestParameterContainer = rootHolder.getMappedRequestDetailsHolder().getRequestParameterContainer();
-        List<String> genericPrams = rootHolder.getMappedRequestDetailsHolder().getGenericParameters();
-        String expectedOutCome = rootHolder.getMappedRequestDetailsHolder().getExpectedOutCome();
-        List<String> inputTypes = rootHolder.getMappedRequestDetailsHolder().getInputTypes();
-        String stepExceptionHandler = rootHolder.getMappedRequestDetailsHolder().getStepExceptionHandler();
-        List<PluginRequest> pluginRequests = rootHolder.getMappedRequestDetailsHolder().getPluginsForRequest(req);
+        RequestParameterContainer requestParameterContainer = requestDetailsHolder.getRequestParameterContainer();
+        List<String> genericPrams = requestDetailsHolder.getGenericParameters();
+        String expectedOutCome = requestDetailsHolder.getExpectedOutCome();
+        List<String> inputTypes = requestDetailsHolder.getInputTypes();
+        String stepExceptionHandler = requestDetailsHolder.getStepExceptionHandler();
 
         if(inputTypes != null && !inputTypes.isEmpty()){
             chain.setInputTypes(inputTypes);
@@ -73,9 +79,6 @@ public class BasicStepRepository implements StepRepository {
         }
         if(expectedOutCome != null){
             chain.setExpectedOutCome(expectedOutCome);
-        }
-        if(pluginRequests != null){
-            chain.setPluginRequests(pluginRequests);
         }
         if(requestParameterContainer != null){
             populateGenericRequestParams(requestParameterContainer, genericPrams);
@@ -89,7 +92,17 @@ public class BasicStepRepository implements StepRepository {
         boolean isFinished = false;
 
         while(!isFinished){
-            String next = holder.getNextStepForScope(request);
+            String scope = requestAliasProvider.getAliasForRequest(request);
+            String next;
+            if(scope != null){
+                next = holder.getNextStepForScope(scope);
+                if(next == null){
+                    next = holder.getNextStepForScope(request);
+                }
+            }else{
+                next = holder.getNextStepForScope(request);
+            }
+
             if(next != null && !next.isEmpty()){
                 holder = this.stepDefinitionProvider.getStepDefinitionByStepName(next);
                 if(holder == null){
@@ -118,12 +131,22 @@ public class BasicStepRepository implements StepRepository {
 
     @Override
     public Set<String> getAllRequestsByName() {
-        return Collections.unmodifiableSet(this.stepDefinitionProvider.allRequests());
+        return Collections.unmodifiableSet(this.mappedRequestDetailsProvider.getAllRequestNames());
     }
 
     @Override
     public Set<String> getAllStepsByName() {
         return Collections.unmodifiableSet(this.stepDefinitionProvider.allSteps());
+    }
+
+    @Override
+    public String getAliasForRequest(String request) {
+        return requestAliasProvider.getAliasForRequest(request);
+    }
+
+    @Override
+    public String getRequestForAlias(String alias) {
+        return requestAliasProvider.getRequestForAlias(alias);
     }
 
     @Override
@@ -134,9 +157,17 @@ public class BasicStepRepository implements StepRepository {
     @Override
     public void buildRepository() {
         genericRequestParameterProvider = new BasicGenericRequestParameterProvider();
+        requestAliasProvider = new BasicRequestAliasProvider();
+        mappedRequestDetailsProvider = new BasicMappedRequestDetailsProvider();
         stepDefinitionProvider = new BasicStepDefinitionProvider(new AnnotatedStepCollector(),
-                new AnnotatedGenericStepCollector(), new XmlStepCollector(genericRequestParameterProvider));
+                new AnnotatedGenericStepCollector(), new XmlStepCollector(genericRequestParameterProvider, requestAliasProvider,mappedRequestDetailsProvider));
         stepDefinitionProvider.prepare(configuration);
+        validate();
+    }
+
+    @Override
+    public MappedRequestDetailsHolder getMappedRequestDetails(String req) {
+        return mappedRequestDetailsProvider.getMappedRequestDetails(req);
     }
 
     private void addCommonStepsInChainIfApplicable(StepChain chain, boolean canApply, boolean isPreStep, String request, List<String> steps){
@@ -163,6 +194,54 @@ public class BasicStepRepository implements StepRepository {
             }
             for(ParameterNameValueHolder param : params){
                 requestParameterContainer.addRequestParameter(param.getName(), param.getValues());
+            }
+        }
+    }
+
+    private void validate(){
+        Set<String> allRegisteredSteps = stepDefinitionProvider.allRegisteredSteps();
+        Set<String> allRequests = mappedRequestDetailsProvider.getAllRequestNames();
+        Set<String> allSteps = stepDefinitionProvider.allSteps();
+
+        for(String step : allSteps){
+            StepDefinitionHolder stepDefinitionHolder = stepDefinitionProvider.getStepDefinitionByStepName(step);
+            String next = stepDefinitionHolder.getNextStep();
+            Set<String> nextScopeSteps = stepDefinitionHolder.getNextStepsForAllApplicableScopes();
+            String request = null;
+            List<AnnotatedField> annotatedPlugins = stepDefinitionHolder.getPlugins();
+
+            for(AnnotatedField annotatedField : annotatedPlugins){
+                String pluginReq = annotatedField.getAnnotatedName();
+                if(!allRequests.contains(pluginReq) && requestAliasProvider.getRequestForAlias(pluginReq) == null){
+                    throw new PluginRequestNotFoundException("Plugin request '"+pluginReq+"' not found, configured in step '"+stepDefinitionHolder.getName()+"'.");
+                }
+            }
+
+            /*if(stepDefinitionHolder.getRootStepOfRequest() != null){
+                request = stepDefinitionHolder.getRootStepOfRequest();
+                if(request != null && !request.isEmpty()){
+                    List<PluginRequest> plugins = mappedRequestDetailsProvider.getMappedRequestDetails(request).getPluginsForRequest(request);
+                    if(plugins != null && !plugins.isEmpty()){
+                        for(PluginRequest pluginRequest : plugins){
+                            if(!allRequests.contains(pluginRequest.getRequest()) && requestAliasProvider.getRequestForAlias(pluginRequest.getRequest()) == null){
+                                throw new PluginRequestNotFoundException("Plugin request '"+pluginRequest.getRequest()+"' not found, configured in request '"+request+"'.");
+                            }
+                        }
+                    }
+                }
+            }*/
+            if(stepDefinitionHolder.getStepClass() == null){
+                throw new StepClassNotFoundException("No Step Class found for step having name '"+stepDefinitionHolder.getName()+"'"+(request == null ? "." : "configured in request '"+request+"'."));
+            }if(next != null && !next.isEmpty()){
+                if(!allRegisteredSteps.contains(next)){
+                    throw new StepClassNotFoundException("No Step Class found for step having name '"+next+"'"+(request == null ? "." : "configured in request '"+request+"'."));
+                }
+            }if(!nextScopeSteps.isEmpty()){
+                for(String nextScopeStep : nextScopeSteps){
+                    if(!allRegisteredSteps.contains(nextScopeStep)){
+                        throw new StepClassNotFoundException("No Step Class found for step having name '"+nextScopeStep+"'"+(request == null ? "." : "configured in request '"+request+"'."));
+                    }
+                }
             }
         }
     }

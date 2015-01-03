@@ -32,6 +32,7 @@ public class ApplyGenericStepCollector implements AnnotationDefinitionCollectorA
             StepDefinitionHolder holder = new StepDefinitionHolder(name, ad.getAnnotatedClass());
             holder.setGenericStepType(type);
             holder.setAnnotatedFields((List)ad.getDefinition("dependencies"));
+            holder.setPlugins((List)ad.getDefinition("plugins"));
             orderedSteps.add(new PrioritizedStepDefinition(priority, holder));
             Collections.sort(orderedSteps, new PriorityComparator());
         }

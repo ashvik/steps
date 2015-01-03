@@ -1,25 +1,37 @@
 package com.step.core.xml.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by amishra on 10/15/14.
  */
 public class Plugins {
-    private String plugin;
-    private boolean applyAutomatically;
+    private String step;
+    private List<String> plugins = new ArrayList<String>();
+    private String type;
 
-    public Plugins(String plugin){
-        this.plugin = plugin;
+    public Plugins(String step){
+        this.step = step;
     }
 
-    public String getPlugin() {
-        return plugin;
+    public String getStep(){
+        return step;
     }
 
-    public boolean isApplyAutomatically() {
-        return applyAutomatically;
+    public List<String> getPlugins() {
+        return plugins;
     }
 
-    public void setApplyAutomatically(boolean applyAutomatically) {
-        this.applyAutomatically = applyAutomatically;
+    public void addPlugin(String plugIn){
+        this.plugins.add(plugIn);
+    }
+
+    public void setType(String type){
+        this.type = type == null || type.isEmpty() ? "PRE" : type;
+    }
+
+    public String getType(){
+        return this.type;
     }
 }

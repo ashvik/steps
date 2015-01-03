@@ -6,14 +6,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Created by amishra on 6/14/14.
+ * Created by amishra on 12/30/14.
  */
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE})
-public @interface StepJumper {
-    String forRequest();
-    String conditionClass();
-    String onSuccessJumpTo();
-    String onFailureJumpTo() default "";
+@Target({ElementType.FIELD})
+public @interface Plugin {
+    String request();
 }

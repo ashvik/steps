@@ -27,9 +27,25 @@
                         </xs:sequence>
                     </xs:complexType>
                 </xs:element>
-                <xs:element name="mappedRequest" minOccurs="0" maxOccurs="unbounded">
+                <xs:element name="requestAliases" minOccurs="0" maxOccurs="1">
                     <xs:complexType>
                         <xs:sequence>
+                            <xs:element name="alias" maxOccurs="unbounded" minOccurs="1">
+                                <xs:complexType>
+                                    <xs:simpleContent>
+                                        <xs:extension base="xs:string">
+                                            <xs:attribute type="xs:string" name="name" use="required"/>
+                                            <xs:attribute type="xs:string" name="request" use="required"/>
+                                        </xs:extension>
+                                    </xs:simpleContent>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="mappedRequest" minOccurs="0" maxOccurs="unbounded">
+                    <xs:complexType>
+                        <xs:choice minOccurs="0" maxOccurs="unbounded">
                             <xs:element name="contract" minOccurs="0" maxOccurs="1">
                                 <xs:complexType>
                                     <xs:sequence>
@@ -78,14 +94,19 @@
                                     </xs:simpleContent>
                                 </xs:complexType>
                             </xs:element>
-                            <xs:element name="pluginRequest" maxOccurs="unbounded" minOccurs="0">
+                            <xs:element name="automatedPluginExecution" minOccurs="0" maxOccurs="1">
                                 <xs:complexType>
-                                    <xs:simpleContent>
-                                        <xs:extension base="xs:string">
-                                            <xs:attribute type="xs:string" name="name" use="required"/>
-                                            <xs:attribute type="xs:string" name="runAutomatically" use="optional"/>
-                                        </xs:extension>
-                                    </xs:simpleContent>
+                                    <xs:sequence>
+                                        <xs:element name="execute" minOccurs="1" maxOccurs="unbounded">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element type="xs:string" name="plugin" maxOccurs="unbounded" minOccurs="0"/>
+                                                </xs:sequence>
+                                                <xs:attribute type="xs:string" name="interceptingStep" use="required"/>
+                                                <xs:attribute type="InterceptingType" name="type" use="optional"/>
+                                            </xs:complexType>
+                                        </xs:element>
+                                    </xs:sequence>
                                 </xs:complexType>
                             </xs:element>
                             <xs:element name="preSteps" minOccurs="0" maxOccurs="1">
@@ -125,7 +146,7 @@
                                     </xs:sequence>
                                 </xs:complexType>
                             </xs:element>
-                        </xs:sequence>
+                        </xs:choice>
                         <xs:attribute type="xs:string" name="request" use="required"/>
                         <xs:attribute type="xs:string" name="rootStep" use="required"/>
                         <xs:attribute type="xs:string" name="applyGenericSteps" use="optional"/>
@@ -151,4 +172,10 @@
             </xs:sequence>
         </xs:complexType>
     </xs:element>
+    <xs:simpleType name="InterceptingType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="PRE" />
+            <xs:enumeration value="POST" />
+        </xs:restriction>
+    </xs:simpleType>
 </xs:schema>

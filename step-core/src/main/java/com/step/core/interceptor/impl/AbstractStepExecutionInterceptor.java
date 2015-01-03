@@ -24,7 +24,7 @@ public abstract class AbstractStepExecutionInterceptor implements ExecutionInter
         for(Class<?> stepClass : steps){
             try{
                 Object step = StepExecutionUtil.loadClass(stepClass.getName(), context.getClassLoader()).newInstance();
-                StepExecutionUtil.makeRichStepObject(step, chain.getDependenciesForStep(stepClass), context);
+                StepExecutionUtil.makeRichStepObject(step, chain.getDependenciesForStep(stepClass), chain.getAnnotatedPluginsForStep(stepClass), context);
                 ResponseLessStep rls = (ResponseLessStep)step;
                 rls.setStepExecutionContext(context);
                 rls.execute();

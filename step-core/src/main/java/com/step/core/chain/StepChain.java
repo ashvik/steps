@@ -1,9 +1,6 @@
 package com.step.core.chain;
 
-import com.step.core.PluginRequest;
 import com.step.core.chain.impl.BasicStepChain;
-import com.step.core.chain.jump.JumpDetails;
-import com.step.core.chain.repeater.RepeatDetails;
 import com.step.core.collector.StepDefinitionHolder;
 import com.step.core.exceptions.handler.StepExceptionHandler;
 import com.step.core.parameter.RequestParameterContainer;
@@ -26,13 +23,8 @@ public interface StepChain {
     void addStep(StepDefinitionHolder stepDefinitionHolder, String request);
     void addInterceptorStep(StepDefinitionHolder stepDefinitionHolder, String request, boolean isPreStep);
     String getStepName(Class<?> stepClass);
-    List<Class<?>> getJumpConditionClassForStep(Class<?> step);
-    List<JumpDetails> getJumpDetailsForStep(Class<?> step);
-    List<Class<?>> getBreakConditionClassForStep(Class<?> step);
     BasicStepChain.StepNode getRootNode();
     BasicStepChain.StepNode getStepNodeByName(String name);
-    Class<?> getRepeatBreakConditionClassForStep(Class<?> step);
-    RepeatDetails getRepeatDetailsForStep(Class<?> step);
     void setRequestParameterContainer(RequestParameterContainer requestParameterContainer);
     RequestParameterContainer getRequestParameterContainer();
     String getExpectedOutComeClass();
@@ -41,6 +33,5 @@ public interface StepChain {
     void setStepExceptionHandler(String stepExceptionHandler);
     void setInputTypes(List<String> inputTypes);
     List<String> getInputType();
-    void setPluginRequests(List<PluginRequest> pluginRequests);
-    List<PluginRequest> getPluginRequests();
+    List<AnnotatedField> getAnnotatedPluginsForStep(Class<?> stepClass);
 }

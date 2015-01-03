@@ -3,7 +3,9 @@ package com.step.core.steps;
 import com.step.core.AbstractResponseLessStep;
 import com.step.core.PluginRequest;
 import com.step.core.annotations.StepDefinition;
-import com.step.core.io.ExecutionResult;
+import com.step.core.interceptor.event.PluginEvent;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.util.List;
 
@@ -13,20 +15,15 @@ import java.util.List;
 
 @StepDefinition
 public class ExecutePluginRequests extends AbstractResponseLessStep{
+    private final Log logger = LogFactory.getLog(getClass());
+
     @Override
     public void execute() throws Exception {
-        List<PluginRequest> pluginRequests = getStepExecutionContext().getPluginRequests();
-        Object out;
+        List<PluginEvent> pluginEvents = getStepExecutionContext().getAutomatedPluginEvent();
 
-        for(PluginRequest pluginRequest : pluginRequests){
-            if(pluginRequest.isRunAutomatically()){
-                ExecutionResult result = runPluginRequest(pluginRequest.getRequest());
-                out = result.getResultObject();
-
-                if(out != null){
-                    getStepExecutionContext().getStepInput().setInput(out);
-                }
-            }
+        for(PluginEvent<PluginRequest> pluginEvent : pluginEvents){
+            PluginRequest pluginRequest = pluginEvent.getPluginDetails();
+            logger.info("Successfully ran following plugins: "+pluginRequest.getPlugIns());
         }
     }
 }
