@@ -1,94 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<stepRequestMapper schemaLocation="classpath:steps.xsd">
+<stepRequestMapper xmlns="http://www.stepframework.com/StepRequestMapper"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.stepframework.com/StepRequestMapper">
     <multiScopedSteps>
         <step name="makeBusinessObjectFromInputStep">
             <scope request="add" nextStep="addBusinessObjectStep"/>
             <scope request="fetch" nextStep="fetchBusinessObjectStep"/>
         </step>
-        <!--<step name="jumpTestStep1">
-            <scope request="jumpTest" nextStep="jumpTestStep2"/>
-            <scope request="jumpTestNew" nextStep="jumpTestStep5"/>
-            <scope request="jumpTestNewAgain" nextStep="jumpTestStep6"/>
-        </step>-->
     </multiScopedSteps>
 
-    <mappedRequest request="nestedReq" rootStep="nestedReqStep">
-        <preSteps>
-            <step>testPreStepNew</step>
-        </preSteps>
-    </mappedRequest>
-
-    <mappedRequest request="add" rootStep="makeBusinessObjectFromInputStep" applyGenericSteps="false">
-        <pluginRequest name="nestedReq"/>
+    <mappedRequest request="add" rootStep="makeBusinessObjectFromInputStep">
+        <requestParameters>
+            <configuration ref="GLOBAL_PARAMS"/>
+        </requestParameters>
     </mappedRequest>
 
     <mappedRequest request="fetch" rootStep="makeBusinessObjectFromInputStep"/>
-
-    <mappedRequest request="jumpTest" rootStep="jumpTestStep1" >
-        <pluginRequest name="runExternal"/>
-        <!--<breaker forStep="jumpTestStep1" conditionClass="com.step.core.example.steps.TestBreakConditionNew"/>
-        <breaker forStep="jumpTestStep1" conditionClass="com.step.core.example.steps.TestBreakCondition"/>
-
-        <jumper forStep="jumpTestStep1" conditionClass="com.step.core.example.steps.TestJumpCondition1" onSuccessJumpTo="jumpTestStep3"/>
-        <jumper forStep="jumpTestStep1" conditionClass="com.step.core.example.steps.TestJumpCondition" onSuccessJumpTo="jumpTestStep4"/>-->
-
-        <preSteps>
-            <step>testPreStep</step>
-        </preSteps>
-        <postSteps>
-            <step>testPostStep</step>
-        </postSteps>
-        <!--breaker forStep="jumpTestStep1" conditionClass="com.step.core.example.steps.TestBreakCondition"/-->
-    </mappedRequest>
-    <mappedRequest request="jumpTestNew" rootStep="jumpTestStep1">
-        <pluginRequest name="runExternal"/>
-        <!--jumper forStep="jumpTestStep1" conditionClass="com.step.core.example.steps.TestJumpConditionNew" onSuccessJumpTo="jumpTestStep6"/-->
-        <preSteps>
-            <step>testPreStepNew</step>
-        </preSteps>
-        <breaker forStep="jumpTestStep1" conditionClass="com.step.core.example.steps.TestBreakConditionNew"/>
-        <!--repeater forStep="jumpTestStep6" conditionClass="com.step.core.example.steps.TestRepeatBreakCondition" repeatFromStep="jumpTestStep1"/-->
-    </mappedRequest>
-    <mappedRequest request="jumpTestNewAgain" rootStep="jumpTestStep1">
-        <!--jumper forStep="jumpTestStep1" conditionClass="com.step.core.example.steps.TestJumpConditionNew" onSuccessJumpTo="jumpTestStep6"/-->
-        <preSteps>
-            <step>testPreStepAgain</step>
-        </preSteps>
-        <breaker forStep="jumpTestStep1" conditionClass="com.step.core.example.steps.TestBreakConditionNew"/>
-        <!--repeater forStep="jumpTestStep6" conditionClass="com.step.core.example.steps.TestRepeatBreakCondition" repeatFromStep="jumpTestStep1"/-->
-    </mappedRequest>
-    <mappedRequest request="paramTest" rootStep="parameterStep">
-        <requestParameters>
-            <configuration ref="GLOBAL_PARAMS"/>
-            <parameters>
-                <parameter name="param1">
-                    <value>PARAM1</value>
-                </parameter>
-                <parameter name="param2">
-                    <value>1234</value>
-                </parameter>
-                <parameter name="param3">
-                    <value>true</value>
-                </parameter>
-            </parameters>
-        </requestParameters>
-    </mappedRequest>
-
-    <mappedRequest request="paramTest1" rootStep="parameterStep">
-        <requestParameters>
-            <configuration ref="GLOBAL_PARAMS_NEW"/>
-            <parameters>
-                <parameter name="p1">
-                    <value>PARAM1</value>
-                </parameter>
-                <parameter name="p2">
-                    <value>1234</value>
-                </parameter>
-                <parameter name="IParameter">
-                    <value>com.step.core.example.steps.Parameter</value>
-                    <value>com.step.core.example.steps.Parameter</value>
-                </parameter>
-            </parameters>
-        </requestParameters>
-    </mappedRequest>
 </stepRequestMapper>

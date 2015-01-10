@@ -1,9 +1,11 @@
 package com.step.core.annotations.builder.impl;
 
-import com.step.core.annotations.Plugin;
-import com.step.core.annotations.StepDependency;
+import com.step.core.annotations.*;
 import com.step.core.annotations.builder.AnnotationDefinitionBuilder;
 import com.step.core.utils.AnnotatedField;
+import com.step.core.utils.InputAsListAnnotatedField;
+import com.step.core.utils.InputAsSetAnnotatedField;
+import com.step.core.utils.ParameterAnnotatedField;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -27,7 +29,7 @@ public abstract class AbstractAnnotationDefinitionBuilder implements AnnotationD
         Field[] fields = root.getDeclaredFields();
 
         for(Field field : fields){
-            StepDependency sd = field.getAnnotation(StepDependency.class);
+            ExternalDependency sd = field.getAnnotation(ExternalDependency.class);
             if(sd != null){
                 annotatedFields.add(new AnnotatedField(field.getType(), field.getName(), sd.name()));
             }
@@ -44,6 +46,69 @@ public abstract class AbstractAnnotationDefinitionBuilder implements AnnotationD
             Plugin plugin = field.getAnnotation(Plugin.class);
             if(plugin != null){
                 annotatedFields.add(new AnnotatedField(field.getType(), field.getName(), plugin.request()));
+            }
+        }
+
+        return annotatedFields;
+    }
+
+    protected List<AnnotatedField> collectInputAnnotatedFields(Class<?> root){
+        List<AnnotatedField> annotatedFields = new ArrayList<AnnotatedField>();
+        Field[] fields = root.getDeclaredFields();
+
+        for(Field field : fields){
+            Input input = field.getAnnotation(Input.class);
+            if(input != null){
+                annotatedFields.add(new AnnotatedField(field.getType(), field.getName(), null));
+            }
+        }
+
+        return annotatedFields;
+    }
+
+    protected List<AnnotatedField> collectInputAsListAnnotatedFields(Class<?> root){
+        List<AnnotatedField> annotatedFields = new ArrayList<AnnotatedField>();
+        Field[] fields = root.getDeclaredFields();
+
+        for(Field field : fields){
+            InputAsList inputAsList = field.getAnnotation(InputAsList.class);
+            if(inputAsList != null){
+                InputAsListAnnotatedField annotatedField = new InputAsListAnnotatedField(field.getType(), field.getName(), null);
+                annotatedField.setListOf(inputAsList.listOf());
+                annotatedFields.add(annotatedField);
+            }
+        }
+
+        return annotatedFields;
+    }
+
+    protected List<AnnotatedField> collectInputAsSetAnnotatedFields(Class<?> root){
+        List<AnnotatedField> annotatedFields = new ArrayList<AnnotatedField>();
+        Field[] fields = root.getDeclaredFields();
+
+        for(Field field : fields){
+            InputAsSet inputAsSet = field.getAnnotation(InputAsSet.class);
+            if(inputAsSet != null){
+                InputAsSetAnnotatedField annotatedField = new InputAsSetAnnotatedField(field.getType(), field.getName(), null);
+                annotatedField.setSetOf(inputAsSet.setOf());
+                annotatedFields.add(annotatedField);
+            }
+        }
+
+        return annotatedFields;
+    }
+
+    protected List<AnnotatedField> collectParameterAnnotatedFields(Class<?> root){
+        List<AnnotatedField> annotatedFields = new ArrayList<AnnotatedField>();
+        Field[] fields = root.getDeclaredFields();
+
+        for(Field field : fields){
+            Parameter parameter = field.getAnnotation(Parameter.class);
+            if(parameter != null){
+                ParameterAnnotatedField annotatedField = new ParameterAnnotatedField(field.getType(), field.getName(), null);
+                annotatedField.setName(parameter.name());
+                annotatedField.setParameterValueType(parameter.valueType());
+                annotatedFields.add(annotatedField);
             }
         }
 

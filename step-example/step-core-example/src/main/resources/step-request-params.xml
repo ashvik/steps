@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<stepRequestMapper schemaLocation="classpath:steps.xsd">
+<stepRequestMapper xmlns="http://www.stepframework.com/StepRequestMapper"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.stepframework.com/StepRequestMapper">
     <parameterConfiguration name="GLOBAL_PARAMS">
         <parameter name="g1">
             <value>GLOBAL1</value>
         </parameter>
         <parameter name="g2">
             <value>GLOBAL2</value>
+        </parameter>
+        <parameter name="IParameter">
+            <value>com.step.core.example.steps.Parameter</value>
         </parameter>
     </parameterConfiguration>
 

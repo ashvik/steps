@@ -8,6 +8,7 @@ import com.step.core.utils.StepExecutionUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.lang.reflect.Method;
 import java.util.List;
 
 /**
@@ -24,10 +25,18 @@ public abstract class AbstractStepExecutionInterceptor implements ExecutionInter
         for(Class<?> stepClass : steps){
             try{
                 Object step = StepExecutionUtil.loadClass(stepClass.getName(), context.getClassLoader()).newInstance();
-                StepExecutionUtil.makeRichStepObject(step, chain.getDependenciesForStep(stepClass), chain.getAnnotatedPluginsForStep(stepClass), context);
-                ResponseLessStep rls = (ResponseLessStep)step;
-                rls.setStepExecutionContext(context);
-                rls.execute();
+                StepExecutionUtil.makeRichStepObject(step, chain.getInterceptorStepDefinition(stepClass), context);
+                if(step instanceof ResponseLessStep){
+                    ResponseLessStep rls = (ResponseLessStep)step;
+                    rls.setStepExecutionContext(context);
+                    rls.execute();
+                }else{
+                    Method method = stepClass.getDeclaredMethod("execute");
+                    Object stepResult = method.invoke(step);
+                    if(stepResult != null){
+                        context.getStepInput().setInput(stepResult);
+                    }
+                }
             }catch(Exception e){
                 logger.info("Exception Occurred during execution of step: "+stepClass.getName()+", cause: "+e.getMessage());
                 throw new IllegalStateException(e.getMessage());

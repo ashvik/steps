@@ -19,6 +19,8 @@ import com.step.core.utils.StepExecutionUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.List;
 
 /**
@@ -54,12 +56,12 @@ public class BasicStepExecutor implements StepExecutor {
                 break;
             }
             step = stepClass.newInstance();
-            StepExecutionUtil.makeRichStepObject(step,
-                    chain.getDependenciesForStep(originalStepClass), chain.getAnnotatedPluginsForStep(originalStepClass), context);
 
-            //Run plugin request automatically if configured before execution of particular step.
+            //Run plugin request automatically if configured, before execution of particular step.
             List<PluginEvent> pluginEvents = context.getAutomatedPluginEvent();
             runPluginsAutomatically(pluginEvents, chain.getStepName(originalStepClass), StepEventType.PRE_EVENT);
+            StepExecutionUtil.makeRichStepObject(step,
+                    currentNode.getStepDefinitionHolder(), context);
 
             if (step instanceof ResponsiveStep) {
                 ResponsiveStep rs = (ResponsiveStep) step;
@@ -69,10 +71,7 @@ public class BasicStepExecutor implements StepExecutor {
                 }catch(Exception e){
                     logger.error("Exception Occurred during execution of step: "+stepClass.getName()+", cause: "+e.getMessage());
                     if(stepExceptionHandlerClass != null){
-                        StepExceptionHandler handler = stepExceptionHandlerClass.newInstance();
-                        handler.setStepExecutionContext(context);
-                        handler.handleException(e);
-                        context.breakStepChainExecution();
+                        handleException(context, stepExceptionHandlerClass, e);
                         break;
                     }else{
                         throw e;
@@ -89,10 +88,7 @@ public class BasicStepExecutor implements StepExecutor {
                 }catch(Exception e){
                     logger.error("Exception Occurred during execution of step: "+stepClass.getName()+", cause: "+e.getMessage());
                     if(stepExceptionHandlerClass != null){
-                        StepExceptionHandler handler = stepExceptionHandlerClass.newInstance();
-                        handler.setStepExecutionContext(context);
-                        handler.handleException(e);
-                        context.breakStepChainExecution();
+                        handleException(context, stepExceptionHandlerClass, e);
                         break;
                     }else{
                         throw e;
@@ -102,11 +98,30 @@ public class BasicStepExecutor implements StepExecutor {
                 moveToStep = breakOrMoveStepExecutionIfApplicable(currentNode, originalStepClass, context, chain,
                         jumpTo, repeatToStep);
             } else {
-                throw new StepExecutionException(stepClass,
-                        "Step can only be the instanceof ResponsiveStep or ResponseLessStep.");
+                try {
+                    Method method = stepClass.getDeclaredMethod("execute");
+                    stepResult = method.invoke(step);
+                }catch (NoSuchMethodException e){
+                    throw new StepExecutionException(stepClass,
+                            "Step can only be the instanceof ResponsiveStep or ResponseLessStep or should have execute method implemented.");
+                }catch(InvocationTargetException e){
+                    logger.error("Exception Occurred during execution of step: "+stepClass.getName()+", cause: "+e.getTargetException().getMessage());
+                    if(stepExceptionHandlerClass != null){
+                        handleException(context, stepExceptionHandlerClass, (Exception)e.getTargetException());
+                        break;
+                    }else{
+                        throw e;
+                    }
+                }
+
+                if(stepResult != null){
+                    context.getStepInput().setInput(stepResult);
+                }
+                moveToStep = breakOrMoveStepExecutionIfApplicable(currentNode, originalStepClass, context, chain,
+                        jumpTo, repeatToStep);
             }
 
-            //Run plugin request automatically if configured after execution of particular step.
+            //Run plugin request automatically if configured, after execution of particular step.
             runPluginsAutomatically(pluginEvents, chain.getStepName(originalStepClass), StepEventType.POST_EVENT);
 
             if(moveToStep != null){
@@ -135,6 +150,13 @@ public class BasicStepExecutor implements StepExecutor {
         }
 
         return result;
+    }
+
+    private void handleException(StepExecutionContext context, Class<StepExceptionHandler> stepExceptionHandlerClass, Exception e) throws InstantiationException, IllegalAccessException {
+        StepExceptionHandler handler = stepExceptionHandlerClass.newInstance();
+        handler.setStepExecutionContext(context);
+        handler.handleException(e);
+        context.breakStepChainExecution();
     }
 
     private BasicStepChain.StepNode breakOrMoveStepExecutionIfApplicable(BasicStepChain.StepNode currentNode,
@@ -247,7 +269,7 @@ public class BasicStepExecutor implements StepExecutor {
 
     }
 
-    private void runPluginsAutomatically(List<PluginEvent> pluginEvents, String currentStep, StepEventType stepEventType){
+    private void  runPluginsAutomatically(List<PluginEvent> pluginEvents, String currentStep, StepEventType stepEventType){
         for(PluginEvent pluginEvent : pluginEvents){
             if(pluginEvent.getStep().equals(currentStep) && pluginEvent.getEventType()==stepEventType){
                 pluginEvent.runPlugins();

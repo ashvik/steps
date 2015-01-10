@@ -2,6 +2,7 @@ package com.step.informer.flat;
 
 import com.step.core.chain.StepChain;
 import com.step.core.chain.impl.BasicStepChain;
+import com.step.core.utils.AnnotatedField;
 import com.step.informer.flat.visitor.impl.BasicFlatInfoVisitor;
 
 import java.util.ArrayList;
@@ -36,7 +37,13 @@ public class StepChainInfo {
             visitor.setCurrentNode(currentNode);
             StepInfo info = new StepInfo();
             info.accept(visitor);
+            List<AnnotatedField> plg = chain.getAnnotatedPluginsForStep(currentNode.getStepClass());
+
+            for(AnnotatedField plugin : plg){
+                plugIns.add(plugin.getAnnotatedName());
+            }
             currentNode = currentNode.getNextNode();
+
         }
 
         if(!postSteps.isEmpty()){
@@ -48,10 +55,6 @@ public class StepChainInfo {
                 inputs.add(cls);
             }
         }
-
-        /*for(PluginRequest request : chain.getPluginRequests()){
-            plugIns.add(request.getRequest());
-        }*/
 
         expectedOutCome = chain.getExpectedOutComeClass();
     }
@@ -110,7 +113,8 @@ public class StepChainInfo {
 
     private void handleInterceptorSteps(List<Class<?>> steps, StepChain chain, BasicFlatInfoVisitor visitor, String type){
         for(Class<?> stepClass : steps){
-            BasicStepChain.StepNode node = new BasicStepChain.StepNode(stepClass, null, -1);
+
+            BasicStepChain.StepNode node = new BasicStepChain.StepNode(chain.getStepNodeByName(chain.getStepName(stepClass)).getStepDefinitionHolder(), null, -1);
             visitor.setCurrentNode(node);
             StepInfo info = new StepInfo();
             info.setInterceptorType(type);

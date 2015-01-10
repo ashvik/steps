@@ -1,8 +1,11 @@
 package com.step.informer.service.impl;
 
 import com.step.core.Configuration;
+import com.step.core.PluginRequest;
 import com.step.core.chain.StepChain;
+import com.step.core.collector.MappedRequestDetailsHolder;
 import com.step.core.collector.StepDefinitionHolder;
+import com.step.core.interceptor.event.PluginEvent;
 import com.step.core.repository.StepRepository;
 import com.step.informer.flat.StepChainInfo;
 import com.step.informer.flat.StepInfo;
@@ -48,10 +51,17 @@ public class BasicStepInformationService implements StepInformationService {
         StepChainInfo stepChainInfo = stepChainInfoMap.get(request);
 
         if(stepChainInfo == null){
+            MappedRequestDetailsHolder mappedRequestDetailsHolder = stepRepository.getMappedRequestDetails(request);
             StepChain chain = stepRepository.getStepExecutionChainForRequest(request);
             String alias = stepRepository.getAliasForRequest(request);
             stepChainInfo = new StepChainInfo();
             stepChainInfo.prepareStepChainInfo(chain);
+
+            List<PluginEvent> pluginEvents = mappedRequestDetailsHolder.getAutoPluginEvents();
+            for(PluginEvent<PluginRequest> pluginEvent : pluginEvents){
+                stepChainInfo.getPlugIns().addAll(pluginEvent.getPluginDetails().getPlugIns());
+            }
+
             if(alias != null)
                 stepChainInfo.setAlias(alias);
             stepChainInfoMap.put(request, stepChainInfo);

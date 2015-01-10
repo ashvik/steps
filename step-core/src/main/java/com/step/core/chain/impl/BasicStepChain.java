@@ -19,6 +19,7 @@ public class BasicStepChain implements StepChain {
     private List<Class<?>> steps = new ArrayList<Class<?>>();
     private List<Class<?>> preSteps = new ArrayList<Class<?>>();
     private List<Class<?>> postSteps = new ArrayList<Class<?>>();
+    private Map<Class<?>, StepDefinitionHolder> interceptorStepDefinitions = new HashMap<Class<?>, StepDefinitionHolder>();
     private Map<Class<?>, String> stepNames = new HashMap<Class<?>, String>();
     private Map<String, StepNode> stepNodeMap = new HashMap<String, StepNode>();
     private Map<Class<?>, List<AnnotatedField>> dependenciesMap = new HashMap<Class<?>, List<AnnotatedField>>();
@@ -54,7 +55,7 @@ public class BasicStepChain implements StepChain {
     @Override
     public void addStep(StepDefinitionHolder holder, String request) {
         if(rootNode == null){
-            rootNode = new StepNode(holder.getStepClass(),null,1);
+            rootNode = new StepNode(holder,null,1);
             stepNodeMap.put(holder.getName(), rootNode);
             populateRequiredAssets(holder, request);
             visitedNodes.add(holder.getName());
@@ -66,7 +67,7 @@ public class BasicStepChain implements StepChain {
                 while(true){
                     if(next == null){
                         seq++;
-                        next = new StepNode(holder.getStepClass(), null, seq);
+                        next = new StepNode(holder, null, seq);
                         stepNodeMap.put(holder.getName(), next);
                         currentNode.setNextNode(next);
                         populateRequiredAssets(holder, request);
@@ -92,9 +93,11 @@ public class BasicStepChain implements StepChain {
     public void addInterceptorStep(StepDefinitionHolder stepDefinitionHolder, String request, boolean isPreStep) {
         if(isPreStep){
             this.preSteps.add(stepDefinitionHolder.getStepClass());
+            this.interceptorStepDefinitions.put(stepDefinitionHolder.getStepClass(), stepDefinitionHolder);
             populateRequiredAssets(stepDefinitionHolder, request);
         }else{
             this.postSteps.add(stepDefinitionHolder.getStepClass());
+            this.interceptorStepDefinitions.put(stepDefinitionHolder.getStepClass(), stepDefinitionHolder);
             populateRequiredAssets(stepDefinitionHolder, request);
         }
 
@@ -120,6 +123,11 @@ public class BasicStepChain implements StepChain {
     public List<AnnotatedField> getAnnotatedPluginsForStep(Class<?> stepClass) {
         List<AnnotatedField> fields = this.pluginDependenciesMap.get(stepClass);
         return fields == null ? Collections.EMPTY_LIST : fields;
+    }
+
+    @Override
+    public StepDefinitionHolder getInterceptorStepDefinition(Class<?> preStep) {
+        return interceptorStepDefinitions.get(preStep);
     }
 
     @Override
@@ -173,17 +181,17 @@ public class BasicStepChain implements StepChain {
 
     public static final class StepNode{
         private int stepSequence;
-        private Class<?> stepClass;
+        private StepDefinitionHolder stepDefinitionHolder;
         private StepNode nextNode;
 
-        public StepNode(Class stepClass, StepNode nextNode, int stepSequence){
-            this.stepClass = stepClass;
+        public StepNode(StepDefinitionHolder stepDefinitionHolder, StepNode nextNode, int stepSequence){
+            this.stepDefinitionHolder = stepDefinitionHolder;
             this.nextNode = nextNode;
             this.stepSequence = stepSequence;
         }
 
         public Class<?> getStepClass() {
-            return stepClass;
+            return this.stepDefinitionHolder.getStepClass();
         }
 
         public StepNode getNextNode() {
@@ -196,6 +204,10 @@ public class BasicStepChain implements StepChain {
 
         public void setNextNode(StepNode nextNode){
             this.nextNode = nextNode;
+        }
+
+        public StepDefinitionHolder getStepDefinitionHolder(){
+            return stepDefinitionHolder;
         }
     }
 }

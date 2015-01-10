@@ -6,14 +6,11 @@
 
     <context:component-scan base-package="com.step.core.example"/>
 
-    <bean id="objectFactory" class="com.step.core.factory.spring.SpringManagedObjectFactory"/>
+    <bean id="objectFactory" class="com.step.spring.support.factory.SpringManagedObjectFactory"/>
 
     <bean id="stepConfigurations" class="com.step.core.BasicConfiguration">
-        <property name="stepPackages" value="com.step.core.example.steps,
-                                             com.step.external.steps"/>
-        <property name="stepConfigurationFiles" value="step-example.xml,
-                                                       external-steps-conf.xml,
-                                                       step-request-params.xml"/>
+        <property name="stepPackages" value="com.step.core.example.steps"/>
+        <property name="stepConfigurationFiles" value="step-example.xml,step-request-params.xml"/>
     </bean>
 
     <bean id="initializeStepFramework" class="com.step.core.InitializeStepFramework" init-method="initialize">

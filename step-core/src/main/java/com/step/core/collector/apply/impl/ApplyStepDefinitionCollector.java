@@ -31,6 +31,10 @@ public class ApplyStepDefinitionCollector implements AnnotationDefinitionCollect
             StepDefinitionHolder holder = new StepDefinitionHolder(names, next, ad.getAnnotatedClass());
             holder.setAnnotatedFields((List)ad.getDefinition("dependencies"));
             holder.setPlugins((List)ad.getDefinition("plugins"));
+            holder.setAnnotatedInputs((List)ad.getDefinition("inputs"));
+            holder.setInputAsListAnnotatedFields((List)ad.getDefinition("inputsAsList"));
+            holder.setInputAsSetAnnotatedFields((List)ad.getDefinition("inputsAsSet"));
+            holder.setParameterAnnotatedFields((List)ad.getDefinition("parameters"));
 
             defs.add(holder);
         }

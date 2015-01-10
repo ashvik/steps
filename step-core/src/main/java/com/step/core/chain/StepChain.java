@@ -34,4 +34,5 @@ public interface StepChain {
     void setInputTypes(List<String> inputTypes);
     List<String> getInputType();
     List<AnnotatedField> getAnnotatedPluginsForStep(Class<?> stepClass);
+    StepDefinitionHolder getInterceptorStepDefinition(Class<?> preStep);
 }

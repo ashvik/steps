@@ -1,8 +1,8 @@
 package com.step.core.example.steps;
 
 import com.step.core.AbstractResponsiveStep;
+import com.step.core.annotations.ExternalDependency;
 import com.step.core.annotations.StepDefinition;
-import com.step.core.annotations.StepDependency;
 import com.step.core.example.entity.BusinessObject;
 import com.step.core.example.services.DBService;
 
@@ -20,7 +20,7 @@ import java.util.logging.Logger;
 public class FetchBusinessObjectStep extends AbstractResponsiveStep<BusinessObject> {
     private Logger log = Logger.getLogger(this.getClass().getName());
 
-    @StepDependency
+    @ExternalDependency
     private DBService dbService;
 
     @Override
