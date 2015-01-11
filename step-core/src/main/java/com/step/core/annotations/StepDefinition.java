@@ -18,4 +18,5 @@ import java.lang.annotation.Target;
 public @interface StepDefinition {
     String name() default "";
     String next() default "";
+    String executionMethod() default "execute";
 }

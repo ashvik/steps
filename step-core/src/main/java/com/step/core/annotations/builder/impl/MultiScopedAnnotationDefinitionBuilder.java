@@ -32,6 +32,7 @@ public class MultiScopedAnnotationDefinitionBuilder extends AbstractAnnotationDe
                     definition.addDefinition("inputsAsList", collectInputAsListAnnotatedFields(cls));
                     definition.addDefinition("inputsAsSet", collectInputAsSetAnnotatedFields(cls));
                     definition.addDefinition("parameters", collectParameterAnnotatedFields(cls));
+                    definition.addDefinition("executionMethod", "execute");
 
                     definitions.add(definition);
                 }

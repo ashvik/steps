@@ -58,72 +58,63 @@ public class BasicStepExecutor implements StepExecutor {
             step = stepClass.newInstance();
 
             //Run plugin request automatically if configured, before execution of particular step.
-            List<PluginEvent> pluginEvents = context.getAutomatedPluginEvent();
-            runPluginsAutomatically(pluginEvents, chain.getStepName(originalStepClass), StepEventType.PRE_EVENT);
-            StepExecutionUtil.makeRichStepObject(step,
-                    currentNode.getStepDefinitionHolder(), context);
+            try{
+                List<PluginEvent> pluginEvents = context.getAutomatedPluginEvent();
+                runPluginsAutomatically(pluginEvents, chain.getStepName(originalStepClass), StepEventType.PRE_EVENT);
+                StepExecutionUtil.makeRichStepObject(step,
+                        currentNode.getStepDefinitionHolder(), context);
 
-            if (step instanceof ResponsiveStep) {
-                ResponsiveStep rs = (ResponsiveStep) step;
-                rs.setStepExecutionContext(context);
-                try{
+                if (step instanceof ResponsiveStep) {
+                    ResponsiveStep rs = (ResponsiveStep) step;
+                    rs.setStepExecutionContext(context);
                     stepResult = rs.execute();
-                }catch(Exception e){
-                    logger.error("Exception Occurred during execution of step: "+stepClass.getName()+", cause: "+e.getMessage());
-                    if(stepExceptionHandlerClass != null){
-                        handleException(context, stepExceptionHandlerClass, e);
-                        break;
-                    }else{
-                        throw e;
-                    }
-                }
-                context.getStepInput().setInput(stepResult);
-                moveToStep = breakOrMoveStepExecutionIfApplicable(currentNode, originalStepClass, context, chain,
-                        jumpTo, repeatToStep);
-            } else if (step instanceof ResponseLessStep) {
-                ResponseLessStep rls = (ResponseLessStep) step;
-                rls.setStepExecutionContext(context);
-                try{
-                    rls.execute();
-                }catch(Exception e){
-                    logger.error("Exception Occurred during execution of step: "+stepClass.getName()+", cause: "+e.getMessage());
-                    if(stepExceptionHandlerClass != null){
-                        handleException(context, stepExceptionHandlerClass, e);
-                        break;
-                    }else{
-                        throw e;
-                    }
-                }
-                stepResult = null;
-                moveToStep = breakOrMoveStepExecutionIfApplicable(currentNode, originalStepClass, context, chain,
-                        jumpTo, repeatToStep);
-            } else {
-                try {
-                    Method method = stepClass.getDeclaredMethod("execute");
-                    stepResult = method.invoke(step);
-                }catch (NoSuchMethodException e){
-                    throw new StepExecutionException(stepClass,
-                            "Step can only be the instanceof ResponsiveStep or ResponseLessStep or should have execute method implemented.");
-                }catch(InvocationTargetException e){
-                    logger.error("Exception Occurred during execution of step: "+stepClass.getName()+", cause: "+e.getTargetException().getMessage());
-                    if(stepExceptionHandlerClass != null){
-                        handleException(context, stepExceptionHandlerClass, (Exception)e.getTargetException());
-                        break;
-                    }else{
-                        throw e;
-                    }
-                }
-
-                if(stepResult != null){
                     context.getStepInput().setInput(stepResult);
+                    moveToStep = breakOrMoveStepExecutionIfApplicable(currentNode, originalStepClass, context, chain,
+                            jumpTo, repeatToStep);
+                } else if (step instanceof ResponseLessStep) {
+                    ResponseLessStep rls = (ResponseLessStep) step;
+                    rls.setStepExecutionContext(context);
+
+                    rls.execute();
+
+                    stepResult = null;
+                    moveToStep = breakOrMoveStepExecutionIfApplicable(currentNode, originalStepClass, context, chain,
+                            jumpTo, repeatToStep);
+                } else {
+                    try {
+                        Method method = stepClass.getDeclaredMethod(currentNode.getStepDefinitionHolder().getExecutionMethod());
+                        stepResult = method.invoke(step);
+                    }catch (NoSuchMethodException e){
+                        throw new StepExecutionException(stepClass,
+                                "Step can only be the instanceof ResponsiveStep or ResponseLessStep or should have execute method implemented.");
+                    }catch(InvocationTargetException e){
+                        logger.error("Exception Occurred during execution of step: "+stepClass.getName()+", cause: "+e.getTargetException().getMessage());
+                        if(stepExceptionHandlerClass != null){
+                            handleException(context, stepExceptionHandlerClass, (Exception)e.getTargetException());
+                            break;
+                        }else{
+                            throw (Exception)e.getTargetException();
+                        }
+                    }
+
+                    if(stepResult != null){
+                        context.getStepInput().setInput(stepResult);
+                    }
+                    moveToStep = breakOrMoveStepExecutionIfApplicable(currentNode, originalStepClass, context, chain,
+                            jumpTo, repeatToStep);
                 }
-                moveToStep = breakOrMoveStepExecutionIfApplicable(currentNode, originalStepClass, context, chain,
-                        jumpTo, repeatToStep);
+
+                //Run plugin request automatically if configured, after execution of particular step.
+                runPluginsAutomatically(pluginEvents, chain.getStepName(originalStepClass), StepEventType.POST_EVENT);
+            }catch(Exception e){
+                logger.error("Exception Occurred during execution of step: "+stepClass.getName()+", cause: "+e.getMessage());
+                if(stepExceptionHandlerClass != null){
+                    handleException(context, stepExceptionHandlerClass, e);
+                    break;
+                }else{
+                    throw e;
+                }
             }
-
-            //Run plugin request automatically if configured, after execution of particular step.
-            runPluginsAutomatically(pluginEvents, chain.getStepName(originalStepClass), StepEventType.POST_EVENT);
-
             if(moveToStep != null){
                 currentNode = moveToStep;
             }else if (currentNode.getNextNode() != null) {
@@ -138,9 +129,9 @@ public class BasicStepExecutor implements StepExecutor {
             if(tokens.length == 2){
                 Class type = StepExecutionUtil.loadClass(tokens[1], classLoader);
                 if(tokens[0].contains("List")){
-                     result = new ExecutionResult(context.getStepInput().getListTypeInput(type), context.getAttributes());
+                    result = new ExecutionResult(context.getStepInput().getListTypeInput(type), context.getAttributes());
                 }else{
-                     result = new ExecutionResult(context.getStepInput().getSetTypeInput(type), context.getAttributes());
+                    result = new ExecutionResult(context.getStepInput().getSetTypeInput(type), context.getAttributes());
                 }
             }else{
                 result = new ExecutionResult(context.getInput(StepExecutionUtil.loadClass(expectedOutCome, classLoader)), context.getAttributes());
@@ -269,7 +260,7 @@ public class BasicStepExecutor implements StepExecutor {
 
     }
 
-    private void  runPluginsAutomatically(List<PluginEvent> pluginEvents, String currentStep, StepEventType stepEventType){
+    private void  runPluginsAutomatically(List<PluginEvent> pluginEvents, String currentStep, StepEventType stepEventType) throws Exception{
         for(PluginEvent pluginEvent : pluginEvents){
             if(pluginEvent.getStep().equals(currentStep) && pluginEvent.getEventType()==stepEventType){
                 pluginEvent.runPlugins();

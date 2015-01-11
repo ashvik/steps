@@ -21,6 +21,7 @@ public class StepDefinitionAnnotationDefinitionBuilder extends AbstractAnnotatio
                     AnnotatedDefinition definition = new AnnotatedDefinition(cls);
                     String name = ac.name();
                     String next = ac.next();
+                    String executionMethod = ac.executionMethod();
 
                     if(name == null || name.isEmpty()){
                         name = makeDefaultStepName(cls);
@@ -28,6 +29,7 @@ public class StepDefinitionAnnotationDefinitionBuilder extends AbstractAnnotatio
 
                     definition.addDefinition("name", name);
                     definition.addDefinition("next", next);
+                    definition.addDefinition("executionMethod", executionMethod);
                     definition.addDefinition("dependencies", collectAnnotatedFields(cls));
                     definition.addDefinition("plugins", collectPluginAnnotatedFields(cls));
                     definition.addDefinition("inputs", collectInputAnnotatedFields(cls));

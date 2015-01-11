@@ -30,7 +30,13 @@ public class ApplyMultiScopedCollector implements AnnotationDefinitionCollectorA
             String[] scopes = (String[])ad.getDefinition("scopes");
             String[] next = (String[])ad.getDefinition("next");
             StepDefinitionHolder holder = new StepDefinitionHolder(names, ad.getAnnotatedClass());
+            holder.setAnnotatedFields((List)ad.getDefinition("dependencies"));
             holder.setPlugins((List)ad.getDefinition("plugins"));
+            holder.setAnnotatedInputs((List)ad.getDefinition("inputs"));
+            holder.setInputAsListAnnotatedFields((List)ad.getDefinition("inputsAsList"));
+            holder.setInputAsSetAnnotatedFields((List)ad.getDefinition("inputsAsSet"));
+            holder.setParameterAnnotatedFields((List)ad.getDefinition("parameters"));
+            holder.setExecutionMethod((String)ad.getDefinition("executionMethod"));
 
             for(int i=0 ; i<scopes.length ; i++){
                 holder.addScope(scopes[i], next[i]);

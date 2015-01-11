@@ -19,6 +19,7 @@ public class StepDefinitionHolder {
     private Class<?> stepClass;
     private String nextStep;
     private String name;
+    private String executionMethod;
     private GenericStepType genericStepType;
     private List<AnnotatedField> annotatedFields = new ArrayList<AnnotatedField>();
     private List<AnnotatedField> plugins = new ArrayList<AnnotatedField>();
@@ -123,7 +124,16 @@ public class StepDefinitionHolder {
         this.parameterAnnotatedFields = parameterAnnotatedFields;
     }
 
+    public String getExecutionMethod() {
+        return executionMethod;
+    }
+
+    public void setExecutionMethod(String executionMethod) {
+        this.executionMethod = executionMethod;
+    }
+
     public void merge(StepDefinitionHolder other){
+        this.executionMethod = other.executionMethod == null ? this.executionMethod : other.executionMethod;
         this.genericStepType = other.genericStepType == null ? this.genericStepType : other.genericStepType;
         this.scopes = other.scopes.isEmpty() ? this.scopes : other.scopes;
         this.annotatedFields = other.annotatedFields.isEmpty() ? this.annotatedFields : other.annotatedFields;

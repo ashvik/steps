@@ -17,14 +17,10 @@ public class AutomatedRunnablePluginEvent extends AbstractStepExecutionContextAw
     }
 
     @Override
-    public void runPlugins() {
-        try {
-            for(String plugin : pluginRequest.getPlugIns()){
-                ExecutionResult result = getStepExecutionContext().applyPluginRequest(plugin);
-                getStepExecutionContext().getStepInput().setInput(result.getResultObject());
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+    public void runPlugins() throws Exception{
+        for(String plugin : pluginRequest.getPlugIns()){
+            ExecutionResult result = getStepExecutionContext().applyPluginRequest(plugin);
+            getStepExecutionContext().getStepInput().setInput(result.getResultObject());
         }
     }
 

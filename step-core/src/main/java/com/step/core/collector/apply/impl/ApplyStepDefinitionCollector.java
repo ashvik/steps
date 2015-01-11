@@ -35,6 +35,7 @@ public class ApplyStepDefinitionCollector implements AnnotationDefinitionCollect
             holder.setInputAsListAnnotatedFields((List)ad.getDefinition("inputsAsList"));
             holder.setInputAsSetAnnotatedFields((List)ad.getDefinition("inputsAsSet"));
             holder.setParameterAnnotatedFields((List)ad.getDefinition("parameters"));
+            holder.setExecutionMethod((String)ad.getDefinition("executionMethod"));
 
             defs.add(holder);
         }
