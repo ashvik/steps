@@ -38,7 +38,7 @@ public class AddBusinessObjectStep {
     @com.step.core.annotations.Parameter(valueType = ParameterValueType.OBJECT)
     private IParameter param;
 
-    @Plugin(request = "fetch")
+    @Plugin(request = "fetch", applyGenericSteps = true, passCurrentInputs = false)
     private PluginGateway pluginGateway;
 
     //@Override

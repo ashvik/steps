@@ -2,10 +2,7 @@ package com.step.core.annotations.builder.impl;
 
 import com.step.core.annotations.*;
 import com.step.core.annotations.builder.AnnotationDefinitionBuilder;
-import com.step.core.utils.AnnotatedField;
-import com.step.core.utils.InputAsListAnnotatedField;
-import com.step.core.utils.InputAsSetAnnotatedField;
-import com.step.core.utils.ParameterAnnotatedField;
+import com.step.core.utils.*;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -44,8 +41,16 @@ public abstract class AbstractAnnotationDefinitionBuilder implements AnnotationD
 
         for(Field field : fields){
             Plugin plugin = field.getAnnotation(Plugin.class);
+
             if(plugin != null){
-                annotatedFields.add(new AnnotatedField(field.getType(), field.getName(), plugin.request()));
+                String request = plugin.request();
+                boolean applyGenericSteps = plugin.applyGenericSteps();
+                boolean passCurrentInputs = plugin.passCurrentInputs();
+                PluginAnnotatedField pluginAnnotatedField = new PluginAnnotatedField(field.getType(), field.getName(), null);
+                pluginAnnotatedField.setRequest(request);
+                pluginAnnotatedField.setApplyGenericSteps(applyGenericSteps);
+                pluginAnnotatedField.setPassCurrentInputs(passCurrentInputs);
+                annotatedFields.add(pluginAnnotatedField);
             }
         }
 

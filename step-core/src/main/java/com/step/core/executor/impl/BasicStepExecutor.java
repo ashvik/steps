@@ -31,12 +31,13 @@ public class BasicStepExecutor implements StepExecutor {
     private final Log logger = LogFactory.getLog(getClass());
 
     @Override
-    public ExecutionResult execute(StepChain chain, StepExecutionContext context)
+    public ExecutionResult execute(StepExecutionContext context)
             throws Exception {
         ExecutionResult result = null;
         Object stepResult = null;
         String jumpTo = null;
         String repeatToStep = null;
+        StepChain chain = context.getStepChain();
         BasicStepChain.StepNode currentNode = chain.getRootNode();
         BasicStepChain.StepNode moveToStep = null;
         String expectedOutCome = chain.getExpectedOutComeClass();

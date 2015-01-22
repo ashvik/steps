@@ -19,7 +19,6 @@ public interface StepChain {
     List<Class<?>> getPreSteps();
     List<Class<?>> getPostStep();
     List<Class<?>> getSteps();
-    List<AnnotatedField> getDependenciesForStep(Class<?> stepClass);
     void addStep(StepDefinitionHolder stepDefinitionHolder, String request);
     void addInterceptorStep(StepDefinitionHolder stepDefinitionHolder, String request, boolean isPreStep);
     String getStepName(Class<?> stepClass);

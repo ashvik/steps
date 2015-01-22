@@ -1,7 +1,6 @@
 package com.step.core.executor;
 
 import com.step.core.Configuration;
-import com.step.core.chain.StepChain;
 import com.step.core.context.StepExecutionContext;
 
 /**
@@ -12,6 +11,6 @@ import com.step.core.context.StepExecutionContext;
  * To change this template use File | Settings | File Templates.
  */
 public interface StepExecutorProvider {
-    StepExecutor provide(StepChain chain, StepExecutionContext context);
+    StepExecutor provide();
     void initInterceptors(Configuration conf);
 }

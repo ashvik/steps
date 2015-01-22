@@ -6,8 +6,6 @@ import com.step.core.chain.breaker.BreakDetails;
 import com.step.core.chain.jump.JumpDetails;
 import com.step.core.chain.repeater.RepeatDetails;
 import com.step.core.collector.MappedRequestDetailsHolder;
-import com.step.core.container.StepExecutionContainer;
-import com.step.core.container.impl.DefaultStepExecutionContainer;
 import com.step.core.context.StepExecutionContext;
 import com.step.core.executor.StepExecutorProvider;
 import com.step.core.factory.ObjectFactory;
@@ -38,9 +36,10 @@ public class BasicStepExecutionContext implements StepExecutionContext {
     private boolean breakStepChain;
     private StepExecutorProvider stepExecutorProvider;
     private StepRepository stepRepository;
-    private StepExecutionContainer stepExecutionContainer = new LocalStepExecutionContainer();
+    private LocalStepExecutionContainer stepExecutionContainer = new LocalStepExecutionContainer();
     private RequestParameterContainer requestParameterContainer;
     private ClassLoader classLoader;
+    private StepChain stepChain;
     private List<ExecutionDecisionEvent<BreakDetails>> breakExecutionDecisionEvents = new ArrayList<ExecutionDecisionEvent<BreakDetails>>();
     private List<ExecutionDecisionEvent<JumpDetails>> jumpExecutionDecisionEvents = new ArrayList<ExecutionDecisionEvent<JumpDetails>>();
     private List<ExecutionDecisionEvent<RepeatDetails>> repeatExecutionDecisionEvents = new ArrayList<ExecutionDecisionEvent<RepeatDetails>>();
@@ -114,7 +113,7 @@ public class BasicStepExecutionContext implements StepExecutionContext {
     public ExecutionResult applyPluginRequest(String request, Object... input) throws Exception{
         String aliasRequest = stepRepository.getRequestForAlias(request);
         request = aliasRequest != null ? aliasRequest : request;
-        return stepExecutionContainer.submit(request, input);
+        return applyPluginRequest(request, true, false, input);
     }
 
     @Override
@@ -203,6 +202,16 @@ public class BasicStepExecutionContext implements StepExecutionContext {
     }
 
     @Override
+    public void setStepChain(StepChain stepChain) {
+      this.stepChain = stepChain;
+    }
+
+    @Override
+    public StepChain getStepChain() {
+        return this.stepChain;
+    }
+
+    @Override
     public void setRequestParameterContainer(RequestParameterContainer requestParameterContainer) {
         this.requestParameterContainer = requestParameterContainer;
     }
@@ -219,8 +228,7 @@ public class BasicStepExecutionContext implements StepExecutionContext {
         return localStepInput;
     }
 
-    private class LocalStepExecutionContainer extends DefaultStepExecutionContainer {
-        @Override
+    private class LocalStepExecutionContainer {
         public ExecutionResult submit(StepInput input) throws Exception {
             StepExecutionContext context = new BasicStepExecutionContext();
             context.setClassLoader(classLoader);
@@ -253,13 +261,13 @@ public class BasicStepExecutionContext implements StepExecutionContext {
 
             StepChain chain = stepRepository.getStepExecutionChainForRequestUsingGenericStepsFlag(input.getRequest(), allowGenericSteps);
             MappedRequestDetailsHolder mappedRequestDetailsHolder = stepRepository.getMappedRequestDetails(input.getRequest());
+            context.setStepChain(chain);
             context.setRequestParameterContainer(chain.getRequestParameterContainer());
             context.setBreakExecutionDecisionEvents(mappedRequestDetailsHolder.getBreakExecutionDecisionEvents());
             context.setJumpExecutionDecisionEvents(mappedRequestDetailsHolder.getJumpExecutionDecisionEvents());
             context.setRepeatExecutionDecisionEvents(mappedRequestDetailsHolder.getRepeatExecutionDecisionEvents());
             context.setAutomatedPluginEvent(mappedRequestDetailsHolder.getAutoPluginEvents());
-
-            return submit(context, chain, stepExecutorProvider);
+            return stepExecutorProvider.provide().execute(context);
         }
     }
 

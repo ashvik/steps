@@ -72,8 +72,8 @@ public class StepDefinitionHolder {
         return this.scopes.get(scope);
     }
 
-    public Set<String> getNextStepsForAllApplicableScopes(){
-        return new HashSet<String>(this.scopes.values());
+    public Set<String> getScopes(){
+        return new HashSet<String>(this.scopes.keySet());
     }
 
     public List<AnnotatedField> getAnnotatedFields() {

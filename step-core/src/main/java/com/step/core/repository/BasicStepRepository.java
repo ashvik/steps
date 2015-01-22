@@ -1,6 +1,7 @@
 package com.step.core.repository;
 
 import com.step.core.Configuration;
+import com.step.core.PluginRequest;
 import com.step.core.alias.RequestAliasProvider;
 import com.step.core.alias.impl.BasicRequestAliasProvider;
 import com.step.core.chain.StepChain;
@@ -14,6 +15,7 @@ import com.step.core.exceptions.PluginRequestNotFoundException;
 import com.step.core.exceptions.RequestParameterNotFoundException;
 import com.step.core.exceptions.StepChainException;
 import com.step.core.exceptions.StepClassNotFoundException;
+import com.step.core.interceptor.event.PluginEvent;
 import com.step.core.parameter.GenericRequestParameterProvider;
 import com.step.core.parameter.ParameterNameValueHolder;
 import com.step.core.parameter.RequestParameterContainer;
@@ -24,6 +26,7 @@ import com.step.core.provider.StepDefinitionProvider;
 import com.step.core.provider.impl.BasicMappedRequestDetailsProvider;
 import com.step.core.provider.impl.BasicStepDefinitionProvider;
 import com.step.core.utils.AnnotatedField;
+import com.step.core.utils.PluginAnnotatedField;
 
 import java.util.Collections;
 import java.util.List;
@@ -206,40 +209,61 @@ public class BasicStepRepository implements StepRepository {
         for(String step : allSteps){
             StepDefinitionHolder stepDefinitionHolder = stepDefinitionProvider.getStepDefinitionByStepName(step);
             String next = stepDefinitionHolder.getNextStep();
-            Set<String> nextScopeSteps = stepDefinitionHolder.getNextStepsForAllApplicableScopes();
-            String request = null;
+            Set<String> scopes = stepDefinitionHolder.getScopes();
             List<AnnotatedField> annotatedPlugins = stepDefinitionHolder.getPlugins();
 
+            //check steps definition
+            if(stepDefinitionHolder.getStepClass() == null){
+                throw new StepClassNotFoundException("No Step Class found for step having name '"+stepDefinitionHolder.getName()+"'.");
+            }if(next != null && !next.isEmpty()){
+                if(!allRegisteredSteps.contains(next)){
+                    throw new StepClassNotFoundException("No Step Class found for step having name '"+next+"' configured next step for step '"+stepDefinitionHolder.getName()+"'.");
+                }
+            }
+
+            //check scopes
+            for(String scope : scopes){
+                if(!allRequests.contains(scope) && requestAliasProvider.getRequestForAlias(scope) == null){
+                    throw new PluginRequestNotFoundException("Request '"+scope+"' not found, configured in multi scoped step '"+stepDefinitionHolder.getName()+"'.");
+                }
+
+                String nextStepForScope = stepDefinitionHolder.getNextStepForScope(scope);
+                if(!allRegisteredSteps.contains(nextStepForScope)){
+                    throw new StepClassNotFoundException("No Step Class found for step having name '"+nextStepForScope+"' configured for step '"+step+"'.");
+                }
+            }
+
+            //check annotated plugins
             for(AnnotatedField annotatedField : annotatedPlugins){
-                String pluginReq = annotatedField.getAnnotatedName();
+                PluginAnnotatedField pluginAnnotatedField = (PluginAnnotatedField) annotatedField;
+                String pluginReq = pluginAnnotatedField.getRequest();
                 if(!allRequests.contains(pluginReq) && requestAliasProvider.getRequestForAlias(pluginReq) == null){
                     throw new PluginRequestNotFoundException("Plugin request '"+pluginReq+"' not found, configured in step '"+stepDefinitionHolder.getName()+"'.");
                 }
             }
 
-            /*if(stepDefinitionHolder.getRootStepOfRequest() != null){
-                request = stepDefinitionHolder.getRootStepOfRequest();
-                if(request != null && !request.isEmpty()){
-                    List<PluginRequest> plugins = mappedRequestDetailsProvider.getMappedRequestDetails(request).getPluginsForRequest(request);
-                    if(plugins != null && !plugins.isEmpty()){
-                        for(PluginRequest pluginRequest : plugins){
-                            if(!allRequests.contains(pluginRequest.getRequest()) && requestAliasProvider.getRequestForAlias(pluginRequest.getRequest()) == null){
-                                throw new PluginRequestNotFoundException("Plugin request '"+pluginRequest.getRequest()+"' not found, configured in request '"+request+"'.");
+
+        }
+        for(String request : allRequests){
+            if(request != null && !request.isEmpty()){
+                MappedRequestDetailsHolder mappedRequestDetailsHolder = mappedRequestDetailsProvider.getMappedRequestDetails(request);
+                String rootStep = mappedRequestDetailsHolder.getRootStep();
+
+                //check root step
+                if(!allRegisteredSteps.contains(rootStep)){
+                    throw new StepClassNotFoundException("No Step Class found for step having name '"+rootStep+"'"+(request == null ? "." : "configured in request '"+request+"'."));
+                }
+
+                //check automated plugins
+                List<PluginEvent> plugins = mappedRequestDetailsHolder.getAutoPluginEvents();
+                if(plugins != null && !plugins.isEmpty()){
+                    for(PluginEvent<PluginRequest> pluginEvent : plugins){
+                        PluginRequest pluginRequest = pluginEvent.getPluginDetails();
+                        for(String plugin : pluginRequest.getPlugIns()){
+                            if(!allRequests.contains(plugin) && requestAliasProvider.getRequestForAlias(plugin) == null){
+                                throw new PluginRequestNotFoundException("Plugin request '"+plugin+"' not found, configured in request '"+request+"'.");
                             }
                         }
-                    }
-                }
-            }*/
-            if(stepDefinitionHolder.getStepClass() == null){
-                throw new StepClassNotFoundException("No Step Class found for step having name '"+stepDefinitionHolder.getName()+"'"+(request == null ? "." : "configured in request '"+request+"'."));
-            }if(next != null && !next.isEmpty()){
-                if(!allRegisteredSteps.contains(next)){
-                    throw new StepClassNotFoundException("No Step Class found for step having name '"+next+"'"+(request == null ? "." : "configured in request '"+request+"'."));
-                }
-            }if(!nextScopeSteps.isEmpty()){
-                for(String nextScopeStep : nextScopeSteps){
-                    if(!allRegisteredSteps.contains(nextScopeStep)){
-                        throw new StepClassNotFoundException("No Step Class found for step having name '"+nextScopeStep+"'"+(request == null ? "." : "configured in request '"+request+"'."));
                     }
                 }
             }

@@ -1,6 +1,5 @@
 package com.step.core.executor;
 
-import com.step.core.chain.StepChain;
 import com.step.core.context.StepExecutionContext;
 import com.step.core.io.ExecutionResult;
 
@@ -12,5 +11,5 @@ import com.step.core.io.ExecutionResult;
  * To change this template use File | Settings | File Templates.
  */
 public interface StepExecutor {
-    ExecutionResult execute(StepChain chain, StepExecutionContext context) throws Exception;
+    ExecutionResult execute(StepExecutionContext context) throws Exception;
 }

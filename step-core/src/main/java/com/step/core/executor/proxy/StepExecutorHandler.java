@@ -38,8 +38,8 @@ public class StepExecutorHandler implements InvocationHandler{
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         List<ExecutionInterceptor> post = new ArrayList<ExecutionInterceptor>();
-        StepChain chain = (StepChain)args[0];
-        StepExecutionContext context = (StepExecutionContext)args[1];
+        StepExecutionContext context = (StepExecutionContext)args[0];
+        StepChain chain = context.getStepChain();
         List<String> ins = chain.getInputType();
         String expectedOutCome = chain.getExpectedOutComeClass();
         Class expectedOutComeClass = null;

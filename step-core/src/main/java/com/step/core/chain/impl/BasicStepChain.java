@@ -47,12 +47,6 @@ public class BasicStepChain implements StepChain {
     }
 
     @Override
-    public List<AnnotatedField> getDependenciesForStep(Class<?> stepClass) {
-        List<AnnotatedField> fields = this.dependenciesMap.get(stepClass);
-        return fields == null ? Collections.EMPTY_LIST : fields;
-    }
-
-    @Override
     public void addStep(StepDefinitionHolder holder, String request) {
         if(rootNode == null){
             rootNode = new StepNode(holder,null,1);

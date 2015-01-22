@@ -1,6 +1,7 @@
 package com.step.core.context;
 
 import com.step.core.Attributes;
+import com.step.core.chain.StepChain;
 import com.step.core.chain.breaker.BreakDetails;
 import com.step.core.chain.jump.JumpDetails;
 import com.step.core.chain.repeater.RepeatDetails;
@@ -52,4 +53,6 @@ public interface StepExecutionContext {
     void setRepeatExecutionDecisionEvents(List<ExecutionDecisionEvent<RepeatDetails>> repeatExecutionDecisionEvents);
     List<PluginEvent> getAutomatedPluginEvent();
     void setAutomatedPluginEvent(List<PluginEvent> automatedPluginEvent);
+    void setStepChain(StepChain stepChain);
+    StepChain getStepChain();
 }

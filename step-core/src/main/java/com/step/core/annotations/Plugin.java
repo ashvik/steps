@@ -13,4 +13,6 @@ import java.lang.annotation.Target;
 @Target({ElementType.FIELD})
 public @interface Plugin {
     String request();
+    boolean applyGenericSteps() default false;
+    boolean passCurrentInputs() default true;
 }

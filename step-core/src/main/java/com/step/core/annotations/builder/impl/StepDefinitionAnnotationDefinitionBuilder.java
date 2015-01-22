@@ -40,7 +40,7 @@ public class StepDefinitionAnnotationDefinitionBuilder extends AbstractAnnotatio
                     definitions.add(definition);
                 }
             }catch(Exception e){
-
+                e.printStackTrace();
             }
         }
         return definitions;

@@ -34,6 +34,7 @@ public class DefaultStepExecutionContainer implements StepExecutionContainer {
         MappedRequestDetailsHolder mappedRequestDetailsHolder = stepRepository.getMappedRequestDetails(req);
         StepExecutionContext context = new BasicStepExecutionContext();
 
+        context.setStepChain(chain);
         context.setStepInput(input);
         context.setObjectFactory(this.objectFactory);
         context.setStepRepository(stepRepository);
@@ -44,8 +45,8 @@ public class DefaultStepExecutionContainer implements StepExecutionContainer {
         context.setJumpExecutionDecisionEvents(mappedRequestDetailsHolder.getJumpExecutionDecisionEvents());
         context.setRepeatExecutionDecisionEvents(mappedRequestDetailsHolder.getRepeatExecutionDecisionEvents());
         context.setAutomatedPluginEvent(mappedRequestDetailsHolder.getAutoPluginEvents());
-        StepExecutor executor = stepExecutorProvider.provide(chain, context);
-        return executor.execute(chain, context);
+        StepExecutor executor = stepExecutorProvider.provide();
+        return executor.execute(context);
     }
 
     @Override
@@ -76,10 +77,5 @@ public class DefaultStepExecutionContainer implements StepExecutionContainer {
     public void init() {
         stepExecutorProvider = new BasicStepExecutorProvider();
         stepExecutorProvider.initInterceptors(configuration);
-    }
-
-    protected ExecutionResult submit(StepExecutionContext context, StepChain chain, StepExecutorProvider stepExecutorProvider) throws Exception {
-        StepExecutor executor = stepExecutorProvider.provide(chain, context);
-        return executor.execute(chain, context);
     }
 }
